@@ -17,9 +17,9 @@
     "default_popup": "popup.html"
   },
   "icons" : {
-    "16": "cookie1.jpg",
-    "48": "cookie1.jpg",
-    "128": "cookie1.jpg"
+    "16": "icon/cookie1.jpg",
+    "48": "icon/cookie1.jpg",
+    "128": "icon/cookie1.jpg"
   },
   "permissions": [
 		"tabs",
