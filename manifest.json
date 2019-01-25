@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+  "version": "0.7.1",
+  "name": "SUGOI!Cookies",
+  "description": "check if you have cookies which needed for Google Ads conversion tracking",
+  "background": {
+    "js": ["js/background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": [ "http://*/*", "https://*/*" ],
+      "js": ["js/getters.js","js/writer.js", "js/main.js"]
+    }
+  ],
+  "browser_action": {
+    "default_title": "SUGOI! Cokkies",
+    "default_popup": "popup.html"
+  },
+  "icons" : {
+    "16": "cookie1.jpg",
+    "48": "cookie1.jpg",
+    "128": "cookie1.jpg"
+  },
+  "permissions": [
+		"tabs",
+		"background",
+        "contextMenus",
+		"http://*/*",
+		"https://*/*"
+  ]
+}
