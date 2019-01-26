@@ -8,11 +8,25 @@
 window.addEventListener('DOMContentLoaded', function() {
   let btnEl = document.getElementById("btn");
   btnEl.onclick = () =>{
-    let inputEl =document.getElementById('input');
-    let val = inputEl && inputEl.value ? inputEl.value : 'TEST';  
-    setGclid(val);
+    changeLocation(getGclid());
   };
+
+  document.addEventListener('keyup', function(e){
+    if(e.key==='Enter'){
+      changeLocation(getGclid());
+    }
+  });
 });
+
+/** 
+ * @return {!string}
+ */
+function getGclid () {
+  let inputEl =document.getElementById('input');
+  let val = inputEl && inputEl.value ? inputEl.value : 'TEST';  
+  let currentHref = window.location.href;
+  return currentHref.includes('?') ? '&gclid='+val : '?gclid='+val; 
+};
 
 /** 
  * @param {string} gclidTag - ?gclid=... OR &gclid=... 
@@ -36,14 +50,6 @@ function changeLocation (gclidTag) {
           });
     });
 }
-
-/** 
- * @param {string} val - value after gclid +...
- */
-function setGclid (val) {
-  let currentHref = window.location.href;
-  currentHref.includes('?') ? changeLocation('&gclid='+val) : changeLocation('?gclid='+val); 
-};
 
 /** 
  * @return {string} url - url without gclid
