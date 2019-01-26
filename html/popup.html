@@ -1,16 +1,16 @@
-<!-- 
-popup.htmlは、manifest.jsonの"browser_action"のdefault_popup"で指定する。<br/>
-アドレスバーの横の拡張機能のアイコンをクリックした際に表示させる画面を指定する。
-通常のHTMLと同様、JavaScriptを読み込ませることも可能
--->
+<link rel="stylesheet" type="text/css" href="../css/popup.css">
+<link href="../lib/bootstrap.min.css" rel="stylesheet">
 <!DOCTYPE html>
 <html>
   <head>
+  <script type="text/javascript" src="../js/popup.js"></script>
   </head>
   <body>
-    <p>Hello , How are you?</p>
-    <form>
-        <input type="button" value="start" />
-    </form>
+    <div>
+      <p>G'day mate! Input value to test gclid</p>
+        <span>gclid=</span><input id='input'></input> 
+        <span><input id='btn' type="button" class="btn btn-primary" value="Go!"/></span>
+    </div>
   </body>
+  <script type="text/javascript" src="../js/popup.js"></script>
 </html>

@@ -1,8 +1,13 @@
+/** 
+ * @author <Akira Sakaguchi> akira.s7171@gmail.com
+ * 
+ * main scripts to show Google Ads Cookies to users 
+ */
 !function(){
-  console.log("SUGOI!Cookies ⊂(・(ェ)・)⊃ﾍﾞｱ♪ ver.0.7.1");
-  console.log("STARTED CHECKING YOUR COOKIES");
+  let style = [STYLE_BOLD, STYLE_BLUE]; 
+  console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃ ver.0.7.1", style.join(';'));
   console.log("Your current domain is : 【", document.domain,"】");
   writeGclAw();
   writeGac();
-  console.log("DONE!");
+  console.log("%cDONE!", style.join(';'));
 }();
