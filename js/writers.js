@@ -2,7 +2,7 @@
  * @author akira.s7171@gmail.com
  */
 let writeGclAw = function(){
-  let gclAw = getGclAwCookies() || [];
+  let gclAw = getGclAwCookies();
   !!gclAw ? 
     console.log('【found out:', gclAw.length,' gcl_aw cookies】') :
     console.log('NO _gcl_aw detected');

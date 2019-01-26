@@ -1,7 +1,11 @@
+/** 
+ * @author akira.s7171@gmail.com
+ */
+
 /**
  * @return {?Array<string>}  
  */
-let getGclAwCookies = function (){
+let getGclAwCookies = () => {
     const cookieNm = '_gcl_aw';
     return getCookies(cookieNm)
 }; 
@@ -9,7 +13,7 @@ let getGclAwCookies = function (){
 /**
  * @return {?Array<string>} cookies 
  */
-let getGacCookies = function (){
+let getGacCookies = () =>{
     const cookieNm = '_gac';
     return getCookies(cookieNm)
 }; 
@@ -18,12 +22,12 @@ let getGacCookies = function (){
  *@return {?Array<string>} cookies 
  *@param {!string} cookies 
  */
-let getCookies = function (cookieNm){
+let getCookies = (cookieNm) =>{
     const cookies = document.cookie;
-    if(!cookies || !cookieNm){
-      return;
-     }  
     let extractedCookies = [];   
+    if(!cookies || !cookieNm){
+      return extractedCookies;
+     }  
     let cookieAsArray = cookies.split(';');
     cookieAsArray.forEach(function(item){
       if(item.includes(cookieNm)){

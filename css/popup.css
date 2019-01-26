@@ -1,0 +1,12 @@
+ body{
+   width: 300px;
+   height: 120px;
+   padding: 16px;
+  }
+#input{
+  margin-top: 16px;
+  max-width: 120px;
+}
+#btn{
+  margin-left: 16px;
+}

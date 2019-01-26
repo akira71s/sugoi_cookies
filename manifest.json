@@ -1,31 +1,31 @@
 {
   "manifest_version": 2,
   "version": "0.7.1",
-  "name": "SUGOI!Cookies",
-  "description": "check if you have cookies which needed for Google Ads conversion tracking",
+  "name": "SUGOI! Cookies for Google Ads",
+  "description": "check if you have cookies that are needed for Google Ads conversion tracking",
   "background": {
-    "js": ["js/background.js"]
+    "js": ["js/background.js"],
+    "persistant":false
+  },
+  "browser_action": {
+    "default_title": "SUGOI! Cokkies",
+    "default_popup": "html/popup.html",
+    "default_icon": "icon/cookie1.jpg"
   },
   "content_scripts": [
     {
-      "matches": [ "http://*/*", "https://*/*" ],
-      "js": ["js/getters.js","js/writer.js", "js/main.js"]
+      "matches": [ "<all_urls>"],
+      "js": ["js/content.js","js/const.js",
+             "js/getters.js","js/writers.js", 
+             "js/main.js",  "js/setters.js","js/gclidSetter.js"]
     }
   ],
-  "browser_action": {
-    "default_title": "SUGOI! Cokkies",
-    "default_popup": "popup.html"
-  },
   "icons" : {
     "16": "icon/cookie1.jpg",
+    "32": "icon/cookie1.jpg",
     "48": "icon/cookie1.jpg",
     "128": "icon/cookie1.jpg"
   },
-  "permissions": [
-		"tabs",
-		"background",
-        "contextMenus",
-		"http://*/*",
-		"https://*/*"
-  ]
+  "permissions": ["storage","tabs","declarativeContent",  "http://*/",  "notifications", "https://*/"],
+  "content_security_policy": "script-src 'self' 'unsafe-eval' https://ajax.googleapis.com/ ; object-src 'self'"
 }
