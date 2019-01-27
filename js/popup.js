@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', function() {
   // event lisner for clicking 'clear' to clear cache 
   let clearBtnEl = document.getElementById("clear");
   clearBtnEl.onclick = () =>{
-    clearCookies();
+    clearCookies_();
   };
 });
 
