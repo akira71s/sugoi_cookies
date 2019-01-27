@@ -1,5 +1,5 @@
 /** 
- * @ akira.s7171@gmail.com 
+ * @author <Akira Saaguchi> akira.s7171@gmail.com 
  */
 
 /** 
@@ -18,12 +18,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 function clearCookies_(){
     chrome.runtime.sendMessage({message:'clearCookies', domain:document.domain}, function(response){
     console.log(STYLE_ESCAPE + response.message, STYLE_BOLD);
-    console.log('reloading this page in 2 seconds...');
-    setTimeout(reload, 2000);
+    console.log('reloading this page in a moment...');
+    setTimeout(reload_, 1500);
   });
 };
 
-function reload(){
+/** 
+ * @private
+ */
+function reload_(){
   window.location = getNewUrl(window.location.href);
 };
 
