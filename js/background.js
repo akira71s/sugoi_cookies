@@ -1,5 +1,5 @@
 /**
- *@author <Akira Sakaguchi> akira.s7171@gmail.com  
+ * @author Akira Sakaguchi <akira.s7171@gmail.com>  
  */
 
 /**
@@ -7,10 +7,10 @@
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     let message = request.message;
-    let currentDomain = request.domain.includes('www') ?
-      currentDomain.slice('www.'.length) : request.domain;
+    let domain = request.domain.includes('www') ?
+      request.domain.slice('www.'.length) : request.domain;
     if(message ==='clearCookies'){
-      clearCookies_(currentDomain).then((result)=>{
+      clearCookies_(domain).then((result)=>{
         sendMsg_(result)
       });
     }
