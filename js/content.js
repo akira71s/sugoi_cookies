@@ -34,7 +34,9 @@ function clearCookies_(){
  */
 function reload_(gclidVal){
   let url = getUrlWithourGclid(window.location.href)
-  window.location = gclidVal ?  window.location + gclidVal : window.location;
+   gclidVal ? 
+     window.location = window.location + gclidVal : 
+     window.location.reload();
 };
 
 /** 
