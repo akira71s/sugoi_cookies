@@ -2,26 +2,56 @@
  * @author akira.s7171@gmail.com
  */
 
+/**
+ * main scripts to show Google Ads Cookies to users 
+ */
+window.addEventListener('load', function(){
+  // TODO change appropriately to call this after cookies made (especially _gac)
+  setTimeout(start_, 1000);
+});
+
 /** 
  *  calling console log
  */
-const write =(cookieNm) =>{
-  /** @type {Promise} */
-  getCookies(cookieNm).then((result) =>{
+function start_(){
+    console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃ ver.0.7.1", STYLES_BOLD_BULE.join(';'));
+    console.log("Your current domain is : 【", document.domain,"】");
+    write_();
+};
+
+/** 
+ * calling console log
+ * @private
+ */
+const write_ =() =>{  
+  let gclAwNm ='_gcl_aw';
+  let gacNm ='_gac';
+  /** +gal_aw */ 
+  getCookies(gclAwNm).then((result) =>{
     result.length > 0 ?
-      console.log('【found out:', result.length, ' ', cookieNm + ' cookies】') :
-      console.log('NO '+ cookieNm + ' detected');
+      console.log('【found out:', result.length, ' ', gclAwNm + ' cookies】') :
+      console.log('NO '+ gclAwNm + ' detected');
       result.forEach(function(item){
-        write_(item);
+        writeCookieInfo_(item);
       });
-  }); 
+  }).then(()=>{
+    /** _gac */ 
+    getCookies(gacNm).then((result) =>{
+      result.length > 0 ?
+        console.log('【found out:', result.length, ' ', gacNm + ' cookies】') :
+        console.log('NO '+ gacNm + ' detected');
+        result.forEach(function(item){
+          writeCookieInfo_(item);
+        });
+    })
+  }).then(()=>{console.log("%cDONE!", STYLES_BOLD_BULE.join(';'))});
 }
 
 /** 
  * @private
  * @param {!string} item
  */
-const write_ = (item) =>{
+const writeCookieInfo_ = (item) =>{
   if(!item){
     console.error('parameter invalid');
     return;
@@ -53,15 +83,3 @@ const getCookies = (cookieNm) =>{
     resolve(extractedCookies);   
   }) 
 }; 
-
-/**
- * main scripts to show Google Ads Cookies to users 
- */
-!function(){
-  let style = [STYLE_BOLD, STYLE_BLUE];
-  console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃ ver.0.7.1", style.join(';'));
-  console.log("Your current domain is : 【", document.domain,"】");
-  write('_gcl_aw');
-  write('_gac');
-  console.log("%cDONE!", style.join(';'));
-}();
