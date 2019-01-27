@@ -17,9 +17,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
  */
 function clearCookies_(){
     chrome.runtime.sendMessage({message:'clearCookies', domain:document.domain}, function(response){
+    window.alert(response);
     console.log(STYLE_ESCAPE + response.message, STYLE_BOLD);
     console.log('reloading this page in a moment...');
-    reload_();
+    setTimeout(reload_(), 1000);
   });
 };
 

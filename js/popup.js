@@ -30,18 +30,21 @@ window.addEventListener('DOMContentLoaded', function() {
 function clearCookies(){
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     // found active tab
-    chrome.extension.getBackgroundPage().test_value;
     const tabID = tabs[0].id;
     chrome.tabs.sendMessage(tabID, {greeting: "clearCookies"}, function(response) {
-      emptyInput();
+      emptyInput_();
     });
   });
 }
 
-function emptyInput(){
+/** 
+ * @private
+ */
+function emptyInput_(){
   let inputEl =document.getElementById('input');
   inputEl.value = '';
 }
+
 /** 
  * @return {!string}
  */
@@ -63,7 +66,6 @@ function changeLocation (gclidTag) {
         }
         // active tab found 
         let url =tabs[0].url;
-
         // if gclid is already there in the URL, remove it
         url = checkGclid(url);
 
