@@ -9,25 +9,37 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     let message = request.message;
     let currentDomain = request.domain;
     if(message ==='clearCookies'){
-      clearCookies_(currentDomain);
-    };
-    // TODO: call this async
-    sendResponse({message: 'now Cookies cleared away!'})
+      clearCookies_(currentDomain).then((result)=>{
+        sendMsg_(result)
+      });
+    }
 });
 
 /**
+ * @private 
  */
+function sendMsg_(msg){
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    // found active tab
+    const tabID = tabs[0].id;
+    chrome.tabs.sendMessage(tabID, {greeting: msg});
+  });
+};
+
 /**
  * @private 
- * @return {string} 
+ * @return {Promise} 
  * @param {string} currentDomain - a domain clear Cookies from  
  */
 function clearCookies_(currentDomain){
-  chrome.cookies.getAll({domain: currentDomain}, function(cookies) {
-    cookies.forEach(function(cookie){
-      console.log(cookie);
-      let url = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain + cookie.path;
-      chrome.cookies.remove({"url": url, "name": cookie.name}, function(cookie){('deleted_cookie', cookie)});
+  return new Promise((resolve, reject)=>{ 
+    chrome.cookies.getAll({domain: currentDomain}, function(cookies) {
+      cookies.forEach(function(cookie){
+        console.log(cookie);
+        let url = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain + cookie.path;
+        chrome.cookies.remove({"url": url, "name": cookie.name}, function(cookie){('deleted_cookie', cookie)});
+      });
     });
-  });
+    resolve("cookieCleared");
+  })
 };

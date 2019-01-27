@@ -1,25 +1,21 @@
 /** 
  * @author akira.s7171@gmail.com
  */
-let writeGclAw = function(){
-  let gclAw = getGclAwCookies();
-  !!gclAw ? 
-    console.log('【found out:', gclAw.length,' gcl_aw cookies】') :
-    console.log('NO _gcl_aw detected');
-    gclAw.forEach(function(item){
-      write_(item);
-  });
-}
 
-let writeGac = function(){
-  let gac = getGacCookies();
-  !!gac ? 
-    console.log('【found out:', gac.length,' gac cookies】') :
-    console.log('NO _gac detected');  
-  gac.forEach(function(item){
-    write_(item);
-  });
-};
+ /** 
+ *  
+ */
+let write = function(cookieNm){
+  /** @type {Promise} */
+  getCookies(cookieNm).then((result) =>{
+    result.length > 0 ?
+      console.log('【found out:', result.length, ' ', cookieNm + ' cookies】') :
+      console.log('NO '+ cookieNm + ' detected');
+      result.forEach(function(item){
+        write_(item);
+      });
+  }); 
+}
 
 /** 
  * @private
@@ -35,4 +31,26 @@ let write_ = function(item){
     console.log(STYLE_ESCAPE + spritedVals[0] + '.' + spritedVals[1] + 
      '.' + STYLE_ESCAPE + spritedVals[2], STYLE_BOLD,STYLE_HIGHLIGHT) :
     console.log(item);  
-;} 
+}; 
+
+/**
+ *@return {Promise}  
+ *@param {string} cookieNm - either _gac or _gcl_aw
+ */
+const getCookies = (cookieNm) =>{
+  return new Promise(function(resolve, reject){
+    let extractedCookies = [];
+    let cookies = document.cookie;
+    if(!cookies || !cookieNm){
+      return extractedCookies;
+    }  
+    let cookieAsArray = cookies.split(';');
+    cookieAsArray.forEach(function(item){
+      if(item.includes(cookieNm)){
+        extractedCookies.push(item);
+      }
+    });
+    resolve(extractedCookies);   
+  }) 
+}; 
+  

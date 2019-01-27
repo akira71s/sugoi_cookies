@@ -9,6 +9,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     // console.log(sender.tab ? "message from a content script:" + sender.tab.url : "message from the extension");
     if (request.greeting == "clearCookies"){   
       clearCookies_();
+    } else if (request.greeting=='cookieCleared'){
+      reload_();
     }
 });
 
@@ -16,7 +18,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
  * @private
  */
 function clearCookies_(){
-    chrome.runtime.sendMessage({message:'clearCookies', domain:document.domain}, function(response){
+  chrome.runtime.sendMessage({message:'clearCookies', domain:document.domain}, function(response){
     console.log(STYLE_ESCAPE + response.message, STYLE_BOLD);
     console.log('reloading this page in a moment...');
     setTimeout(reload_(), 1000);
