@@ -12,7 +12,7 @@
       "matches": [ "<all_urls>"],
       "js": ["js/content.js","js/const.js",
              "js/getters.js","js/writers.js", 
-             "js/main.js",  "js/setters.js","js/gclidSetter.js"]
+             "js/main.js"]
     }
   ],
   "browser_action": {
