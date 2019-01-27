@@ -1,5 +1,5 @@
 /** 
- * @author <Akira Saaguchi> akira.s7171@gmail.com 
+ * @author Akira Saaguchi <akira.s7171@gmail.com> 
  */
 
 /** 
@@ -11,6 +11,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       clearCookies_();
     } else if (request.greeting=='cookieCleared'){
       reload_();
+    } else if (request.greeting=='reload' && request.gclidVal){
+      reload_(request.gclidVal);
     }
 });
 
@@ -27,16 +29,18 @@ function clearCookies_(){
 
 /** 
  * @private
+ * @param {?string} gclidVal
  */
-function reload_(){
-  window.location = getNewUrl(window.location.href);
+function reload_(gclidVal){
+  let url = getUrlWithourGclid(window.location.href)
+  window.location = gclidVal ?  window.location + gclidVal : window.location;
 };
 
 /** 
  * @return {string} url - url without gclid
  * @param {string} url - url with or without gclid
  */
-function getNewUrl (url) {
+function getUrlWithourGclid (url) {
   if(url.includes('?gclid')){
     url = url.substring(url.indexOf('?gclid'),0);
   } else if(url.includes('&gclid')) {

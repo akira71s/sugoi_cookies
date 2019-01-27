@@ -1,5 +1,5 @@
 /** 
- * @author akira.s7171@gmail.com
+ * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 
 /**
@@ -11,16 +11,16 @@ window.addEventListener('load', function(){
 });
 
 /** 
- *  calling console log
+ *  calling console log for starter messages
  */
 function start_(){
-    console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃ ver.0.7.1", STYLES_BOLD_BULE.join(';'));
-    console.log("Your current domain is : 【", document.domain,"】");
-    write_();
+  console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃ ver.0.7.1", STYLES_BOLD_BULE.join(';'));
+  console.log("Your current domain is : 【", document.domain,"】");
+  write_();
 };
 
 /** 
- * calling console log
+ * calling console log for cookies
  * @private
  */
 const write_ =() =>{  
@@ -43,8 +43,9 @@ const write_ =() =>{
         result.forEach(function(item){
           writeCookieInfo_(item);
         });
-    })
-  }).then(()=>{console.log("%cDONE!", STYLES_BOLD_BULE.join(';'))});
+    }) 
+  }) // after all the Promise functions, write DONE
+  .then(()=>{console.log("%cDONE!", STYLES_BOLD_BULE.join(';'))});
 }
 
 /** 
@@ -64,6 +65,7 @@ const writeCookieInfo_ = (item) =>{
 }; 
 
 /**
+ * TODO: may be able to use Chrome.cookies API
  *@return {Promise}  
  *@param {string} cookieNm - either _gac or _gcl_aw
  */

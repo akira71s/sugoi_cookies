@@ -7,27 +7,35 @@
  */
 window.addEventListener('DOMContentLoaded', function() {
   let btnEl = document.getElementById("go");
+
+  // event lisner for clicking 'GO' to execute a gclid test 
   btnEl.onclick = () =>{
     let inputEl =document.getElementById('input');
     if(inputEl && inputEl.value){
-      changeLocation(getGclid());
+      reloadWithGclid();
     }
   };
-
+  
+  // event lisner for pressing enter to execute a gclid test 
   document.addEventListener('keyup', function(e){
     let inputEl =document.getElementById('input');
     if(e.key==='Enter'&&inputEl && inputEl.value){
-      changeLocation(getGclid());
+      reloadWithGclid();
     }
   });
 
+  // event lisner for clicking 'clear' to clear cache 
   let clearBtnEl = document.getElementById("clear");
   clearBtnEl.onclick = () =>{
     clearCookies();
   };
 });
 
-function clearCookies(){
+/**
+ * send message to content JS to clear cookies
+ * @private
+ */
+function clearCookies_(){
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     // found active tab
     const tabID = tabs[0].id;
@@ -38,6 +46,7 @@ function clearCookies(){
 }
 
 /** 
+ * empty input box in the popup
  * @private
  */
 function emptyInput_(){
@@ -46,6 +55,7 @@ function emptyInput_(){
 }
 
 /** 
+ * get gclid val according to the value in the input box
  * @return {!string}
  */
 function getGclid () {
@@ -56,36 +66,17 @@ function getGclid () {
 };
 
 /** 
- * @param {string} gclidTag - ?gclid=... OR &gclid=... 
+ * reload with ?gclid or &gclid
  */
-function changeLocation (gclidTag) {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tabID = tabs[0].id;
-        if (!tabID) {
-            return;
-        }
-        // active tab found 
-        let url =tabs[0].url;
-        // if gclid is already there in the URL, remove it
-        url = checkGclid(url);
+function reloadWithGclid() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const tabID = tabs[0].id;
+    if (!tabID) {
+      return;
+    }
 
-        // now move onto the URL with gclid
-        let newURL = url + gclidTag;
-        chrome.tabs.executeScript(tabID, {
-            code: `window.location.href="${newURL}"`
-          });
-    });
+    // active tab found 
+    let url =tabs[0].url;
+    chrome.tabs.sendMessage(tabID, {greeting: "reload", gclidVal: getGclid()});   
+  });
 }
-
-/** 
- * @return {string} url - url without gclid
- * @param {string} url - url with or without gclid
- */
-function checkGclid (url) {
-  if(url.includes('?gclid')){
-    url = url.substring(url.indexOf('?gclid'), url.indexOf('?gclid'));
-  } else if(url.includes('&gclid')) {
-    url = url.substring(url.indexOf('&gclid'), url.indexOf('&gclid'));
-  }
-  return url;
-};

@@ -1,5 +1,5 @@
 /** 
- * @author <Akira Sakaguchi> akira.s7171@gmail.com
+ * @author Akira Sakaguchi <akira.s7171@gmail.com>
  * A list of constants  
  */
 const STYLE_HIGHLIGHT ='font-weight: bold;background-color:black;color:#fff';
