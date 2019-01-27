@@ -7,6 +7,7 @@ const STYLE_BOLD ='font-weight: bold';
 const STYLE_BLUE ='color: blue';
 const STYLE_ESCAPE = '%c';
 const STYLES_BOLD_BULE = [STYLE_BOLD, STYLE_BLUE];
+const VERSION = '1.0.1';
 
 /** 
  * Google Ads Cookies usually consists of 3 parts: conversionID, timeStamp, and UUID 
