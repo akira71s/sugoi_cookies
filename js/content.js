@@ -6,7 +6,6 @@
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    console.log(request.greeting); 
     // console.log(sender.tab ? "message from a content script:" + sender.tab.url : "message from the extension");
     if (request.greeting == "clearCookies"){   
       clearCookies_(document.domain);

@@ -14,7 +14,7 @@ window.addEventListener('load', function(){
  *  calling console log for starter messages
  */
 function start_(){
-  console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃ ver.0.7.1", STYLES_BOLD_BULE.join(';'));
+  console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃" + VERSION, STYLES_BOLD_BULE.join(';'));
   console.log("Your current domain is : 【", document.domain,"】");
   write_();
 };
