@@ -6,7 +6,6 @@
  * main scripts to show Google Ads Cookies to users 
  */
 window.addEventListener('load', function(){
-  // TODO change appropriately to call this after cookies made (especially _gac)
   setTimeout(start_, 1000);
 });
 
