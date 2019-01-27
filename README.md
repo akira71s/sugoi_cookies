@@ -9,19 +9,19 @@ Now that you do NOT need to open your developer tool to check your cookie, or ty
 This plugin is developed to make it easy to check if first party Cookies can be passed between different domains in your website.
 
 # Features:
-# 1 You can check "_gcl_aw" on your browser. This is a cookie that plays a very important role for Google Ads and its conversion tracking.
+## 1 You can check "_gcl_aw" on your browser. This is a cookie that plays a very important role for Google Ads and its conversion tracking.
 For more information about how _gcl_aw works, please have a look below:
 
 English - https://developers.google.com/adwords-remarketing-tag/?hl=en
 日本語 - https://developers.google.com/adwords-remarketing-tag/?hl=ja
 
-# 2 You can check "_gac" on your browser. It is a type of Google Analytics cookie, and also can be utilized for Google Ads conversion tracking. 
+## 2 You can check "_gac" on your browser. It is a type of Google Analytics cookie, and also can be utilized for Google Ads conversion tracking. 
 For more information about how _gac_ works, please have a look below:
 
 English - https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=en
 日本語 -https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=ja
 
-# 3 Test gclid auto-tagging with this plugin, which means you don't need to type '?gclid=.....' in the URL bar one by one anymore. 
+## 3 Test gclid auto-tagging with this plugin, which means you don't need to type '?gclid=.....' in the URL bar one by one anymore. 
 You are an advertiser or web marketing developer but don't know much about gclid? You should check : 
 English - https://support.google.com/analytics/answer/2938246?hl=en
 日本語 - https://support.google.com/analytics/answer/2938246?hl=ja
