@@ -31,12 +31,13 @@ This plugin is developed to make it easy to check if first party Cookies can be 
 ## Message Flow
 *testGclid: popup.js: get gclid value and sendMessage to content JS  
   => content,js: execute reload with / without gclid
- 
- /** below also can be used to reload
-  *  
-  *  chrome.tabs.executeScript(tabID, {
-  *   code: `window.location.href="${newURL}"`
-  */ });
+
+ // MEMO
+ /** below also can be used to reload */
+  chrome.tabs.executeScript(tabID, {
+    code: `window.location.href="${newURL}"`
+  });
+ *However, it'd be better to let only content JS have these core logics.
 
 *clearCookies: popup.js: sendMessage 
   => content,js: receive & send message to background.js
