@@ -18,13 +18,12 @@
   "browser_action": {
     "default_title": "SUGOI! Cokkies",
     "default_popup": "html/popup.html",
-    "default_icon": "icon/cookie1.jpg"
+    "default_icon": "icon/cookie128.png"
   },
   "icons" : {
-    "16": "icon/cookie1.jpg",
-    "32": "icon/cookie1.jpg",
-    "48": "icon/cookie1.jpg",
-    "128": "icon/cookie1.jpg"
+    "16": "icon/cookie16.png",
+    "48": "icon/cookie48.png",
+    "128": "icon/cookie128.png"
   },
   "permissions": ["activeTab","cookies","<all_urls>"],
   "content_security_policy": "script-src 'self' 'unsafe-eval' https://ajax.googleapis.com/ ; object-src 'self'"

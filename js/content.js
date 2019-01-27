@@ -19,7 +19,7 @@ function clearCookies_(){
     chrome.runtime.sendMessage({message:'clearCookies', domain:document.domain}, function(response){
     console.log(STYLE_ESCAPE + response.message, STYLE_BOLD);
     console.log('reloading this page in a moment...');
-    setTimeout(reload_, 1500);
+    reload_();
   });
 };
 
