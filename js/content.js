@@ -9,7 +9,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     console.log(request.greeting); 
     // console.log(sender.tab ? "message from a content script:" + sender.tab.url : "message from the extension");
     if (request.greeting == "clearCookies"){   
-      clearCookies_();
+      clearCookies_(document.domain);
     } else if (request.greeting=='cookieCleared'){
       reload_();
     } else if (request.greeting=='reload' && request.gclidVal){
@@ -20,8 +20,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 /** 
  * @private
  */
-function clearCookies_(){
-  chrome.runtime.sendMessage({message:'clearCookies', domain:document.domain}, function(response){
+function clearCookies_(newDomain){
+  chrome.runtime.sendMessage({message:'clearCookies', domain:newDomain}, function(response){
     console.log(STYLE_ESCAPE + response.message, STYLE_BOLD);
     console.log('reloading this page in a moment...');
     setTimeout(reload_(), 1000);
@@ -33,10 +33,10 @@ function clearCookies_(){
  * @param {?string} gclidVal
  */
 function reload_(gclidVal){
-  let url = getUrlWithourGclid(window.location.href)
-   gclidVal ? 
-     window.location = window.location + gclidVal : 
-     window.location.reload();
+  let newUrl = getUrlWithourGclid(window.location.href)
+   gclidVal ?
+     window.location = newUrl + gclidVal : 
+     window.location = newUrl;
 };
 
 /** 
