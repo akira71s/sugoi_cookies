@@ -1,6 +1,6 @@
 body{
   width: 300px;
-  height: 120px;
+  height: 150px;
   padding: 16px;
 }
 
@@ -13,6 +13,13 @@ body{
   margin-right: 8px;
 }
 
+#clear-all{
+  margin-left: 120px;
+}
+
 .second-line{
+  margin-top: 12px;
+}
+.third-line{
   margin-top: 12px;
 }

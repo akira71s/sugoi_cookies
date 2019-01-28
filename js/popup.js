@@ -6,10 +6,9 @@
  * eventListener
  */
 window.addEventListener('DOMContentLoaded', function() {
-  let btnEl = document.getElementById("go");
-
+  let goBtnEl = document.getElementById("go");
   // event lisner for clicking 'GO' to execute a gclid test 
-  btnEl.onclick = () =>{
+  goBtnEl.onclick = () =>{
     let inputEl =document.getElementById('input');
     if(inputEl && inputEl.value){
       reloadWithGclid();
@@ -29,17 +28,24 @@ window.addEventListener('DOMContentLoaded', function() {
   clearBtnEl.onclick = () =>{
     clearCookies_();
   };
+  // event lisner for clicking 'clear' to clear cache 
+  let clearAllBtnEl = document.getElementById("clear-all");
+  clearAllBtnEl.onclick = () =>{
+    clearCookies_(true);
+  };
 });
 
 /**
  * send message to content JS to clear cookies
  * @private
+ * @param{?boolean} shouldClearAll
  */
-function clearCookies_(){
+function clearCookies_(shouldClearAll){
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     // found active tab
     const tabID = tabs[0].id;
-    chrome.tabs.sendMessage(tabID, {greeting: "clearCookies"}, function(response) {
+    let greetingObj = shouldClearAll ? {greeting: "clearAll"} : {greeting: "clearCookies"};
+    chrome.tabs.sendMessage(tabID, greetingObj, function(response) {
       emptyInput_();
     });
   });
