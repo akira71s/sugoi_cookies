@@ -1,8 +1,8 @@
 /**
  * @author Akira Sakaguchi <akira.s7171@gmail.com>  
  */
-console.log(window.localStorage.getItem('domainNm'));
-/**
+
+ /**
  * chrome.cookies shoul be called in this file, otherwise it's gonna be undefined  
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -28,6 +28,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     } else if (message==='started'){
       let isTheSameDomain = isTheSameDomain_(request.domain);
       sendMsg_('domainChecked', isTheSameDomain);
+      // save domain name to local storage
       window.localStorage.setItem("domainNm", request.domain);
     }
 });
@@ -68,7 +69,7 @@ function getCookies_(domainNm){
       resolve(cookies || []);
     }));
   });
-}
+};
 
 /**
  * @private 

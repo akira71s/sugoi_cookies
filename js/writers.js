@@ -2,33 +2,36 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 
+/** 
+ * start - immediateb function
+ */
 !function(){
   chrome.runtime.sendMessage({message:'started', domain:document.domain});
 }();
+
+/** 
+ * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
+ */
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  // background JS sends back this message agter 'start' ->  'cross domain check'
+  if (request.message=='domainChecked'){
+    // TODO listen Google Ads & Analytics Cookies Events instead of calling setTimeout
+    setTimeout(start_(request.value), 1000);
+  }
+});
 
 /** 
  * calling console log for starter messages
  * @param{boolean} isSameDomain
  */
 function start_(isSameDomain){
-  console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃" + VERSION, STYLES_BOLD_BULE.join(';'));
   let domain = document.domain;
+  console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃" + VERSION, STYLES_BOLD_BULE.join(';'));
   isSameDomain ?
-  console.log("Current domain is : 【", domain ,"】"):
-  console.log("%cDOMAIN CHANGED to " + domain, STYLES_BOLD_RED.join(';'));
+    console.log("Current domain is : 【", domain ,"】"):
+    console.log("%cDOMAIN CHANGED to " + domain, STYLES_BOLD_RED.join(';'));
   write_(document.domain);
 };
-
-/** 
- * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
- */
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  // console.log(sender.tab ? "message from a content script:" + sender.tab.url : "message from the extension");
-  if (request.message=='domainChecked'){
-    // TODO listen Google Ads & Analytics Cookies Events instead of calling setTimeout
-    setTimeout(start_(request.value), 1000);
-  }
-});
 
 /** 
  * calling console log for cookies
