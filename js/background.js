@@ -1,7 +1,7 @@
 /**
  * @author Akira Sakaguchi <akira.s7171@gmail.com>  
  */
-
+console.log(window.localStorage.getItem('domainNm'));
 /**
  * chrome.cookies shoul be called in this file, otherwise it's gonna be undefined  
  */
@@ -25,8 +25,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           sendMsg_(result || otherResult);
         });
       });
+    } else if (message==='started'){
+      let isTheSameDomain = isTheSameDomain_(request.domain);
+      sendMsg_('domainChecked', isTheSameDomain);
+      window.localStorage.setItem("domainNm", request.domain);
     }
 });
+
+/**
+ * @private 
+ * @return {boolean} 
+ * @param {String} domain 
+ */
+function isTheSameDomain_(domain){
+  return domain === window.localStorage.getItem("domainNm");
+}
 
 /**
  * @private 
@@ -59,14 +72,18 @@ function getCookies_(domainNm){
 
 /**
  * @private 
+ * @param {string} msg 
+ * @param {?Any} val
  */
-function sendMsg_(msg){
+function sendMsg_(msg, val){
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     // found active tab
     if(!tabs[0]){
       return;
     }
     const tabID = tabs[0].id;
-    chrome.tabs.sendMessage(tabID, {greeting: msg});
-  });
+    val ? 
+      chrome.tabs.sendMessage(tabID, {message: msg, value: val}):
+      chrome.tabs.sendMessage(tabID, {message: msg});
+    });
 };
