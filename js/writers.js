@@ -6,6 +6,7 @@
  * main scripts to show Google Ads Cookies to users 
  */
 window.addEventListener('load', function(){
+  // TODO listen Google Ads & Analytics Cookies Events instead of calling setTimeout
   setTimeout(start_, 1000);
 });
 
@@ -15,10 +16,11 @@ window.addEventListener('load', function(){
 function start_(){
   console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃" + VERSION, STYLES_BOLD_BULE.join(';'));
   let domain = document.domain;
-  let lastDomain = document.referrer;
-  lastDomain && domain!==lastDomain ? 
-    console.log("%cDOMAIN CHANGED to " + domain, STYLES_BOLD_RED.join(';')): 
-    console.log("Current domain is : 【", domain ,"】");
+  // TODO: detect CROSS DOMAIN
+  // let lastDomain = document.referrer;
+  // lastDomain && domain!==lastDomain ? 
+  //  console.log("%cDOMAIN CHANGED to " + domain, STYLES_BOLD_RED.join(';')): 
+  console.log("Current domain is : 【", domain ,"】");
   write_();
 };
 
