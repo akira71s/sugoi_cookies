@@ -3,15 +3,27 @@
  */
 
 /**
- * chrome.cookies shoulbe called in this file, otherwise it's gonna be undefined  
+ * chrome.cookies shoul be called in this file, otherwise it's gonna be undefined  
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     let message = request.message;
-    let domain = request.domain.includes('www') ?
-      request.domain.slice('www.'.length) : request.domain;
     if(message ==='clearCookies'){
-      clearCookies_(domain).then((result)=>{
-        sendMsg_(result)
+      let subdomain = request.domain;
+      let domain = request.domain.substr(request.domain.indexOf('.'));
+      getCookies_(domain).then((cookies)=>{
+        clearCookies_(cookies).then((result)=>{
+          getCookies_(subdomain).then((otherCookies)=>{
+            clearCookies_(otherCookies).then((otherResult)=>{
+              sendMsg_(result || otherResult);
+            });
+          });
+        });
+      });
+    } else if (message==='clearAll'){
+      getCookies_().then((cookies)=>{
+        clearCookies_(cookies).then((result)=>{
+          sendMsg_(result || otherResult);
+        });
       });
     }
 });
@@ -19,19 +31,31 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 /**
  * @private 
  * @return {Promise} 
- * @param {string} currentDomain - a domain clear Cookies from  
+ * @param {Array.<Object>} cookies - [] default 
  */
-function clearCookies_(currentDomain){
+function clearCookies_(cookies=[]){
   return new Promise((resolve, reject)=>{ 
-    chrome.cookies.getAll({domain: currentDomain}, function(cookies) {
       cookies.forEach(function(cookie){
         let url = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain + cookie.path;
         chrome.cookies.remove({"url": url, "name": cookie.name}, function(cookie){('deleted_cookie', cookie)});
       });
+      resolve("cookieCleared");
     });
-    resolve("cookieCleared")
-  });
 };
+
+/**
+ * @private 
+ * @return {Promise} 
+ * @param {?string} domaiNm - if null, get all 
+ */
+function getCookies_(domainNm){
+  let detailObj = domainNm ? {domain:domainNm} :{};
+  return new Promise((resolve, reject)=>{ 
+    chrome.cookies.getAll(detailObj,((cookies)=>{
+      resolve(cookies || []);
+    }));
+  });
+}
 
 /**
  * @private 

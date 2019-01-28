@@ -14,7 +14,11 @@ window.addEventListener('load', function(){
  */
 function start_(){
   console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃" + VERSION, STYLES_BOLD_BULE.join(';'));
-  console.log("Your current domain is : 【", document.domain,"】");
+  let domain = document.domain;
+  let lastDomain = document.referrer;
+  lastDomain && domain!==lastDomain ? 
+    console.log("%cDOMAIN CHANGED to " + domain, STYLES_BOLD_RED.join(';')): 
+    console.log("Current domain is : 【", domain ,"】");
   write_();
 };
 
