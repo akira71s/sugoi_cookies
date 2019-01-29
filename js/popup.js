@@ -77,7 +77,6 @@ function sendMsgToContentJS_(msg, key, value){
     if (!tabID) {
       return;
     }
-    console.log(msg, obj);
     key && value ?
       chrome.tabs.sendMessage(tabID, {message: msg, key:value}):
       chrome.tabs.sendMessage(tabID, {message: msg});
