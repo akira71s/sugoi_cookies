@@ -70,13 +70,12 @@ function getGclid () {
  * @return {!string} msg
  * @return {?string} val
  */
-function sendMsgToContentJS_(msg, key, value){
+function sendMsgToContentJS_(msg,val){
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const tabID = tabs[0].id;
     if (!tabID) {
       return;
     }
-    console.log(msg, key, value);
     val ?
       chrome.tabs.sendMessage(tabID, {message: msg, value:val}):
       chrome.tabs.sendMessage(tabID, {message: msg});
