@@ -86,6 +86,7 @@ const writeCookieInfo_ = (item) =>{
  *@param {string} cookieNm - either _gac or _gcl_aw
  */
 const getCookies = (cookieNm) =>{
+  // TODO: console in bg-red or bg-green 
   return new Promise(function(resolve, reject){
     let extractedCookies = [];
     let cookies = document.cookie;
