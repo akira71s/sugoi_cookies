@@ -3,10 +3,10 @@
  */
 
 /** 
- * start - immediateb function
+ * start - immediate function
  */
 !function(){
-  chrome.runtime.sendMessage({message:'started', domain:document.domain});
+  chrome.runtime.sendMessage({message:'started', domain:document.domain, refferer: document.refferer});
 }();
 
 /** 
@@ -17,96 +17,91 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.message=='domainChecked'){
     // TODO listen Google Ads & Analytics Cookies Events instead of calling setTimeout
     setTimeout(start_(request.value), 1000);
+    getCookies_(); // => returnCookies
+  } else if (request.message=='returnCookies'){
+    let cookies = request.value;
+    write_(cookies, document.domain);
   }
 });
 
 /** 
  * calling console log for starter messages
- * @param{boolean} isSameDomain
+ * @param{string} meg
  */
-function start_(isSameDomain){
+function start_(msg){
   let domain = document.domain;
   console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃" + VERSION, STYLES_BOLD_BULE.join(';'));
-  isSameDomain ?
+  msg === 'noError' ?
     console.log("Current domain is : 【", domain ,"】"):
     console.log("%cDOMAIN CHANGED to " + domain, STYLES_BOLD_RED.join(';'));
-  write_(document.domain);
 };
 
 /** 
  * calling console log for cookies
  * @private
+ * @oaram {Array.<string>} cookies
+ * @oaram {string} domain
  */
-const write_ =(domain) =>{
+const write_ =(cookies, domain) =>{
   let gclAwNm ='_gcl_aw';
   let gacNm ='_gac';
   /** _gal_aw */ 
-  getCookies(gclAwNm).then((result) =>{
-    result.length > 0 ?
-      console.log('【found out:', result.length, ' ', gclAwNm + ' cookies】') :
-      console.log('NO '+ gclAwNm + ' detected');
-      result.forEach(function(item){
-        writeCookieInfo_(item);
-      });
-  })
+  writeCookies_(cookies, gclAwNm)
   .then(()=>{
-    /** _gac */ 
-    getCookies(gacNm).then((result) =>{
-      result.length > 0 ?
-        console.log('【found out:', result.length, ' ', gacNm + ' cookies】') :
-        console.log('NO '+ gacNm + ' detected');
-        result.forEach(function(item){
-          writeCookieInfo_(item);
-        });
-    }) 
-  })
-  // after all the Promise functions, write DONE
-  .then(()=>{console.log("%cDONE!", STYLES_BOLD_BULE.join(';'))})
+  /** _gac */ 
+    writeCookies_(cookies, gacNm)
+      .then(()=>{
+        console.log("%cDONE!", STYLES_BOLD_BULE.join(';'));
+    })
+ })
 }
 
 /** 
+ * calling console log for cookies
  * @private
- * @param {!string} item
+ * @return {Promise} 
+ * @oaram {Array.<string>} cookies
+ * @oaram {string} cookieNm
  */
-const writeCookieInfo_ = (item) =>{
-  if(!item){
+function writeCookies_(cookies, cookieNm){
+ return new Promise((resolve, reject)=>{
+    cookies = cookies.filter(cookie => cookie.name.includes(cookieNm));  
+    cookies.length > 0 ?
+    console.log('【found out:', cookies.length, ' ', cookieNm + ' cookies】') :
+    console.log('NO '+ cookieNm + ' detected');
+    cookies.forEach(function(item){
+      writeCookieInfo_(item);
+    }); 
+    resolve();
+  })
+};
+
+/** 
+ * @private
+ * @param {!string} cookie
+ */
+const writeCookieInfo_ = (cookie) =>{
+  if(!cookie){
     console.error('parameter invalid');
     return;
   }
-  var spritedVals = item.split('.');
-  spritedVals.length === DEFAULT_COOKIE_LENGTH ? 
-    console.log(STYLE_ESCAPE + spritedVals[0] + '.' + spritedVals[1] + 
-     '.' + STYLE_ESCAPE + spritedVals[2], STYLE_BOLD,STYLE_HIGHLIGHT) :
-    console.log(item);  
+  let values = cookie.value.split('.');
+  values.length === DEFAULT_COOKIE_LENGTH ?
+  console.log(STYLE_ESCAPE + cookie.name + '=' + values[0] +'.'+ values[1] +'.'+ STYLE_ESCAPE + values[2], STYLE_BOLD, STYLE_HIGHLIGHT):
+  console.log(STYLE_ESCAPE + cookie.name + '=' + STYLE_ESCAPE + cookie.value, STYLE_BOLD, STYLE_HIGHLIGHT);
+// TODO: console in bg-red or bg-green 
 }; 
-
 /**
- * TODO: may be able to use Chrome.cookies API
- *@return {Promise}  
- *@param {string} cookieNm - either _gac or _gcl_aw
+ *@private  
  */
-const getCookies = (cookieNm) =>{
-  // TODO: console in bg-red or bg-green 
-  return new Promise(function(resolve, reject){
-    let extractedCookies = [];
-    let cookies = document.cookie;
-    if(!cookies || !cookieNm){
-      return extractedCookies;
-    }  
-    let cookieAsArray = cookies.split(';');
-    cookieAsArray.forEach(function(item){
-      if(item.includes(cookieNm)){
-        extractedCookies.push(item);
-      }
-    });
-    resolve(extractedCookies);   
-  }) 
+const getCookies_ = () =>{
+  chrome.runtime.sendMessage({message:'getCookies', domain:document.domain});
 }; 
 
 /** 
  * eventListener
  * when window loaded, renew thedomain to the background.js
  */
-window.addListener('load', function() {
+window.addEventListener('load', function() {
   chrome.runtime.sendMessage({message:'setDomain', domain:document.domain});
 });

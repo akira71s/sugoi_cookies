@@ -25,12 +25,18 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           sendMsg_(result || otherResult);
         });
       });
+    } else if (message==='getCookies'){
+      getCookies_(message.domain).then((cookies)=>{
+          sendMsg_('returnCookies', cookies);
+      });
     } else if (message==='started'){
-      let isTheSameDomain = isTheSameDomain_(request.domain);
-      if(isTheSameDomain){
-        sendMsg_('domainChecked', isTheSameDomain);
+      let domain = request.domain;
+      let refferer = request.refferer;
+      let isTheSameDomain = isTheSameDomain_(domain);
+      if(isTheSameDomain || refferer==''){
+        sendMsg_('domainChecked', 'noError');
       } else {
-        sendMsg_('domainChecked', isTheSameDomain);
+        sendMsg_('domainChecked', 'noError');
       }
       // TODO
       //   let result = checkCookies_()
