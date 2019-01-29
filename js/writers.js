@@ -101,3 +101,11 @@ const getCookies = (cookieNm) =>{
     resolve(extractedCookies);   
   }) 
 }; 
+
+/** 
+ * eventListener
+ * when window loaded, renew thedomain to the background.js
+ */
+window.addListener('load', function() {
+  chrome.runtime.sendMessage({message:'setDomain', domain:document.domain});
+});

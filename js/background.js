@@ -27,11 +27,45 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       });
     } else if (message==='started'){
       let isTheSameDomain = isTheSameDomain_(request.domain);
-      sendMsg_('domainChecked', isTheSameDomain);
-      // save domain name to local storage
-      window.localStorage.setItem("domainNm", request.domain);
+      if(isTheSameDomain){
+        sendMsg_('domainChecked', isTheSameDomain);
+      } else {
+        sendMsg_('domainChecked', isTheSameDomain);
+      }
+      // TODO
+      //   let result = checkCookies_()
+      //   if(result ==='fail'){
+      //     // TODO: 
+      //     // sendMsg_('cookieChecked', 'fail');
+      //   } else if (result ==='success'){
+      //     // TODO: 
+      //     // sendMsg_('cookieChecked', 'success');
+      //   }
+      // }
+    } else if (message==='setDomain'){
+      // renew a domain name in the  local storage
+      // TODO
+      // window.sessionStorage.setItem("domainNm", request.domain);      
     }
 });
+
+// TODO
+ // -> setItem('cookies', JSON)
+ // -> parse -> cookies 
+ 
+/**
+ * @private 
+ * @return {string} 'fali' || 'success'
+ */
+function checkCookies_(){
+  // getCookies
+  // getItem('cookies', JSON)
+  // JSON.parse ->  
+
+  // getCookies_('_gcl_aw')
+  // getCookies_('_gac')
+}
+
 
 /**
  * @private 
@@ -39,7 +73,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
  * @param {String} domain 
  */
 function isTheSameDomain_(domain){
-  return domain === window.localStorage.getItem("domainNm");
+  return domain === window.sessionStorage.getItem("domainNm");
 }
 
 /**
@@ -83,7 +117,7 @@ function sendMsg_(msg, val){
       return;
     }
     const tabID = tabs[0].id;
-    val ? 
+    val != undefined ? 
       chrome.tabs.sendMessage(tabID, {message: msg, value: val}):
       chrome.tabs.sendMessage(tabID, {message: msg});
     });

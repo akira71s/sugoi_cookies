@@ -14,6 +14,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       reload_();
     } else if (request.message=='reload' && request.gclidVal){
       reload_(request.gclidVal);
+    } else if (request.message=='coockieChecked'){
+      if(request.value==='success'){
+        // TODO consoleInGreen 
+      } else if (request.value==='fail'){
+        // TODO consoleInRed
+      }
     }
 });
 
