@@ -20,8 +20,37 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       } else if (request.value==='fail'){
         // TODO consoleInRed
       }
-    }
+    } else if (request.message=='toggle'){
+      toggle_(request.shouldEnabled);
+    } else if (request.message=='getCookies'){
+      getCookies_(request.shouldEnabled);
+    } 
 });
+
+/** 
+ * @private
+ * @param {boolean} enabled
+ */
+function toggle_(enabled){
+  chrome.runtime.sendMessage({message:'toggle', shouldEnabled: enabled},(()=>{}));
+ };
+
+ 
+/** 
+ * @private
+ * @param {boolean} enabled
+ */
+function getCookies_(enabled){
+  chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},(()=>{})); 
+};
+
+/** 
+ * immediate function
+ * @private
+ */
+!function start_(enabled){
+  chrome.runtime.sendMessage({message:'start', domain:document.domain},(()=>{}));
+}();
 
 /** 
  * @private
