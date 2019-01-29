@@ -14,6 +14,7 @@
     }
   ],
   "browser_action": {
+    "name" : "turn on / off",
     "default_title": "SUGOI! Cokkies",
     "default_popup": "html/popup.html",
     "default_icon": "icon/cookie128.png"

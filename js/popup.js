@@ -5,7 +5,7 @@
 /** 
  * eventListener
  */
-window.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('load', function() {
   let goBtnEl = document.getElementById("go");
   // event lisner for clicking 'GO' to execute a gclid test 
   goBtnEl.onclick = () =>{
@@ -28,12 +28,21 @@ window.addEventListener('DOMContentLoaded', function() {
   clearBtnEl.onclick = () =>{
     clearCookies_();
   };
+
   // event lisner for clicking 'clear' to clear cache 
   let clearAllBtnEl = document.getElementById("clear-all");
   clearAllBtnEl.onclick = () =>{
     clearCookies_(true);
   };
-});
+
+  // event lisner for clicking 'clear' to clear cache 
+  let toggleEl = document.getElementById("toggle");
+  let isChecked = window.localStorage.getItem('enabled');
+  toggleEl.checked = isChecked && isChecked=='true'? true : false;
+  toggleEl.onchange = () =>{
+    toggle_(toggleEl.checked);
+  };
+}, false);
 
 /**
  * send message to content JS to clear cookies
@@ -80,9 +89,33 @@ function reloadWithGclid() {
     if (!tabID) {
       return;
     }
-
-    // active tab found 
-    let url =tabs[0].url;
     chrome.tabs.sendMessage(tabID, {message: "reload", gclidVal: getGclid()});   
+  });
+};
+
+/** 
+ * @param{boolean}
+ */
+function toggle_(enabled) {
+  console.log('to', enabled);
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const tabID = tabs[0].id;
+    if (!tabID) {
+      return;
+    }
+    chrome.tabs.sendMessage(tabID, {message: "toggle", shouldEnabled : enabled});   
+  });
+};
+
+/** 
+ * @param{boolean}
+ */
+function start_(enabled) {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const tabID = tabs[0].id;
+    if (!tabID) {
+      return;
+    }
+    chrome.tabs.sendMessage(tabID, {message: "start"});   
   });
 }

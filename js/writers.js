@@ -3,13 +3,6 @@
  */
 
 /** 
- * start - immediate function
- */
-!function(){
-  chrome.runtime.sendMessage({message:'started', domain:document.domain, refferer: document.refferer});
-}();
-
-/** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -90,12 +83,6 @@ const writeCookieInfo_ = (cookie) =>{
   console.log(STYLE_ESCAPE + cookie.name + '=' + values[0] +'.'+ values[1] +'.'+ STYLE_ESCAPE + values[2], STYLE_BOLD, STYLE_HIGHLIGHT):
   console.log(STYLE_ESCAPE + cookie.name + '=' + STYLE_ESCAPE + cookie.value, STYLE_BOLD, STYLE_HIGHLIGHT);
 // TODO: console in bg-red or bg-green 
-}; 
-/**
- *@private  
- */
-const getCookies_ = () =>{
-  chrome.runtime.sendMessage({message:'getCookies', domain:document.domain});
 }; 
 
 /** 

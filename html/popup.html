@@ -1,5 +1,5 @@
 <link rel="stylesheet" type="text/css" href="../css/popup.css">
-<link href="../lib/bootstrap.min.css" rel="stylesheet">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 <!DOCTYPE html>
 <html>
   <head>
@@ -14,10 +14,14 @@
         <span><input id='clear' type="button" class="btn-warning" value="Clear"/></span>
       </div>
       <div class="third-line">
-        <span><input id='clear-all' type="button" class="btn-danger" value="Clear ALL Cookies"/></span>
+        <input id='clear-all' type="button" class="btn-danger" value="Clear ALL Cookies"/>
+        <!-- Rounded switch -->
+        <label class="switch">
+          <input id="toggle" type="checkbox">
+          <span class="slider round"></span>
+        </label> 
       </div>
     </div>
-  <div id='app'/>
   </body>
   <script src="../dist//div>.js"></script>
   <script type="text/javascript" src="../js/popup.js"></script>
