@@ -11,7 +11,7 @@ window.addEventListener('load', function() {
   goBtnEl.onclick = () =>{
     let inputEl =document.getElementById('input');
     if(inputEl && inputEl.value){
-      sendMsgToContentJS_('reload', 'gclidVal', getGclid());
+      sendMsgToContentJS_('reload', getGclid());
     }
   };
   
@@ -19,7 +19,7 @@ window.addEventListener('load', function() {
   document.addEventListener('keyup', function(e){
     let inputEl =document.getElementById('input');
     if(e.key==='Enter'&&inputEl && inputEl.value){
-      sendMsgToContentJS_('reload', 'gclidVal' ,getGclid());
+      sendMsgToContentJS_('reload', getGclid());
     }
   });
 
@@ -42,7 +42,7 @@ window.addEventListener('load', function() {
   let isChecked = window.localStorage.getItem('enabled');
   toggleEl.checked = isChecked && isChecked=='true'? true : false;
   toggleEl.onchange = () =>{
-    sendMsgToContentJS_('toggle', 'shouldEnabled', toggleEl.checked);
+    sendMsgToContentJS_('toggle', toggleEl.checked);
   };
 }, false);
 
@@ -68,8 +68,7 @@ function getGclid () {
 
 /** 
  * @return {!string} msg
- * @return {?string} key
- * @return {?string} value
+ * @return {?string} val
  */
 function sendMsgToContentJS_(msg, key, value){
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -77,8 +76,9 @@ function sendMsgToContentJS_(msg, key, value){
     if (!tabID) {
       return;
     }
-    key && value ?
-      chrome.tabs.sendMessage(tabID, {message: msg, key:value}):
+    console.log(msg, key, value);
+    val ?
+      chrome.tabs.sendMessage(tabID, {message: msg, value:val}):
       chrome.tabs.sendMessage(tabID, {message: msg});
   });
 };

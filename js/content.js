@@ -12,8 +12,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       clearCookies_(document.domain, true);
     } else if (request.message=='cookieCleared'){
       reload_();
-    } else if (request.message=='reload' && request.gclidVal){
-      reload_(request.gclidVal);
+    } else if (request.message=='reload' && request.value){
+      reload_(request.value);
     } else if (request.message=='coockieChecked'){
       if(request.value==='success'){
         // TODO consoleInGreen 
@@ -21,9 +21,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         // TODO consoleInRed
       }
     } else if (request.message=='toggle'){
-      toggle_(request.shouldEnabled);
+      toggle_(request.value);
     } else if (request.message=='getCookies'){
-      getCookies_(request.shouldEnabled);
+      getCookies_(request.value);
     } 
 });
 
