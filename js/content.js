@@ -6,15 +6,13 @@
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    // console.log(sender.tab ? "message from a content script:" + sender.tab.url : "message from the extension");
-    if (request.greeting == "clearCookies"){   
+    if (request.message == "clearCookies"){   
       clearCookies_(document.domain);
-    } else if (request.greeting == "clearAll"){   
+    } else if (request.message == "clearAll"){   
       clearCookies_(document.domain, true);
-    }
-     else if (request.greeting=='cookieCleared'){
+    } else if (request.message=='cookieCleared'){
       reload_();
-    } else if (request.greeting=='reload' && request.gclidVal){
+    } else if (request.message=='reload' && request.gclidVal){
       reload_(request.gclidVal);
     }
 });

@@ -2,7 +2,7 @@
  * @author akira.s7171@gmail.com
  */
 
- /** 
+/** 
  * eventListener
  */
 window.addEventListener('DOMContentLoaded', function() {
@@ -44,8 +44,8 @@ function clearCookies_(shouldClearAll){
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     // found active tab
     const tabID = tabs[0].id;
-    let greetingObj = shouldClearAll ? {greeting: "clearAll"} : {greeting: "clearCookies"};
-    chrome.tabs.sendMessage(tabID, greetingObj, function(response) {
+    let msgObj = shouldClearAll ? {message: "clearAll"} : {message: "clearCookies"};
+    chrome.tabs.sendMessage(tabID, msgObj, function(response) {
       emptyInput_();
     });
   });
@@ -83,6 +83,6 @@ function reloadWithGclid() {
 
     // active tab found 
     let url =tabs[0].url;
-    chrome.tabs.sendMessage(tabID, {greeting: "reload", gclidVal: getGclid()});   
+    chrome.tabs.sendMessage(tabID, {message: "reload", gclidVal: getGclid()});   
   });
 }
