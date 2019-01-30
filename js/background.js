@@ -2,7 +2,6 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>  
  */
 
- 
 /**
  * chrome.cookies shoul be called in this file, otherwise it's gonna be undefined  
  */
@@ -55,9 +54,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         });
       });
       break;
-    // getCookies_(domain).then((cookies)=>{
-    //   sendMsg_('returnCookies', cookies);
-    // });
+      
   case 'setDomain':
    break;
     // renew a domain name in the  local storage
@@ -78,7 +75,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 function toggle_(request){
   let shouldEnabled = request.shouldEnabled;
   updateIcon_(shouldEnabled);
-  var booleanStr = shouldEnabled ? 'true' : 'false';
+  let booleanStr = shouldEnabled ? 'true' : 'false';
   window.localStorage.setItem('enabled', booleanStr);
   if(shouldEnabled){
     start_(request);
@@ -101,7 +98,7 @@ function push_(array, cookies){
  * @param{boolean} shouldEnabled 
  */
 function updateIcon_(shouldEnabled) {
-  var suffix = shouldEnabled ? '-on' : '';
+  let suffix = shouldEnabled ? '-on' : '';
   chrome.browserAction.setIcon({path:"../icon/cookie128" + suffix + ".png"});
 };
 
