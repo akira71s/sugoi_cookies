@@ -38,9 +38,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       });
     });
   } else if (message==='getCookies'){
-    console.log('getCookies ', domain);
     getCookies_(domain).then((cookies)=>{
-      console.log('getCookies', cookies);
       sendMsg_('returnCookies', cookies);
     });
   } else if (message==='setDomain'){

@@ -50,7 +50,6 @@ function toggle_(enabled){
  * @param {boolean} enabled
  */
 function getCookies_(enabled){
-  console.log('contentJS', document.domain);
   chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},(()=>{})); 
 };
 
