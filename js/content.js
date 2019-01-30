@@ -3,6 +3,15 @@
  */
 
 /** 
+ * immediate function, sending message to background.js
+ * start and check if the plugin is enabled or not 
+ * @private
+ */
+!function start_(enabled){
+  chrome.runtime.sendMessage({message:'start', domain:document.domain},(()=>{}));
+}();
+
+/** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -43,14 +52,6 @@ function toggle_(enabled){
 function getCookies_(enabled){
   chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},(()=>{})); 
 };
-
-/** 
- * immediate function
- * @private
- */
-!function start_(enabled){
-  chrome.runtime.sendMessage({message:'start', domain:document.domain},(()=>{}));
-}();
 
 /** 
  * @private
