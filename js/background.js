@@ -8,7 +8,18 @@
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   let message = request.message;
-  if(message ==='clearCookies'){
+  let domain = request.domain;
+  // receive start message on load 
+  if (message==='start'){
+    // check if the plugin is enabled or not
+    let enabled = window.localStorage.getItem('enabled') == 'true' ? true : false;
+    // change the icon accordinglly
+    updateIcon_(enabled);
+    if(!enabled){
+      return;
+    }
+    start_(request);
+  } else  if(message ==='clearCookies'){
     let subdomain = request.domain;
     let domain = request.domain.substr(request.domain.indexOf('.'));
     getCookies_(domain).then((cookies)=>{
@@ -27,8 +38,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       });
     });
   } else if (message==='getCookies'){
-    getCookies_(message.domain).then((cookies)=>{
-        sendMsg_('returnCookies', cookies);
+    console.log('getCookies ', domain);
+    getCookies_(domain).then((cookies)=>{
+      console.log('getCookies', cookies);
+      sendMsg_('returnCookies', cookies);
     });
   } else if (message==='setDomain'){
     // renew a domain name in the  local storage
@@ -36,14 +49,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     // window.sessionStorage.setItem("domainNm", request.domain);      
    } else if (message==='toggle'){
     toggle_(request)
-   } else if (message==='start'){
-     let enabled = window.localStorage.getItem('enabled') == 'true' ? true : false;
-     updateIcon_(enabled);
-     if(!enabled){
-       return;
-     }
-     start_(request);
-   }
+   } 
 });
 
 
