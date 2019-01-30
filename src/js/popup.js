@@ -1,5 +1,5 @@
 /** 
- * @author akira.s7171@gmail.com
+ * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 
 /** 

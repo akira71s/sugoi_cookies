@@ -1,5 +1,5 @@
 /** 
- * @author Akira Saaguchi <akira.s7171@gmail.com> 
+ * @author Akira Sakaguchi <akira.s7171@gmail.com> 
  */
 
 /** 
@@ -59,7 +59,6 @@ function toggle_(enabled){
   chrome.runtime.sendMessage({message:'toggle', shouldEnabled: enabled},(()=>{}));
  };
 
- 
 /** 
  * @private
  * @param {boolean} enabled
