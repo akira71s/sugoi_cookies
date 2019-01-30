@@ -59,7 +59,6 @@ function toggle_(enabled){
   chrome.runtime.sendMessage({message:'toggle', shouldEnabled: enabled},(()=>{}));
  };
 
- 
 /** 
  * @private
  * @param {boolean} enabled

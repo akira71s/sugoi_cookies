@@ -8,7 +8,10 @@
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   let msg = request.message;
   let subdomain = request.domain;
-  let domain = request.domain.substr(request.domain.indexOf('.'));
+  let domain;
+  if(request.domain){
+   domain = request.domain.substr(request.domain.indexOf('.'));
+  }
   // receive start message on load 
   switch(msg){
     case 'start':
@@ -99,7 +102,7 @@ function push_(array, cookies){
  */
 function updateIcon_(shouldEnabled) {
   let suffix = shouldEnabled ? '-on' : '';
-  chrome.browserAction.setIcon({path:"../icon/cookie128" + suffix + ".png"});
+  chrome.browserAction.setIcon({path:"../../icon/cookie128" + suffix + ".png"});
 };
 
 /**
