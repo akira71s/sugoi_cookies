@@ -15,25 +15,40 @@
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.message == "clearCookies"){   
-      clearCookies_(document.domain);
-    } else if (request.message == "clearAll"){   
-      clearCookies_(document.domain, true);
-    } else if (request.message=='cookieCleared'){
-      reload_();
-    } else if (request.message=='reload' && request.value){
-      reload_(request.value);
-    } else if (request.message=='coockieChecked'){
+   let msg = request.message; 
+   switch(msg){
+     case "clearCookies":   
+       clearCookies_(document.domain);
+       break;
+
+     case "clearAll":   
+       clearCookies_(document.domain, true);
+       break;
+
+     case 'cookieCleared':
+       reload_();
+       break;
+
+     case 'reload':
+       reload_(request.value);
+       break;
+
+     case request.message=='coockieChecked':
       if(request.value==='success'){
         // TODO consoleInGreen 
       } else if (request.value==='fail'){
         // TODO consoleInRed
       }
-    } else if (request.message=='toggle'){
+      break;
+      
+      case 'toggle':
       toggle_(request.value);
-    } else if (request.message=='getCookies'){
+      break;
+
+      case 'getCookies':
       getCookies_(request.value);
-    } 
+      break;
+  }
 });
 
 /** 

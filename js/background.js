@@ -7,47 +7,67 @@
  * chrome.cookies shoul be called in this file, otherwise it's gonna be undefined  
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  let message = request.message;
-  let domain = request.domain;
+  let msg = request.message;
+  let subdomain = request.domain;
+  let domain = request.domain.substr(request.domain.indexOf('.'));
   // receive start message on load 
-  if (message==='start'){
-    // check if the plugin is enabled or not
-    let enabled = window.localStorage.getItem('enabled') == 'true' ? true : false;
-    // change the icon accordinglly
-    updateIcon_(enabled);
-    if(!enabled){
-      return;
-    }
-    start_(request);
-  } else  if(message ==='clearCookies'){
-    let subdomain = request.domain;
-    let domain = request.domain.substr(request.domain.indexOf('.'));
-    getCookies_(domain).then((cookies)=>{
-      clearCookies_(cookies).then((result)=>{
-        getCookies_(subdomain).then((otherCookies)=>{
-          clearCookies_(otherCookies).then((otherResult)=>{
-            sendMsg_(result || otherResult);
+  switch(msg){
+    case 'start':
+      // check if the plugin is enabled or not
+      let enabled = window.localStorage.getItem('enabled') == 'true' ? true : false;
+      // change the icon accordinglly
+      updateIcon_(enabled);
+      if(!enabled){
+        return;
+      }
+      start_(request);
+      break;
+
+    case 'clearCookies':
+      getCookies_(domain).then((cookies)=>{
+        clearCookies_(cookies).then((result)=>{
+          getCookies_(subdomain).then((otherCookies)=>{
+            clearCookies_(otherCookies).then((otherResult)=>{
+              sendMsg_(result || otherResult);
+            });
           });
         });
       });
-    });
-  } else if (message==='clearAll'){
-    getCookies_().then((cookies)=>{
-      clearCookies_(cookies).then((result)=>{
-        sendMsg_(result || otherResult);
+      break;
+    
+    case 'clearAll':
+      getCookies_().then((cookies)=>{
+        clearCookies_(cookies).then((result)=>{
+          sendMsg_(result || otherResult);
+        });
       });
-    });
-  } else if (message==='getCookies'){
-    getCookies_(domain).then((cookies)=>{
-      sendMsg_('returnCookies', cookies);
-    });
-  } else if (message==='setDomain'){
+      break;
+    
+    case 'getCookies':
+      let array = [];
+      getCookies_(domain).then((cookies)=>{
+        push_(array, cookies).then((result)=>{
+          getCookies_(subdomain).then((otherCookies)=>{
+            push_(result, otherCookies).then((finalCookies)=>{
+              sendMsg_('returnCookies', finalCookies);
+            });
+          });
+        });
+      });
+      break;
+    // getCookies_(domain).then((cookies)=>{
+    //   sendMsg_('returnCookies', cookies);
+    // });
+  case 'setDomain':
+   break;
     // renew a domain name in the  local storage
     // TODO
     // window.sessionStorage.setItem("domainNm", request.domain);      
-   } else if (message==='toggle'){
+  
+  case 'toggle':
     toggle_(request)
-   } 
+    break;
+  } 
 });
 
 
@@ -65,6 +85,17 @@ function toggle_(request){
   }
 };
 
+/**
+ * @private 
+ * @return{Promise}
+ * @param{Array} array 
+ * @param{Array} cookies 
+ */
+function push_(array, cookies){
+  return new Promise((resolve, reject)=>{
+    resolve(array.concat(cookies));
+  });
+};
 /**
  * @private 
  * @param{boolean} shouldEnabled 
