@@ -1,5 +1,5 @@
 /** 
- * @author Akira Saaguchi <akira.s7171@gmail.com> 
+ * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 
 /** 
@@ -47,6 +47,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
       case 'getCookies':
       getCookies_(request.value);
+      break;
+
+      case 'getUrl':
+      sendResponse(window.location.href);
       break;
   }
 });

@@ -8,22 +8,19 @@
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   let msg = request.message;
-  let subdomain = request.domain;
-  let domain = request.domain.substr(request.domain.indexOf('.'));
   // receive start message on load 
   switch(msg){
     case 'start':
-      // check if the plugin is enabled or not
       let enabled = window.localStorage.getItem('enabled') == 'true' ? true : false;
-      // change the icon accordinglly
       updateIcon_(enabled);
-      if(!enabled){
-        return;
+      if(enabled){
+        start_(request);
       }
-      start_(request);
       break;
 
     case 'clearCookies':
+    var subdomain = request.domain;
+    var domain = request.domain.substr(request.domain.indexOf('.'));
       getCookies_(domain).then((cookies)=>{
         clearCookies_(cookies).then((result)=>{
           getCookies_(subdomain).then((otherCookies)=>{
@@ -45,6 +42,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     
     case 'getCookies':
       let array = [];
+      var subdomain = request.domain;
+      var domain = request.domain.substr(request.domain.indexOf('.'));    
       getCookies_(domain).then((cookies)=>{
         push_(array, cookies).then((result)=>{
           getCookies_(subdomain).then((otherCookies)=>{
@@ -55,9 +54,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         });
       });
       break;
-    // getCookies_(domain).then((cookies)=>{
-    //   sendMsg_('returnCookies', cookies);
-    // });
+
   case 'setDomain':
    break;
     // renew a domain name in the  local storage
@@ -70,10 +67,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   } 
 });
 
-
 /**
  * @private 
- * @param{Object} shouldEnabled 
+ * @param{Object} request 
  */
 function toggle_(request){
   let shouldEnabled = request.shouldEnabled;
@@ -96,13 +92,14 @@ function push_(array, cookies){
     resolve(array.concat(cookies));
   });
 };
+
 /**
  * @private 
  * @param{boolean} shouldEnabled 
  */
 function updateIcon_(shouldEnabled) {
   var suffix = shouldEnabled ? '-on' : '';
-  chrome.browserAction.setIcon({path:"../icon/cookie128" + suffix + ".png"});
+  chrome.browserAction.setIcon({path:"../../icon/cookie128" + suffix + ".png"});
 };
 
 /**
@@ -129,10 +126,6 @@ function start_(request){
     //   }
     // }
 };
-
-// TODO
- // -> setItem('cookies', JSON)
- // -> parse -> cookies 
  
 /**
  * @private 

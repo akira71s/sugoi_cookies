@@ -1,5 +1,5 @@
 /** 
- * @author akira.s7171@gmail.com
+ * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 
 /** 
@@ -11,7 +11,7 @@ window.addEventListener('load', function() {
   goBtnEl.onclick = () =>{
     let inputEl =document.getElementById('input');
     if(inputEl && inputEl.value){
-      sendMsgToContentJS_('reload', getGclid());
+      reload_();
     }
   };
   
@@ -19,7 +19,7 @@ window.addEventListener('load', function() {
   document.addEventListener('keyup', function(e){
     let inputEl =document.getElementById('input');
     if(e.key==='Enter'&&inputEl && inputEl.value){
-      sendMsgToContentJS_('reload', getGclid());
+      reload_();
     }
   });
 
@@ -57,13 +57,13 @@ function emptyInput_(){
 
 /** 
  * get gclid val according to the value in the input box
- * @return {!string}
+ * @return {!string};
+ * @param {string} url
  */
-function getGclid () {
+function getGclid_(url) {
   let inputEl =document.getElementById('input');
-  let val = inputEl && inputEl.value ? inputEl.value : 'TEST';  
-  let currentHref = window.location.href;
-  return currentHref.includes('?') ? '&gclid='+val : '?gclid='+val; 
+  let val = inputEl && inputEl.value ? inputEl.value : 'TEST';
+  return url.includes('?') ? '&gclid='+val : '?gclid='+val; 
 };
 
 /** 
@@ -80,4 +80,20 @@ function sendMsgToContentJS_(msg,val){
       chrome.tabs.sendMessage(tabID, {message: msg, value:val}):
       chrome.tabs.sendMessage(tabID, {message: msg});
   });
+};
+
+/** 
+ * @private
+ */
+function reload_(){
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const tabID = tabs[0].id;
+    if (!tabID) {
+      return;
+    }
+    chrome.tabs.sendMessage(tabID, {message: 'getUrl'}, ((response)=>{
+      let gclid = getGclid_(response);
+      chrome.tabs.sendMessage(tabID, {message: 'reload', value:gclid});
+    }));
+  })
 };
