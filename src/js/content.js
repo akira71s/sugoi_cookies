@@ -89,13 +89,13 @@ function clearCookies_(newDomain, isAll){
 
 /** 
  * @private
- * @param {?string} gclidVal
+ * @param {?string} url;
  */
-function reload_(gclidVal){
-  let newUrl = getUrlWithourGclid(window.location.href)
-   gclidVal ?
-     window.location = newUrl + gclidVal : 
-     window.location = newUrl;
+function reload_(url){
+  console.log(url);
+  url?
+   window.location.href = url:
+   window.location.href = getUrlWithourGclid (window.location.href);
 };
 
 /** 

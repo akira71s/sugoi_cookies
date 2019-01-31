@@ -62,7 +62,7 @@ function emptyInput_(){
  */
 function getGclid_(url) {
   let inputEl =document.getElementById('input');
-  let val = inputEl && inputEl.value ? inputEl.value : 'TEST';
+  let val = inputEl && inputEl.value ? inputEl.value : '';
   return url.includes('?') ? '&gclid='+val : '?gclid='+val; 
 };
 
@@ -92,8 +92,22 @@ function reload_(){
       return;
     }
     chrome.tabs.sendMessage(tabID, {message: 'getUrl'}, ((response)=>{
-      let gclid = getGclid_(response);
-      chrome.tabs.sendMessage(tabID, {message: 'reload', value:gclid});
+      let url = getUrlWithourGclid(response);
+      let gclid = getGclid_(url);
+      chrome.tabs.sendMessage(tabID, {message: 'reload', value:url+gclid});
     }));
   })
+};
+
+/** 
+ * @return {string} url - url without gclid
+ * @param {string} url - url with or without gclid
+ */
+function getUrlWithourGclid (url) {
+  if(url.includes('?gclid')){
+    url = url.substring(url.indexOf('?gclid'),0);
+  } else if(url.includes('&gclid')) {
+    url = url.substring(url.indexOf('&gclid'),0);
+  }
+  return url;
 };
