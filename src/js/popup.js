@@ -6,22 +6,24 @@
  * eventListener
  */
 window.addEventListener('load', function() {
+  console.log('load');
   let goBtnEl = document.getElementById("go");
   // event lisner for clicking 'GO' to execute a gclid test 
   goBtnEl.onclick = () =>{
     let inputEl =document.getElementById('input');
     if(inputEl && inputEl.value){
+      console.log('hit');
       reload_();
     }
   };
   
-  // event lisner for pressing enter to execute a gclid test 
-  document.addEventListener('keyup', function(e){
-    let inputEl =document.getElementById('input');
-    if(e.key==='Enter'&&inputEl && inputEl.value){
+// event lisner for pressing enter to execute a gclid test 
+  let inputEl =document.getElementById('input');
+  inputEl.onkeydown = (e) => {
+    if(e.key==='Enter'&& inputEl && inputEl.value){
       reload_();
     }
-  });
+  };
 
   // event lisner for clicking 'clear' to clear cache 
   let clearBtnEl = document.getElementById("clear");

@@ -46,6 +46,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       getCookies_(domain).then((cookies)=>{
         push_(array, cookies).then((result)=>{
           getCookies_(subdomain).then((otherCookies)=>{
+            cookies = cookies.filter((cookie)=>{
+             return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
+            });
+            if(cookies.length>0){
+              otherCookies =[];  
+            }
             push_(result, otherCookies).then((finalCookies)=>{
               sendMsg_('returnCookies', finalCookies);
             });
