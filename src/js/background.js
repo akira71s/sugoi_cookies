@@ -18,54 +18,52 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       break;
 
     case 'clearCookies':
-    var subdomain = request.domain;
-    var domain = request.domain.substr(request.domain.indexOf('.'));
-      getCookies_(domain).then((cookies)=>{
-        clearCookies_(cookies).then((result)=>{
-          getCookies_(subdomain).then((otherCookies)=>{
-            clearCookies_(otherCookies).then((otherResult)=>{
-              sendMsg_(result || otherResult);
+      var subdomain = request.domain;
+      var domain = subdomain.split('.').length > 2 ? 
+        request.domain.substr(request.domain.indexOf('.')):'';
+        getDomainCookies_(domain).then((cookies)=>{
+          clearCookies_(cookies).then((result)=>{
+            getDomainCookies_(subdomain).then((otherCookies)=>{
+              clearCookies_(otherCookies).then((otherResult)=>{
+                sendMsg_(result || otherResult);
             });
           });
         });
       });
+      clearStorage_();
       break;
     
     case 'clearAll':
-      getCookies_().then((cookies)=>{
+      getDomainCookies_().then((cookies)=>{
         clearCookies_(cookies).then((result)=>{
           sendMsg_(result || otherResult);
         });
       });
+      celarStoage_();
       break;
     
     case 'getCookies':
-      let array = [];
-      var subdomain = request.domain;
-      var domain = request.domain.substr(request.domain.indexOf('.'));    
-      getCookies_(domain).then((cookies)=>{
-        push_(array, cookies).then((result)=>{
-          getCookies_(subdomain).then((otherCookies)=>{
-            cookies = cookies.filter((cookie)=>{
-             return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
-            });
-            if(cookies.length>0){
-              otherCookies =[];  
-            }
-            push_(result, otherCookies).then((finalCookies)=>{
-              sendMsg_('returnCookies', finalCookies);
-            });
-          });
-        });
-      });
+      getCookies(request).then((result)=>{
+        sendMsg_('returnCookies', result);
+      });              
       break;
 
-   case 'setDomain':
+    // currently this is NOT called.
+    // TODO: call this and send msg to writer.js
+    case 'checkCookies':
+      getCookies(request).then((result)=>{
+        sendMsg_('cookieChecked', checkCookies_(result)); // 'fail' or 'success'
+      });              
+      break;
+
+   case 'setDomainAndCookies':
+     // renew a domain name in the  local storage
+     getCookies(request).then((result)=>{
+       setCookies_(result);
+     });
+     window.sessionStorage.setItem("domainNm", request.domain);      
      break;
-    // renew a domain name in the  local storage
-    // TODO
-    // window.sessionStorage.setItem("domainNm", request.domain);      
-  
+
    case 'toggle':
      toggle_(request)
      break;
@@ -115,36 +113,55 @@ function start_(request){
     let domain = request.domain;
     let refferer = request.refferer;
     let isTheSameDomain = isTheSameDomain_(domain);
+    // TODO
+    // let result = checkCookies_()
     if(isTheSameDomain || refferer==''){
       sendMsg_('domainChecked', 'noError');
-    } else {
-      sendMsg_('domainChecked', 'noError');
+    } else if(!isTheSameDomain){
+      sendMsg_('domainChecked', 'domainChanged');
+    } else if (result ==='fail'){
+      // sendMsg_('cookieChecked', 'fail');
+    } else if (result ==='success'){
+      // sendMsg_('cookieChecked', 'success');
+
     }
-    // TODO
-    //   let result = checkCookies_()
-    //   if(result ==='fail'){
-    //     // TODO: 
-    //     // sendMsg_('cookieChecked', 'fail');
-    //   } else if (result ==='success'){
-    //     // TODO: 
-    //     // sendMsg_('cookieChecked', 'success');
-    //   }
-    // }
 };
  
+
 /**
  * @private 
- * @return {string} 'fali' || 'success'
+ * @return {string} success / fail
  */
-function checkCookies_(){
-  // getCookies
-  // getItem('cookies', JSON)
-  // JSON.parse ->  
+function checkCookies_(cookies){
+  let JSONcookies = window.sessionStorage.getItem('cookies');
+  if(!JSONcookies){
+    return 'success';
+  }
+  let cookiesSaved = JSON.parse(JSONcookies);
+  cookiesSaved =cookiesSaved.filter((cookie)=>{
+    return cookie.name.includes('_gac') ||cookie.name.includes('_gcl_aw');
+  });
+  cookies = cookies.filter((cookie)=>{
+    return cookie.name.includes('_gac') ||cookie.name.includes('_gcl_aw');
+  });
+  cookiesSaved.forEach((cookie)=>{
+    console.log(cookie);
+  });    
+  cookies.forEach((cookie)=>{
+    console.log(cookie);
+  });    
+  
+  return cookies == cookiesSaved ? 'success' : 'fail';
+};
 
-  // getCookies_('_gcl_aw')
-  // getCookies_('_gac')
-}
-
+/**
+ * @private 
+ * @return {Array.<Object>} cookies
+ */
+function setCookies_(cookies){
+  let JSONcookies = JSON.stringify(cookies);
+  window.sessionStorage.setItem('cookies', JSONcookies);
+};
 
 /**
  * @private 
@@ -173,11 +190,15 @@ function clearCookies_(cookies=[]){
 /**
  * @private 
  * @return {Promise} 
- * @param {?string} domaiNm - if null, get all 
+ * @param {?string} domaiNm - if null, get all  
  */
-function getCookies_(domainNm){
+function getDomainCookies_(domainNm){
   let detailObj = domainNm ? {domain:domainNm} :{};
   return new Promise((resolve, reject)=>{ 
+    // '' is a flag to return empty array
+    if(domainNm===''){
+      resolve([]);
+    }  
     chrome.cookies.getAll(detailObj,((cookies)=>{
       resolve(cookies || []);
     }));
@@ -200,4 +221,39 @@ function sendMsg_(msg, val){
       chrome.tabs.sendMessage(tabID, {message: msg, value: val}):
       chrome.tabs.sendMessage(tabID, {message: msg});
     });
+};
+
+/**
+ * @param {Object} request
+ */
+function getCookies(request){
+  let array = [];
+  var subdomain = request.domain;
+  var domain = subdomain.split('.').length > 2 ? 
+    request.domain.substr(request.domain.indexOf('.')):'';
+  return new Promise((resolve, reject)=>{
+    getDomainCookies_(domain).then((cookies)=>{
+      push_(array, cookies).then((result)=>{
+        getDomainCookies_(subdomain).then((otherCookies)=>{
+          cookies = cookies.filter((cookie)=>{
+           return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
+          });
+          if(cookies.length>0){
+            otherCookies =[];  
+          }
+          push_(result, otherCookies).then((finalCookies)=>{
+            resolve(finalCookies);
+          });
+        });
+      });
+    });
+  });
+};
+
+/**
+ * @private
+ */
+function clearStorage_(){
+  window.sessionStorage.removeItem('domain');
+  window.sessionStorage.removeItem('cookies');
 };

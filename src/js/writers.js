@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.message=='domainChecked'){
     start_(request.value);
     // TODO listen Google Ads & Analytics Cookies Events instead of calling setTimeout
-    setTimeout(getCookies_, 1000); // => returnCookies
+    setTimeout(getCookies_, 2000); // => returnCookies
   } else if (request.message=='returnCookies'){
     let cookies = request.value;
     write_(cookies, document.domain);
@@ -19,14 +19,28 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 /** 
  * calling console log for starter messages
- * @param{string} meg
+ * @param{string} msg
  */
 function start_(msg){
   let domain = document.domain;
-  console.log("%cSUGOI!Cookies for Google Ads ⊂(・(ェ)・)⊃" + VERSION, STYLES_BOLD_BULE.join(';'));
-  msg === 'noError' ?
-    console.log("Current domain is : 【", domain ,"】"):
-    console.log("%cDOMAIN CHANGED to " + domain, STYLES_BOLD_RED.join(';'));
+  console.log("%cSUGOI!Cookies for Google Ads (`*・ω・’)" + VERSION, STYLES_BOLD_BULE.join(';'));
+  switch(msg){
+    case 'noError':
+      console.log("Current domain is : 【", domain ,"】");
+      break;
+ 
+    // TODO
+    case 'domainChanged':
+      console.log("DOMAIN CHANGED TO : 【", domain ,"】");
+      break;
+
+    case 'fail':
+      console.log("DOMAIN CHANGED TO : 【", domain ,"】");
+      break;
+
+    case 'success':
+      break;
+  }
 };
 
 /** 
@@ -39,10 +53,10 @@ const write_ =(cookies, domain) =>{
   let gclAwNm ='_gcl_aw';
   let gacNm ='_gac';
   /** _gal_aw */ 
-  writeCookies_(cookies, gclAwNm)
+  writeCookies_(cookies, gclAwNm, domain)
   .then(()=>{
   /** _gac */ 
-    writeCookies_(cookies, gacNm)
+    writeCookies_(cookies, gacNm, domain)
       .then(()=>{
         console.log("%cDONE!", STYLES_BOLD_BULE.join(';'));
     })
@@ -53,12 +67,16 @@ const write_ =(cookies, domain) =>{
  * calling console log for cookies
  * @private
  * @return {Promise} 
- * @oaram {Array.<string>} cookies
- * @oaram {string} cookieNm
+ * @param {Array.<string>} cookies
+ * @param {string} cookieNm
+ * @param {string} domain
  */
-function writeCookies_(cookies, cookieNm){
- return new Promise((resolve, reject)=>{
-    cookies = cookies.filter(cookie => cookie.name.includes(cookieNm));  
+function writeCookies_(cookies, cookieNm, domain){
+   let mainDomain = domain.slice(domain.indexOf('.'));
+  return new Promise((resolve, reject)=>{
+    cookies = cookies.filter((cookie) => {
+      return cookie.name.includes(cookieNm);
+    });
     cookies.length > 0 ?
     console.log('【found out:', cookies.length, ' ', cookieNm + ' cookies】') :
     console.log('NO '+ cookieNm + ' detected');
@@ -90,5 +108,7 @@ const writeCookieInfo_ = (cookie) =>{
  * when window loaded, renew thedomain to the background.js
  */
 window.addEventListener('load', function() {
-  chrome.runtime.sendMessage({message:'setDomain', domain:document.domain});
+  // TODO fix this
+  chrome.runtime.sendMessage({message:'checkCookies', domain:document.domain});
+  chrome.runtime.sendMessage({message:'setDomainAndCookies', domain:document.domain});
 });
