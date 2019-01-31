@@ -2,6 +2,7 @@
   "manifest_version": 2,
   "version": "1.7.1",
   "name": "SUGOI!Cookies: gclid tester for Google Ads",
+  "short_name": "S Cookies: gclid tester",
   "description": "Check if you have cookies that are needed for Google Ads conversion tracking by gclid test",
   "background": {
     "scripts": ["src/js/background.js"],
