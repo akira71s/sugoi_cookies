@@ -13,7 +13,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     getCookies_(); // => returnCookies
   } else if (request.message=='returnCookies'){
     let cookies = request.value;
-    console.log('write!!', cookies)
     write_(cookies, document.domain);
   }
 });
