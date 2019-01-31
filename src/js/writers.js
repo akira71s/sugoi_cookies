@@ -8,9 +8,9 @@
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   // background JS sends back this message agter 'start' ->  'cross domain check'
   if (request.message=='domainChecked'){
+    start_(request.value);
     // TODO listen Google Ads & Analytics Cookies Events instead of calling setTimeout
-    setTimeout(start_(request.value), 1000);
-    getCookies_(); // => returnCookies
+    setTimeout(getCookies_, 1000); // => returnCookies
   } else if (request.message=='returnCookies'){
     let cookies = request.value;
     write_(cookies, document.domain);
