@@ -12,7 +12,7 @@ const STYLE_ESCAPE = '%c';
 const STYLES_BOLD_BULE = [STYLE_BOLD, STYLE_BLUE];
 const STYLES_BOLD_RED = [STYLE_BOLD, STYLE_RED];
 const STYLES_BOLD_WHITE_BG_GREEN = [STYLE_BOLD, STYLE_WHITE, STYLE_BG_GREEN];
-const VERSION = '1.7.1';
+const VERSION = '1.7.2';
 
 /** 
  * Google Ads Cookies usually consists of 3 parts: conversionID, timeStamp, and UUID 
