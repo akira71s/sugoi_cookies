@@ -96,10 +96,11 @@ const writeCookieInfo_ = (cookie) =>{
     console.error('parameter invalid');
     return;
   }
-  let values = cookie.value.split('.');
-  values.length === DEFAULT_COOKIE_LENGTH ?
-  console.log(STYLE_ESCAPE + cookie.name + '=' + values[0] +'.'+ values[1] +'.'+ STYLE_ESCAPE + values[2], STYLE_BOLD, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
-  console.log(STYLE_ESCAPE + cookie.name + '=' + STYLE_ESCAPE + cookie.value, STYLE_BOLD, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
+  // let values = cookie.value.split('.');
+  cookie.value.length === DEFAULT_COOKIE_LENGTH ?
+  console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
+  // console.log(STYLE_ESCAPE + cookie.name + '=' + values[0] +'.'+ values[1] +'.'+ STYLE_ESCAPE + values[2], STYLE_BOLD, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
+  console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
 // TODO: console in bg-red or bg-green 
 }; 
 
