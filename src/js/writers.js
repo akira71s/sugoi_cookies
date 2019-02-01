@@ -29,16 +29,16 @@ function start_(msg){
       console.log("Current domain is : 【", domain ,"】");
       break;
  
-    // TODO
     case 'domainChanged':
-      console.log("DOMAIN CHANGED TO : 【", domain ,"】");
+      console.log(STYLE_ESCAPE+"DOMAIN CHANGED TO : 【 "+ domain +" 】", STYLES_BOLD_RED.join(';'));
       break;
 
     case 'fail':
-      console.log("DOMAIN CHANGED TO : 【", domain ,"】");
+      // TODO
       break;
 
     case 'success':
+      // TODO
       break;
   }
 };
@@ -98,8 +98,8 @@ const writeCookieInfo_ = (cookie) =>{
   }
   let values = cookie.value.split('.');
   values.length === DEFAULT_COOKIE_LENGTH ?
-  console.log(STYLE_ESCAPE + cookie.name + '=' + values[0] +'.'+ values[1] +'.'+ STYLE_ESCAPE + values[2], STYLE_BOLD, STYLE_HIGHLIGHT):
-  console.log(STYLE_ESCAPE + cookie.name + '=' + STYLE_ESCAPE + cookie.value, STYLE_BOLD, STYLE_HIGHLIGHT);
+  console.log(STYLE_ESCAPE + cookie.name + '=' + values[0] +'.'+ values[1] +'.'+ STYLE_ESCAPE + values[2], STYLE_BOLD, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
+  console.log(STYLE_ESCAPE + cookie.name + '=' + STYLE_ESCAPE + cookie.value, STYLE_BOLD, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
 // TODO: console in bg-red or bg-green 
 }; 
 

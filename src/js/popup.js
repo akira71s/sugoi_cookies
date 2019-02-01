@@ -5,14 +5,12 @@
 /** 
  * eventListener
  */
-window.addEventListener('load', function() {
-  console.log('load');
+window.addEventListener('load', function(){
   let goBtnEl = document.getElementById("go");
   // event lisner for clicking 'GO' to execute a gclid test 
   goBtnEl.onclick = () =>{
     let inputEl =document.getElementById('input');
     if(inputEl && inputEl.value){
-      console.log('hit');
       reload_();
     }
   };
@@ -28,15 +26,13 @@ window.addEventListener('load', function() {
   // event lisner for clicking 'clear' to clear cache 
   let clearBtnEl = document.getElementById("clear");
   clearBtnEl.onclick = () =>{
-    sendMsgToContentJS_('clearCookies');
-    emptyInput_();
+    sendMsgToContentJS_('clearCookies', null, emptyInput_());
   };
 
   // event lisner for clicking 'clear' to clear cache 
   let clearAllBtnEl = document.getElementById("clear-all");
   clearAllBtnEl.onclick = () =>{
-    sendMsgToContentJS_('clearAll');
-    emptyInput_();
+    sendMsgToContentJS_('clearAll', null, emptyInput_());
   };
 
   // event lisner for clicking 'clear' to clear cache 
@@ -44,7 +40,7 @@ window.addEventListener('load', function() {
   let isChecked = window.localStorage.getItem('enabled');
   toggleEl.checked = isChecked && isChecked=='true'? true : false;
   toggleEl.onchange = () =>{
-    sendMsgToContentJS_('toggle', toggleEl.checked);
+    sendMsgToContentJS_('toggle', toggleEl.checked, reload_());
   };
 }, false);
 
@@ -67,21 +63,18 @@ function getGclid_(url) {
   let val = inputEl && inputEl.value ? inputEl.value : '';
   return url.includes('?') ? '&gclid='+val : '?gclid='+val; 
 };
-
+ 
 /** 
- * @return {!string} msg
- * @return {?string} val
+ * @return {string} url - url without gclid
+ * @param {string} url - url with or without gclid
  */
-function sendMsgToContentJS_(msg,val){
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    const tabID = tabs[0].id;
-    if (!tabID) {
-      return;
-    }
-    val ?
-      chrome.tabs.sendMessage(tabID, {message: msg, value:val}):
-      chrome.tabs.sendMessage(tabID, {message: msg});
-  });
+function getUrlWithourGclid (url) {
+  if(url.includes('?gclid')){
+    url = url.substring(url.indexOf('?gclid'),0);
+  } else if(url.includes('&gclid')) {
+    url = url.substring(url.indexOf('&gclid'),0);
+  }
+  return url;
 };
 
 /** 
@@ -102,14 +95,18 @@ function reload_(){
 };
 
 /** 
- * @return {string} url - url without gclid
- * @param {string} url - url with or without gclid
+ * @return {!string} msg
+ * @return {?string} val
+ * @return {function} callback
  */
-function getUrlWithourGclid (url) {
-  if(url.includes('?gclid')){
-    url = url.substring(url.indexOf('?gclid'),0);
-  } else if(url.includes('&gclid')) {
-    url = url.substring(url.indexOf('&gclid'),0);
-  }
-  return url;
+function sendMsgToContentJS_(msg,val,callback){
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const tabID = tabs[0].id;
+    if (!tabID) {
+      return;
+    }
+    callback = callback ? callback : (()=>{});
+    val = val ? val : '';
+    chrome.tabs.sendMessage(tabID, {message: msg, value:val}, callback);
+  });
 };

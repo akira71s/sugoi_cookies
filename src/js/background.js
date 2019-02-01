@@ -9,16 +9,18 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   let msg = request.message;
   // receive start message on load 
   switch(msg){
+    // content.js
     case 'start':
       let enabled = window.localStorage.getItem('enabled') == 'true' ? true : false;
       updateIcon_(enabled);
       if(enabled){
         start_(request);
       }
-      break;
+      return true;
 
     case 'clearCookies':
-      var subdomain = request.domain;
+     // from popup.js
+     var subdomain = request.domain;
       var domain = subdomain.split('.').length > 2 ? 
         request.domain.substr(request.domain.indexOf('.')):'';
         getDomainCookies_(domain).then((cookies)=>{
@@ -26,33 +28,38 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             getDomainCookies_(subdomain).then((otherCookies)=>{
               clearCookies_(otherCookies).then((otherResult)=>{
                 sendMsg_(result || otherResult);
+                return true;
             });
           });
         });
       });
-      clearStorage_();
       break;
     
     case 'clearAll':
+     // from popup.js
       getDomainCookies_().then((cookies)=>{
         clearCookies_(cookies).then((result)=>{
           sendMsg_(result || otherResult);
+          return true;
         });
       });
-      celarStoage_();
+      // celarStoage_();
       break;
     
     case 'getCookies':
+     // from writer.js
       getCookies(request).then((result)=>{
         sendMsg_('returnCookies', result);
+        return true;
       });              
       break;
 
-    // currently this is NOT called.
-    // TODO: call this and send msg to writer.js
     case 'checkCookies':
+    // TODO: call this and send msg to writer.js
+    // from & to writer.js
       getCookies(request).then((result)=>{
         sendMsg_('cookieChecked', checkCookies_(result)); // 'fail' or 'success'
+        return true;
       });              
       break;
 
@@ -60,17 +67,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
      // renew a domain name in the  local storage
      getCookies(request).then((result)=>{
        setCookies_(result);
+       return true;
      });
      window.sessionStorage.setItem("domainNm", request.domain);      
      break;
 
    case 'toggle':
+     // to & from pupup.js
      toggle_(request)
-     break;
+     return true;
   } 
+  return true;
 });
 
 /**
+ * to & from pupup.js
  * @private 
  * @param{Object} request 
  */
@@ -79,9 +90,6 @@ function toggle_(request){
   updateIcon_(shouldEnabled);
   let booleanStr = shouldEnabled ? 'true' : 'false';
   window.localStorage.setItem('enabled', booleanStr);
-  if(shouldEnabled){
-    start_(request);
-  }
 };
 
 /**
@@ -97,6 +105,7 @@ function push_(array, cookies){
 };
 
 /**
+ * request from pupup.js
  * @private 
  * @param{boolean} shouldEnabled 
  */
@@ -106,6 +115,7 @@ function updateIcon_(shouldEnabled) {
 };
 
 /**
+ * request from content.js
  * @private  
  * @param {Object} request
  */
@@ -129,6 +139,7 @@ function start_(request){
  
 
 /**
+ * request from writers.js
  * @private 
  * @return {string} success / fail
  */

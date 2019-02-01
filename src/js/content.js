@@ -18,44 +18,54 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
    let msg = request.message; 
    switch(msg){
      case "clearCookies":   
+       // request from popup.js to background.js
        clearCookies_(document.domain);
-       break;
+       return true;
 
      case "clearAll":   
+       // request from popup.js to background.js
        clearCookies_(document.domain, true);
-       break;
+       return true;
 
      case 'cookieCleared':
+       // msg from background.js
        reload_();
-       break;
+       return true;
 
      case 'reload':
+       // request from popup.js
        reload_(request.value);
-       break;
+       return true;
 
      case request.message=='coockieChecked':
-      if(request.value==='success'){
-        // TODO consoleInGreen 
-      } else if (request.value==='fail'){
-        // TODO consoleInRed
-      }
-      break;
-      
+       // msg from background.js 
+       if(request.value==='success'){
+         // TODO consoleInGreen 
+        } else if (request.value==='fail'){
+          // TODO consoleInRed
+        }
+        return true;
+
       case 'toggle':
-      toggle_(request.value);
-      break;
+      // request from popup.js
+        toggle_(request.value);
+        return true;
 
       case 'getCookies':
-      getCookies_(request.value);
-      break;
+        // request from popup.js to background.js
+        getCookies_(request.value);
+        return true;
 
       case 'getUrl':
-      sendResponse(window.location.href);
-      break;
+        // request from popup.js, sending response back
+        sendResponse(window.location.href);
+        break;
   }
+  return true;
 });
 
 /** 
+ * from popup.js to background.js
  * @private
  * @param {boolean} enabled
  */
@@ -64,6 +74,7 @@ function toggle_(enabled){
  };
 
 /** 
+ * to background.js
  * @private
  * @param {boolean} enabled
  */
@@ -71,7 +82,8 @@ function getCookies_(enabled){
   chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},(()=>{})); 
 };
 
-/** 
+/**
+ * from popup.js to background.js 
  * @private
  * @param {string} newDomain
  * @param {?boolean} isAll
@@ -88,6 +100,7 @@ function clearCookies_(newDomain, isAll){
 };
 
 /** 
+ * from popup.js 
  * @private
  * @param {?string} url;
  */
@@ -99,6 +112,7 @@ function reload_(url){
 };
 
 /** 
+ * from popup.js and send the value back to it
  * @return {string} url - url without gclid
  * @param {string} url - url with or without gclid
  */
