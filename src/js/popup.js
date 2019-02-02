@@ -69,6 +69,9 @@ function getGclid_(url) {
  * @param {string} url - url with or without gclid
  */
 function getUrlWithourGclid (url) {
+  if(!url){
+    return;
+  }
   if(url.includes('?gclid')){
     url = url.substring(url.indexOf('?gclid'),0);
   } else if(url.includes('&gclid')) {
@@ -87,7 +90,10 @@ function reload_(){
       return;
     }
     chrome.tabs.sendMessage(tabID, {message: 'getUrl'}, ((response)=>{
-      let url = getUrlWithourGclid(response);
+      let url = getUrlWithourGclid(response);    
+      if(!url){
+        return true; 
+      } 
       let gclid = getGclid_(url);
       chrome.tabs.sendMessage(tabID, {message: 'reload', value:url+gclid});
     }));
@@ -95,15 +101,16 @@ function reload_(){
 };
 
 /** 
- * @return {!string} msg
- * @return {?string} val
- * @return {function} callback
+ * @return {?string}
+ * @param {!string} msg
+ * @param {?string} val
+ * @param {function} callback
  */
 function sendMsgToContentJS_(msg,val,callback){
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const tabID = tabs[0].id;
     if (!tabID) {
-      return;
+      return null;
     }
     callback = callback ? callback : (()=>{});
     val = val ? val : '';

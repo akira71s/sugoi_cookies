@@ -121,11 +121,12 @@ function updateIcon_(shouldEnabled) {
  */
 function start_(request){
     let domain = request.domain;
-    let refferer = request.refferer;
+    let referrer = request.referrer;
+    console.log(referrer)
     let isTheSameDomain = isTheSameDomain_(domain);
     // TODO
     // let result = checkCookies_()
-    if(isTheSameDomain || refferer==''){
+    if(isTheSameDomain || referrer==''){
       sendMsg_('domainChecked', 'noError');
     } else if(!isTheSameDomain){
       sendMsg_('domainChecked', 'domainChanged');

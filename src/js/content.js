@@ -8,7 +8,7 @@
  * @private
  */
 !function start_(enabled){
-  chrome.runtime.sendMessage({message:'start', domain:document.domain},(()=>{}));
+  chrome.runtime.sendMessage({message:'start', domain:document.domain, referrer:document.referrer},(()=>{}));
 }();
 
 /** 
