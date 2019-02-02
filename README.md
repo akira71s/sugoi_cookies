@@ -2,6 +2,7 @@
 
 # sugoi_cookies
 Chrome extension for checking Cookies needed for Google Ads Conversion tracking
+
 (Google広告のコンバージョン計測に必要なクッキーの計測・テストを行う、Google Chromブラウザの拡張機能(プラグイン)です。)
 
 ## Outline(概要):
@@ -45,6 +46,7 @@ Then send messages to background JS or content JS for reload / clearCookie
 ## Features(機能):
 ### 1 Check "_gcl_aw" in the console.(_gcl_aw_クッキーを検出し、コンソールで情報を流します)  
 This is a cookie that plays a very important role for Google Ads and its conversion tracking.
+
 (このクッキーはGoogle広告のコンバージョン計測に欠かせないものです。)
 
 For more information about how _gcl_aw works, please have a look below:
@@ -74,9 +76,11 @@ English - https://support.google.com/analytics/answer/2938246?hl=en
 ### 4(New! for version 1.7.2) Clear Cookies (新機能: クッキーの削除)|
 
 By hitting the yellow botton, you can clear _gcl_aw & _gac Cookies in the domain you're currently at.
+
 (現在いるドメインの_gac, _gcl_awを消去します。)
 
 ### 5(New! for version 1.7.2) Clear All Cookies (新機能: すべてのクッキーの削除)
 
 By hitting the red botton, you can clear all the cookies you have in the browser.
+
 (クロームブラウザのすべてのクッキーを削除します。)
