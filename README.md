@@ -43,7 +43,8 @@ Then send messages to background JS or content JS for reload / clearCookie
 // TODO : reload / onload
 
 ## Features(機能):
-### 1 You can check "_gcl_aw" in console.(_gcl_aw_クッキーを検出し、コンソールで情報を流します)  
+### 1 Check "_gcl_aw" in the console.
+(_gcl_aw_クッキーを検出し、コンソールで情報を流します)  
 This is a cookie that plays a very important role for Google Ads and its conversion tracking.
 (このクッキーはGoogle広告のコンバージョン計測に欠かせないものです。)
 
@@ -52,9 +53,12 @@ For more information about how _gcl_aw works, please have a look below:
 English - https://developers.google.com/adwords-remarketing-tag/?hl=en
 日本語 - https://developers.google.com/adwords-remarketing-tag/?hl=ja
 
-### 2 You can check "_gac" on your browser.(_gac_クッキーを検出し、コンソールで情報を流します) 
+### 2 Check "_gac" in the console.
+(_gac_クッキーを検出し、コンソールで情報を流します) 
+
 It is a type of Google Analytics cookie, and also can be utilized for Google Ads conversion tracking. 
 *You need to link your Google Ads & Google Analytics accounts to utilize this cookie  
+
 (これはGoogleアナリティクスのクッキーの1種です。_gcl_awと同様に、Google広告のコンバージョンに活用できます。
 ※Google広告アカウントと、Googleアナリティクスアカウントのリンクが必要です)
 
@@ -63,7 +67,7 @@ For more information about how _gac_ works, please have a look below:
 English - https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=en
 日本語 -https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=ja
 
-### 3 Test gclid auto-tagging with this plugin, which means you don't need to type '?gclid=.....' in the URL bar one by one anymore. 
+### 3 1-click gclid auto-tagging test
 (gclidテストがボタン1つで実行可能です。)
 
 You are an advertiser or web marketing developer but don't know much about gclid? You should check : 
