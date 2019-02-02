@@ -43,8 +43,7 @@ Then send messages to background JS or content JS for reload / clearCookie
 // TODO : reload / onload
 
 ## Features(機能):
-### 1 Check "_gcl_aw" in the console.
-(_gcl_aw_クッキーを検出し、コンソールで情報を流します)  
+### 1 Check "_gcl_aw" in the console.(_gcl_aw_クッキーを検出し、コンソールで情報を流します)  
 This is a cookie that plays a very important role for Google Ads and its conversion tracking.
 (このクッキーはGoogle広告のコンバージョン計測に欠かせないものです。)
 
@@ -53,9 +52,7 @@ For more information about how _gcl_aw works, please have a look below:
 English - https://developers.google.com/adwords-remarketing-tag/?hl=en
 日本語 - https://developers.google.com/adwords-remarketing-tag/?hl=ja
 
-### 2 Check "_gac" in the console.
-(_gac_クッキーを検出し、コンソールで情報を流します) 
-
+### 2 Check "_gac" in the console.(_gac_クッキーを検出し、コンソールで情報を流します) 
 It is a type of Google Analytics cookie, and also can be utilized for Google Ads conversion tracking. 
 *You need to link your Google Ads & Google Analytics accounts to utilize this cookie  
 
@@ -67,18 +64,19 @@ For more information about how _gac_ works, please have a look below:
 English - https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=en
 日本語 -https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=ja
 
-### 3 1-click gclid auto-tagging test
-(gclidテストがボタン1つで実行可能です。)
+### 3 1-click gclid auto-tagging test(gclidテストがボタン1つで実行可能です。)
 
 You are an advertiser or web marketing developer but don't know much about gclid? You should check : 
 (gclidテスト、自動タグ設定に関しては以下のドキュメントをお読み下さい。)
 English - https://support.google.com/analytics/answer/2938246?hl=en
 日本語 - https://support.google.com/analytics/answer/2938246?hl=ja
 
-### 4(New! for version 1.7.2) Clear Cookies (新機能: クッキーの削除)
+### 4(New! for version 1.7.2) Clear Cookies (新機能: クッキーの削除)|
+
 By hitting the yellow botton, you can clear _gcl_aw & _gac Cookies in the domain you're currently at.
 (現在いるドメインの_gac, _gcl_awを消去します。)
 
 ### 5(New! for version 1.7.2) Clear All Cookies (新機能: すべてのクッキーの削除)
+
 By hitting the red botton, you can clear all the cookies you have in the browser.
 (クロームブラウザのすべてのクッキーを削除します。)
