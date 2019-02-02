@@ -2,7 +2,7 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 
-/** 
+ /** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -15,6 +15,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     let cookies = request.value;
     write_(cookies, document.domain);
   }
+  return true;
 });
 
 /** 
@@ -101,7 +102,7 @@ const writeCookieInfo_ = (cookie) =>{
   console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
   // console.log(STYLE_ESCAPE + cookie.name + '=' + values[0] +'.'+ values[1] +'.'+ STYLE_ESCAPE + values[2], STYLE_BOLD, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
   console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
-// TODO: console in bg-red or bg-green 
+  // TODO: console in bg-red or bg-green 
 }; 
 
 /** 

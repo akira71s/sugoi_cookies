@@ -16,8 +16,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       if(enabled){
         start_(request);
       }
-      return true;
-
+      break;
+       
     case 'clearCookies':
      // from popup.js
      var subdomain = request.domain;
@@ -27,22 +27,29 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           clearCookies_(cookies).then((result)=>{
             getDomainCookies_(subdomain).then((otherCookies)=>{
               clearCookies_(otherCookies).then((otherResult)=>{
-                sendMsg_(result || otherResult);
-                return true;
+                sendResponse(result || otherResult);
+                // TODO remove below
+                // sendMsg_(result || otherResult);
+                // return true;                
             });
           });
         });
       });
+      // TODO 
+      // celarStoage_();
       break;
     
     case 'clearAll':
      // from popup.js
       getDomainCookies_().then((cookies)=>{
         clearCookies_(cookies).then((result)=>{
-          sendMsg_(result || otherResult);
-          return true;
+          sendResponse(result);
+          // TODO remove below
+          // sendMsg_(result || otherResult);
+          // return true;                
         });
       });
+      // TODO 
       // celarStoage_();
       break;
     
@@ -55,11 +62,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       break;
 
     case 'checkCookies':
-    // TODO: call this and send msg to writer.js
-    // from & to writer.js
+      // TODO: call this and send msg to writer.js
+      // from & to writer.js
       getCookies(request).then((result)=>{
         sendMsg_('cookieChecked', checkCookies_(result)); // 'fail' or 'success'
-        return true;
+        // sendResponse();
       });              
       break;
 

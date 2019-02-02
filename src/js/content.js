@@ -20,22 +20,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
      case "clearCookies":   
        // request from popup.js to background.js
        clearCookies_(document.domain);
-       return true;
+       break;
 
      case "clearAll":   
        // request from popup.js to background.js
        clearCookies_(document.domain, true);
-       return true;
-
-     case 'cookieCleared':
-       // msg from background.js
-       reload_();
-       return true;
+       break;
 
      case 'reload':
        // request from popup.js
        reload_(request.value);
-       return true;
+       break;
 
      case request.message=='coockieChecked':
        // msg from background.js 
@@ -44,17 +39,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         } else if (request.value==='fail'){
           // TODO consoleInRed
         }
-        return true;
+        break;
 
       case 'toggle':
       // request from popup.js
         toggle_(request.value);
-        return true;
+        break;
 
       case 'getCookies':
         // request from popup.js to background.js
         getCookies_(request.value);
-        return true;
+        break;
 
       case 'getUrl':
         // request from popup.js, sending response back
@@ -93,9 +88,9 @@ function clearCookies_(newDomain, isAll){
     {message:'clearAll', domain:newDomain} :
     {message:'clearCookies', domain:newDomain}; 
   chrome.runtime.sendMessage(msgObj, function(response){
-    console.log(STYLE_ESCAPE + response.message, STYLE_BOLD);
+    console.log(STYLE_ESCAPE + response, STYLE_BOLD);
     console.log('reloading this page in a moment...');
-    setTimeout(reload_(), 1000);
+    setTimeout(reload_, 1000);
   });
 };
 
@@ -105,7 +100,6 @@ function clearCookies_(newDomain, isAll){
  * @param {?string} url;
  */
 function reload_(url){
-  console.log(url);
   url?
    window.location.href = url:
    window.location.href = getUrlWithourGclid (window.location.href);

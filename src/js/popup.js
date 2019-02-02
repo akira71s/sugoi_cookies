@@ -7,21 +7,10 @@
  */
 window.addEventListener('load', function(){
   let goBtnEl = document.getElementById("go");
-  // event lisner for clicking 'GO' to execute a gclid test 
-  goBtnEl.onclick = () =>{
-    let inputEl =document.getElementById('input');
-    if(inputEl && inputEl.value){
-      reload_();
-    }
-  };
-  
-// event lisner for pressing enter to execute a gclid test 
+  goBtnEl.onclick = () =>beforeReload_();
+
   let inputEl =document.getElementById('input');
-  inputEl.onkeydown = (e) => {
-    if(e.key==='Enter'&& inputEl && inputEl.value){
-      reload_();
-    }
-  };
+  inputEl.onkeydown = (e) => {if(e.key==='Enter'&&e.target.value){reload_()}};
 
   // event lisner for clicking 'clear' to clear cache 
   let clearBtnEl = document.getElementById("clear");
@@ -31,18 +20,14 @@ window.addEventListener('load', function(){
 
   // event lisner for clicking 'clear' to clear cache 
   let clearAllBtnEl = document.getElementById("clear-all");
-  clearAllBtnEl.onclick = () =>{
-    sendMsgToContentJS_('clearAll', null, emptyInput_());
-  };
+  clearAllBtnEl.onclick = () =>{sendMsgToContentJS_('clearAll', null, emptyInput_());};
 
   // event lisner for clicking 'clear' to clear cache 
   let toggleEl = document.getElementById("toggle");
   let isChecked = window.localStorage.getItem('enabled');
   toggleEl.checked = isChecked && isChecked=='true'? true : false;
-  toggleEl.onchange = () =>{
-    sendMsgToContentJS_('toggle', toggleEl.checked, reload_());
-  };
-}, false);
+  toggleEl.onchange = () =>{sendMsgToContentJS_('toggle', toggleEl.checked, reload_());};
+});
 
 /** 
  * empty input box in the popup
@@ -83,20 +68,30 @@ function getUrlWithourGclid (url) {
 /** 
  * @private
  */
+function beforeReload_(){
+  let inputEl =document.getElementById('input');
+  if(inputEl && inputEl.value){
+    reload_();
+  }
+};
+
+/** 
+ * @private
+ */
 function reload_(){
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const tabID = tabs[0].id;
-    if (!tabID) {
-      return;
-    }
-    chrome.tabs.sendMessage(tabID, {message: 'getUrl'}, ((response)=>{
-      let url = getUrlWithourGclid(response);    
-      if(!url){
+    if (tabID) {
+      chrome.tabs.sendMessage(tabID, {message: 'getUrl'}, ((response)=>{
+        let url = getUrlWithourGclid(response);    
+        if(url){
+          let gclid = getGclid_(url);
+          chrome.tabs.sendMessage(tabID, {message: 'reload', value:url+gclid});
+        }
         return true; 
-      } 
-      let gclid = getGclid_(url);
-      chrome.tabs.sendMessage(tabID, {message: 'reload', value:url+gclid});
-    }));
+      }));
+    }
+    return true; 
   })
 };
 
