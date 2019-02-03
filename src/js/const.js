@@ -2,6 +2,8 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  * A list of constants  
  */
+"use strict";
+
 const STYLE_HIGHLIGHT ='font-weight: bold;background-color:black;color:#fff';
 const STYLE_BOLD ='font-weight: bold';
 const STYLE_BLUE ='color: blue';

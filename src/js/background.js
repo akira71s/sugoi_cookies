@@ -2,7 +2,9 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>  
  */
 
-/**
+ "use strict";
+
+ /**
  * chrome.cookies shoul be called in this file, otherwise it's gonna be undefined  
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {

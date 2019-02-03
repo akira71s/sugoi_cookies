@@ -1,6 +1,7 @@
 /** 
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
+"use strict";
 
 /** 
  * eventListener
@@ -9,7 +10,7 @@ window.addEventListener('load', function(){
   let goBtnEl = document.getElementById("go");
   goBtnEl.onclick = () =>beforeReload_();
 
-  let inputEl =document.getElementById('input');
+  let inputEl = document.getElementById('input');
   inputEl.onkeydown = (e) => {if(e.key==='Enter'&&e.target.value){reload_()}};
 
   // event lisner for clicking 'clear' to clear cache 

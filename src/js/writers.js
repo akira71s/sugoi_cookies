@@ -1,6 +1,7 @@
 /** 
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
+"use strict";
 
  /** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
@@ -10,7 +11,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.message=='domainChecked'){
     start_(request.value);
     // TODO listen Google Ads & Analytics Cookies Events instead of calling setTimeout
-    setTimeout(getCookies_, 2000); // => returnCookies
+    getCookies_(); // => returnCookies
   } else if (request.message=='returnCookies'){
     let cookies = request.value;
     write_(cookies, document.domain);
