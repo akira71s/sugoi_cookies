@@ -5,11 +5,12 @@
 /** 
  * immediate function, sending message to background.js
  * start and check if the plugin is enabled or not 
- * @private
+ * 
+ * event listener
  */
-!function start_(enabled){
+ window.addEventListener('load', ()=>{
   chrome.runtime.sendMessage({message:'start', domain:document.domain, referrer:document.referrer},(()=>{}));
-}();
+});
 
 /** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
