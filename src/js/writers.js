@@ -74,7 +74,6 @@ const write_ =(cookies, domain) =>{
  * @param {string} domain
  */
 function writeCookies_(cookies, cookieNm, domain){
-   let mainDomain = domain.slice(domain.indexOf('.'));
   return new Promise((resolve, reject)=>{
     cookies = cookies.filter((cookie) => {
       return cookie.name.includes(cookieNm);

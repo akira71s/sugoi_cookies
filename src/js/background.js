@@ -4,6 +4,23 @@
 
  "use strict";
 
+
+ !function(){
+   chrome.cookies.onChanged.addListener((e)=>{
+     let name = e.cookie.name;
+     if(name.includes('_gac') || name.includes('_gcl_aw')){
+       if(isEnabled_()){
+         // cookie changed after window loaded;
+        sendMsg_('domainChecked', 'noError');
+       }
+     }
+   })
+}();
+     // TODO -> conversion linker checker 
+    // check cookies changed 
+    // search GTM or gtag -> 
+    // if no GTM, it would be gtag that generating the cookies
+
  /**
  * chrome.cookies shoul be called in this file, otherwise it's gonna be undefined  
  */
@@ -13,7 +30,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   switch(msg){
     // content.js
     case 'start':
-      let enabled = window.localStorage.getItem('enabled') == 'true' ? true : false;
+      let enabled = isEnabled_();
       updateIcon_(enabled);
       if(enabled){
         start_(request);
@@ -113,6 +130,15 @@ function push_(array, cookies){
   });
 };
 
+
+/**
+ * @private 
+ * @return{boolean}
+ */
+function isEnabled_(){
+ return window.localStorage.getItem('enabled') == 'true' ? true : false;
+}
+
 /**
  * request from pupup.js
  * @private 
@@ -131,7 +157,6 @@ function updateIcon_(shouldEnabled) {
 function start_(request){
     let domain = request.domain;
     let referrer = request.referrer;
-    console.log(referrer)
     let isTheSameDomain = isTheSameDomain_(domain);
     // TODO
     // let result = checkCookies_()
@@ -166,10 +191,10 @@ function checkCookies_(cookies){
     return cookie.name.includes('_gac') ||cookie.name.includes('_gcl_aw');
   });
   cookiesSaved.forEach((cookie)=>{
-    console.log(cookie);
+    // console.log(cookie);
   });    
   cookies.forEach((cookie)=>{
-    console.log(cookie);
+    // console.log(cookie);
   });    
   
   return cookies == cookiesSaved ? 'success' : 'fail';
