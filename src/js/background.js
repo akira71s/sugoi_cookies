@@ -61,12 +61,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       });              
       break;
 
-    case 'checkCookies':
-      getCookies(request).then((result)=>{
-        sendMsg_('cookieChecked', checkCookies_(result)); // 'fail' or 'success'
-        // sendResponse();
-      });              
-      break;
+    // TODO 
+    // case 'checkCookies':
+    //   getCookies(request).then((result)=>{
+    //     sendMsg_('cookieChecked', checkCookies_(result)); // 'fail' or 'success'
+    //     // sendResponse();
+    //   });              
+    //   break;
 
    case 'setDomainAndCookies':
      getCookies(request).then((result)=>{

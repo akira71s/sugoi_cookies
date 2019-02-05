@@ -13,18 +13,13 @@ window.addEventListener('load',()=>{
    }));
 });
 
- 
-// /**
-//  * @private 
-//  */
-// function startCheckingCookies_() {  
-//   return new Promise ((resolve,reject)=>{
-//     console.log('checkcookies');
-//     chrome.runtime.sendMessage({message:'checkCookies', domain:document.domain},function(){
-//       resolve();
-//     }); 
-//   });
-// }
+/** 
+* eventListener
+* clear cache of background.js
+*/
+window.onbeforeunload = function(){
+  chrome.runtime.sendMessage({message:'beforeReload'},(()=>{})); 
+ };
 
 /** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
@@ -142,6 +137,15 @@ function getUrlWithourGclid (url) {
   return url;
 };
 
-window.onbeforeunload = function(){
- chrome.runtime.sendMessage({message:'beforeReload'},(()=>{})); 
-};
+// TODO
+// /**
+//  * @private 
+//  */
+// function startCheckingCookies_() {  
+//   return new Promise ((resolve,reject)=>{
+//     console.log('checkcookies');
+//     chrome.runtime.sendMessage({message:'checkCookies', domain:document.domain},function(){
+//       resolve();
+//     }); 
+//   });
+// }

@@ -100,7 +100,6 @@ function reload_(){
 };
 
 /** 
- * @return {?string}
  * @param {!string} msg
  * @param {?string} val
  * @param {function} callback
