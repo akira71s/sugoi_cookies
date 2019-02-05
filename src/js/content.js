@@ -4,13 +4,27 @@
 "use strict";
 
 /** 
- * immediate function, sending message to background.js
- * start and check if the plugin is enabled or not 
- * @private
- */
+* eventListener
+* when window loaded, renew thedomain to the background.js
+*/
 window.addEventListener('load',()=>{
-  chrome.runtime.sendMessage({message:'start', domain:document.domain, referrer:document.referrer},(()=>{}));
+  chrome.runtime.sendMessage({message:'start', domain:document.domain, referrer:document.referrer},(()=>{
+    chrome.runtime.sendMessage({message:'setDomainAndCookies', domain:document.domain});
+   }));
 });
+
+ 
+// /**
+//  * @private 
+//  */
+// function startCheckingCookies_() {  
+//   return new Promise ((resolve,reject)=>{
+//     console.log('checkcookies');
+//     chrome.runtime.sendMessage({message:'checkCookies', domain:document.domain},function(){
+//       resolve();
+//     }); 
+//   });
+// }
 
 /** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
@@ -18,12 +32,12 @@ window.addEventListener('load',()=>{
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
    let msg = request.message; 
    switch(msg){
-     case "clearCookies":   
+     case "clearCookies":
        // request from popup.js to background.js
        clearCookies_(document.domain);
        break;
 
-     case "clearAll":   
+     case "clearAll": 
        // request from popup.js to background.js
        clearCookies_(document.domain, true);
        break;
@@ -43,7 +57,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         break;
 
       case 'toggle':
-      // request from popup.js
+        // request from popup.js
         toggle_(request.value);
         break;
 
@@ -78,6 +92,14 @@ function getCookies_(enabled){
   chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},(()=>{})); 
 };
 
+/** 
+ * to background.js
+ * @private
+ */
+function stopWatching_(){
+  chrome.runtime.sendMessage({message:'stopWatching'},(()=>{})); 
+};
+
 /**
  * from popup.js to background.js 
  * @private
@@ -91,7 +113,7 @@ function clearCookies_(newDomain, isAll){
   chrome.runtime.sendMessage(msgObj, function(response){
     console.log(STYLE_ESCAPE + response, STYLE_BOLD);
     console.log('reloading this page in a moment...');
-    setTimeout(reload_, 1000);
+    reload_();
   });
 };
 
@@ -103,7 +125,7 @@ function clearCookies_(newDomain, isAll){
 function reload_(url){
   url?
    window.location.href = url:
-   window.location.href = getUrlWithourGclid (window.location.href);
+   window.location.href = getUrlWithourGclid(window.location.href);
 };
 
 /** 
@@ -118,4 +140,8 @@ function getUrlWithourGclid (url) {
     url = url.substring(url.indexOf('&gclid'),0);
   }
   return url;
+};
+
+window.onbeforeunload = function(){
+ chrome.runtime.sendMessage({message:'beforeReload'},(()=>{})); 
 };

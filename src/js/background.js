@@ -1,18 +1,18 @@
 /**
  * @author Akira Sakaguchi <akira.s7171@gmail.com>  
  */
+"use strict";
+let cache_ =[];
 
- "use strict";
-
- /**
+/**
  * chrome.cookies shoul be called in this file, otherwise it's gonna be undefined  
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   let msg = request.message;
-  // receive start message on load 
   switch(msg){
-    // content.js
     case 'start':
+      watch();
+      cache_ =[];
       let enabled = isEnabled_();
       updateIcon_(enabled);
       if(enabled){
@@ -21,7 +21,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       break;
        
     case 'clearCookies':
-     // from popup.js
      var subdomain = request.domain;
       var domain = subdomain.split('.').length > 2 ? 
         request.domain.substr(request.domain.indexOf('.')):'';
@@ -30,10 +29,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             getDomainCookies_(subdomain).then((otherCookies)=>{
               clearCookies_(otherCookies).then((otherResult)=>{
                 sendResponse(result || otherResult);
-                stopWatching_(); 
-                // TODO remove below
-                // sendMsg_(result || otherResult);
-                // return true;                
             });
           });
         });
@@ -47,7 +42,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       getDomainCookies_().then((cookies)=>{
         clearCookies_(cookies).then((result)=>{
           sendResponse(result);
-          stopWatching_();  
           // TODO remove below
           // sendMsg_(result || otherResult);
           // return true;                
@@ -58,16 +52,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       break;
     
     case 'getCookies':
-     // from writer.js
       getCookies(request).then((result)=>{
+        result = filter_(result);
+        cache_ = result;
+        watch();
         sendMsg_('returnCookies', result);
         return true;
       });              
       break;
 
     case 'checkCookies':
-      // TODO: call this and send msg to writer.js
-      // from & to writer.js
       getCookies(request).then((result)=>{
         sendMsg_('cookieChecked', checkCookies_(result)); // 'fail' or 'success'
         // sendResponse();
@@ -75,21 +69,28 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       break;
 
    case 'setDomainAndCookies':
-     // renew a domain name in the  local storage
      getCookies(request).then((result)=>{
        setCookies_(result);
        return true;
      });
      window.sessionStorage.setItem("domainNm", request.domain);
-     watch();  
      break;
 
    case 'toggle':
-     // to & from pupup.js
      toggle_(request);
      stopWatching_();
      return true;
-  } 
+
+  case 'stopWatching':
+    stopWatching_();  
+    break;
+
+  case 'beforeReload':
+    cache_ = [];
+    stopWatching_();
+    break;
+  }
+
   return true;
 });
 
@@ -117,7 +118,6 @@ function push_(array, cookies){
   });
 };
 
-
 /**
  * @private 
  * @return{boolean}
@@ -135,6 +135,20 @@ function updateIcon_(shouldEnabled) {
   let suffix = shouldEnabled ? '-on' : '';
   chrome.browserAction.setIcon({path:"../../icon/cookie128" + suffix + ".png"});
 };
+
+/** 
+ * @private
+ * @param {Array.<Object>} cookies
+ * @return {Array.<Object>} filtered cookies
+ */
+function filter_(cookies){
+  let gclAwNm ='_gcl_aw';
+  let gacNm ='_gac';
+  cookies = cookies.filter((cookie) => {
+    return cookie.name.includes(gclAwNm)||cookie.name.includes(gacNm);
+  });
+  return cookies;
+}
 
 /**
  * request from content.js
@@ -159,7 +173,6 @@ function start_(request){
     }
 };
  
-
 /**
  * request from writers.js
  * @private 
@@ -245,10 +258,11 @@ function getDomainCookies_(domainNm){
  */
 function sendMsg_(msg, val){
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    // found active tab
     if(!tabs[0]){
+      window.alert('please reload the page');
       return;
     }
+    // found active tab
     const tabID = tabs[0].id;
     val != undefined ? 
       chrome.tabs.sendMessage(tabID, {message: msg, value: val}):
@@ -268,10 +282,10 @@ function getCookies(request){
     getDomainCookies_(domain).then((cookies)=>{
       push_(array, cookies).then((result)=>{
         getDomainCookies_(subdomain).then((otherCookies)=>{
-          cookies = cookies.filter((cookie)=>{
+          result = result.filter((cookie)=>{
            return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
           });
-          if(cookies.length>0){
+          if(result.length>0){
             otherCookies =[];  
           }
           push_(result, otherCookies).then((finalCookies)=>{
@@ -295,35 +309,59 @@ function clearStorage_(){
  * @private
  */
 function watch(){
-  chrome.cookies.onChanged.addListener(function(e){
-    watch_(e);
-  });
+  chrome.cookies.onChanged.addListener(watch_);
 };
 
 /**
  * @private
  * @param {Event} e 
  */
-function watch_(e){
-  let name = e.cookie.name;
-  console.log(e.cookie);
+ function watch_(e){
+  let cookie = e.cookie;
+  let name = cookie.name;
+  let val = cookie.value;
+  let cause = e.cause;
+  let isRemoved = e.removed;
+  let isChanged = false;
   if(name.includes('_gac') || name.includes('_gcl_aw')){
     if(isEnabled_()){
-      // cookie changed after window loaded;
-     sendMsg_('domainChecked', 'noError');
+      if(cause=='explicit' && !isRemoved){
+        let filteredCache_ = fileterByName_(name, cache_);
+        if(filteredCache_.length === 0){
+          isChanged = true;
+        } else {
+          filteredCache_.forEach((cache)=>{
+            isChanged = cache.value.split('.')[2] != val.split('.')[2] ? true:false;
+          });
+        }
+        if(isChanged){
+          cache_ = cache_.concat([cookie]);
+          sendMsg_('cookiesChanged', cookie);
+        }
+      }
     }
   }
+};
+
+/**
+ * @private
+ * @param {string} name
+ * @param {Array.<string>} cache_
+ */
+function fileterByName_(name, cache_){
+  return cache_ = cache_.filter((cache)=>{
+    return cache.name.includes(name);
+  });
+};
+
+/**
+ * @private
+ */
+function stopWatching_(){
+  chrome.cookies.onChanged.removeListener(watch_);
 };
 
 // TODO -> conversion linker checker 
 // check cookies changed 
 // search GTM or gtag -> 
 // if no GTM, it would be gtag that generating the cookies
-
-/**
- * @private
- */
-function stopWatching_(){
-  console.log('stop watching');
-  chrome.cookies.onChanged.removeListener(watch_);
-};
