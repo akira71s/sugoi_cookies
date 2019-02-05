@@ -30,6 +30,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             getDomainCookies_(subdomain).then((otherCookies)=>{
               clearCookies_(otherCookies).then((otherResult)=>{
                 sendResponse(result || otherResult);
+                stopWatching_(); 
                 // TODO remove below
                 // sendMsg_(result || otherResult);
                 // return true;                
@@ -46,6 +47,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       getDomainCookies_().then((cookies)=>{
         clearCookies_(cookies).then((result)=>{
           sendResponse(result);
+          stopWatching_();  
           // TODO remove below
           // sendMsg_(result || otherResult);
           // return true;                
@@ -79,12 +81,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
        return true;
      });
      window.sessionStorage.setItem("domainNm", request.domain);
-     watch_();  
+     watch();  
      break;
 
    case 'toggle':
      // to & from pupup.js
-     toggle_(request)
+     toggle_(request);
+     stopWatching_();
      return true;
   } 
   return true;
@@ -288,18 +291,39 @@ function clearStorage_(){
   window.sessionStorage.removeItem('cookies');
 };
 
-function watch_(){
-  chrome.cookies.onChanged.addListener((e)=>{
-    let name = e.cookie.name;
-    if(name.includes('_gac') || name.includes('_gcl_aw')){
-      if(isEnabled_()){
-        // cookie changed after window loaded;
-       sendMsg_('domainChecked', 'noError');
-      }
-    }
-  })
+/**
+ * @private
+ */
+function watch(){
+  chrome.cookies.onChanged.addListener(function(e){
+    watch_(e);
+  });
 };
-    // TODO -> conversion linker checker 
-   // check cookies changed 
-   // search GTM or gtag -> 
-   // if no GTM, it would be gtag that generating the cookies
+
+/**
+ * @private
+ * @param {Event} e 
+ */
+function watch_(e){
+  let name = e.cookie.name;
+  console.log(e.cookie);
+  if(name.includes('_gac') || name.includes('_gcl_aw')){
+    if(isEnabled_()){
+      // cookie changed after window loaded;
+     sendMsg_('domainChecked', 'noError');
+    }
+  }
+};
+
+// TODO -> conversion linker checker 
+// check cookies changed 
+// search GTM or gtag -> 
+// if no GTM, it would be gtag that generating the cookies
+
+/**
+ * @private
+ */
+function stopWatching_(){
+  console.log('stop watching');
+  chrome.cookies.onChanged.removeListener(watch_);
+};

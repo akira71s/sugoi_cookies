@@ -11,7 +11,7 @@ window.addEventListener('load', function(){
   goBtnEl.onclick = () =>beforeReload_();
 
   let inputEl = document.getElementById('input');
-  inputEl.onkeydown = (e) => {if(e.key==='Enter'&&e.target.value){reload_()}};
+  inputEl.onkeydown = (e) => {if(e.key==='Enter'&&e.target.value!=''){reload_()}};
 
   // event lisner for clicking 'clear' to clear cache 
   let clearBtnEl = document.getElementById("clear");
@@ -71,7 +71,7 @@ function getUrlWithourGclid (url) {
  */
 function beforeReload_(){
   let inputEl =document.getElementById('input');
-  if(inputEl && inputEl.value){
+  if(inputEl && inputEl.value!=''){
     reload_();
   }
 };
