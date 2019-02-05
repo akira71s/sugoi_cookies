@@ -4,23 +4,6 @@
 
  "use strict";
 
-
- !function(){
-   chrome.cookies.onChanged.addListener((e)=>{
-     let name = e.cookie.name;
-     if(name.includes('_gac') || name.includes('_gcl_aw')){
-       if(isEnabled_()){
-         // cookie changed after window loaded;
-        sendMsg_('domainChecked', 'noError');
-       }
-     }
-   })
-}();
-     // TODO -> conversion linker checker 
-    // check cookies changed 
-    // search GTM or gtag -> 
-    // if no GTM, it would be gtag that generating the cookies
-
  /**
  * chrome.cookies shoul be called in this file, otherwise it's gonna be undefined  
  */
@@ -95,7 +78,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
        setCookies_(result);
        return true;
      });
-     window.sessionStorage.setItem("domainNm", request.domain);      
+     window.sessionStorage.setItem("domainNm", request.domain);
+     watch_();  
      break;
 
    case 'toggle':
@@ -303,3 +287,19 @@ function clearStorage_(){
   window.sessionStorage.removeItem('domain');
   window.sessionStorage.removeItem('cookies');
 };
+
+function watch_(){
+  chrome.cookies.onChanged.addListener((e)=>{
+    let name = e.cookie.name;
+    if(name.includes('_gac') || name.includes('_gcl_aw')){
+      if(isEnabled_()){
+        // cookie changed after window loaded;
+       sendMsg_('domainChecked', 'noError');
+      }
+    }
+  })
+};
+    // TODO -> conversion linker checker 
+   // check cookies changed 
+   // search GTM or gtag -> 
+   // if no GTM, it would be gtag that generating the cookies
