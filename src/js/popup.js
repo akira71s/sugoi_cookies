@@ -47,6 +47,9 @@ function emptyInput_(){
 function getGclid_(url) {
   let inputEl =document.getElementById('input');
   let val = inputEl && inputEl.value ? inputEl.value : '';
+  if(!val){
+    return '';
+  }
   return url.includes('?') ? '&gclid='+val : '?gclid='+val; 
 };
  
