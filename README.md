@@ -90,7 +90,7 @@ By hitting the red botton, you can clear all the cookies you have in the browser
 (クロームブラウザのすべてのクッキーを削除します。)  
 
 ## TODO
-TODO: add CROSS DOMAIN COOKIE DIFF ALERT function
-TODO: integrate OLD CODE DETECTOR function
-TODO: listen to ajax event or something which is fired on cookie creation (_gac, _gcl_aw)
-TODO: deal with customized cookie name (users can change the prefix of "_gcl" from GTM)
+TODO: add CROSS DOMAIN COOKIE DIFF ALERT function  
+TODO: integrate OLD CODE DETECTOR function  
+TODO: listen to ajax event or something which is fired on cookie creation (_gac, _gcl_aw)  
+TODO: deal with customized cookie name (users can change the prefix of "_gcl" from GTM)  
