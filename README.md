@@ -18,7 +18,7 @@ but you don't need to do anymore. What you need to do is just check the console!
 という作業が必要でしたが、このプラグインを使えば、それがコンソールでできます。)
 
 ## JS files (JavaScript ファイル):
-### writer.js
+### writers.js
  - JS file to write (console.log) cookie info related to Google Ads conversion tracking
 
 ### background.js
@@ -44,7 +44,8 @@ Then send messages to background JS or content JS for reload / clearCookie
   => background.js: execute chrome.cookie API, then sendResponse to content.js
   => content.js: console.log() & reload without gcli
 
-// TODO : reload / onload
+*reload: popup.js: clear / execute gclid test  
+  => content,js: after async functions done (Promise), execute reload with or without gclid
 
 ## Features(機能):  
 ### 1 Check "_gcl_aw" in the console.(_gcl_aw_クッキーを検出し、コンソールで情報を流します)    
