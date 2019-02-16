@@ -8,7 +8,8 @@ let cache_ =[];
  * chrome.cookies shoul be called in this file, otherwise it's gonna be undefined  
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  let msg = request.message;
+  const msg = request.message;
+  const domain = request.domain;
   switch(msg){
     case 'start':
       watch();
@@ -21,14 +22,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       break;
        
     case 'clearCookies':
-     var subdomain = request.domain;
-      var domain = subdomain.split('.').length > 2 ? 
-        request.domain.substr(request.domain.indexOf('.')):'';
-        getDomainCookies_(domain).then((cookies)=>{
-          clearCookies_(cookies).then((result)=>{
-            getDomainCookies_(subdomain).then((otherCookies)=>{
-              clearCookies_(otherCookies).then((otherResult)=>{
-                sendResponse(result || otherResult);
+      const domains = getDomains_(domain);
+          getDomainCookies_(domains[0]).then((firstCookies)=>{
+          clearCookies_(firstCookies).then((firstResult)=>{
+            getDomainCookies_(domains[1]).then((secondCookies)=>{
+              clearCookies_(secondCookies).then((secondResult)=>{
+                getDomainCookies_(domains[2]).then((thirdCookies)=>{
+                  clearCookies_(thirdCookies).then((thirdResult)=>{    
+                    sendResponse(firstResult || secondResult || thirdResult);
+                });
+              });
             });
           });
         });
@@ -74,7 +77,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
        setCookies_(result);
        return true;
      });
-     window.sessionStorage.setItem("domainNm", request.domain);
+     window.sessionStorage.setItem("domainNm", domain);
      break;
 
    case 'toggle':
@@ -121,11 +124,28 @@ function push_(array, cookies){
 
 /**
  * @private 
+ * @return{Array.<String>} domains
+ * @param{String} domain 
+ */
+function getDomains_(domain){
+  let domains = [];
+  domains.push(domain);
+  domain.split('.').length > 2? 
+    domains.push(domain.substr(domain.indexOf('.'))):
+    domains.push('');
+  domain.split('.').length > 3? 
+    domains.push(domain.substr(domain.indexOf('.', domain.indexOf('.')+1))):
+    domains.push('');
+  return domains;
+};
+
+/**
+ * @private 
  * @return{boolean}
  */
 function isEnabled_(){
  return window.localStorage.getItem('enabled') == 'true' ? true : false;
-}
+};
 
 /**
  * request from pupup.js
@@ -134,7 +154,7 @@ function isEnabled_(){
  */
 function updateIcon_(shouldEnabled) {
   let suffix = shouldEnabled ? '-on' : '';
-  chrome.browserAction.setIcon({path:"../../icon/cookie128" + suffix + ".png"});
+  chrome.browserAction.setIcon({path:"../../icon/s128" + suffix + ".png"});
 };
 
 /** 
@@ -276,21 +296,33 @@ function sendMsg_(msg, val){
  */
 function getCookies(request){
   let array = [];
-  var subdomain = request.domain;
-  var domain = subdomain.split('.').length > 2 ? 
-    request.domain.substr(request.domain.indexOf('.')):'';
+  let domains = getDomains_(request.domain);
   return new Promise((resolve, reject)=>{
-    getDomainCookies_(domain).then((cookies)=>{
-      push_(array, cookies).then((result)=>{
-        getDomainCookies_(subdomain).then((otherCookies)=>{
-          result = result.filter((cookie)=>{
-           return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
-          });
-          if(result.length>0){
-            otherCookies =[];  
-          }
-          push_(result, otherCookies).then((finalCookies)=>{
-            resolve(finalCookies);
+    getDomainCookies_(domains[0]).then((firstCookies)=>{
+      push_(array, firstCookies).then((firstResult)=>{
+        getDomainCookies_(domains[1]).then((secondCookies)=>{
+           firstResult = firstResult.filter((cookie)=>{
+            return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
+           });
+           if(firstResult.length>0){
+            secondCookies =[];  
+           } else {
+            secondCookies = secondCookies.filter((cookie)=>{
+              return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
+             });
+           }
+           push_(firstResult, secondCookies).then((secondResult)=>{
+             getDomainCookies_(domains[2]).then((thirdCookies)=>{
+               thirdCookies = thirdCookies.filter((cookie)=>{
+                 return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
+               });
+               if(secondResult.length>0){
+                 thirdCookies =[];  
+               }
+               push_(secondResult, thirdCookies).then((finalCookies)=>{
+                 resolve(finalCookies);
+               }); 
+            }); 
           });
         });
       });
