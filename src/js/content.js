@@ -5,6 +5,14 @@
 
 /** 
 * eventListener
+* clear cache of background.js
+*/
+window.onbeforeunload = function(){
+  chrome.runtime.sendMessage({message:'beforeReload'},(()=>{})); 
+ };
+
+/** 
+* eventListener
 * when window loaded, renew thedomain to the background.js
 */
 window.addEventListener('load',()=>{
@@ -12,14 +20,6 @@ window.addEventListener('load',()=>{
     chrome.runtime.sendMessage({message:'setDomainAndCookies', domain:document.domain});
    }));
 });
-
-/** 
-* eventListener
-* clear cache of background.js
-*/
-window.onbeforeunload = function(){
-  chrome.runtime.sendMessage({message:'beforeReload'},(()=>{})); 
- };
 
 /** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
