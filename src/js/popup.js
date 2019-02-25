@@ -1,6 +1,7 @@
 /** 
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
+"use strict";
 
 /** 
  * eventListener
@@ -9,8 +10,8 @@ window.addEventListener('load', function(){
   let goBtnEl = document.getElementById("go");
   goBtnEl.onclick = () =>beforeReload_();
 
-  let inputEl =document.getElementById('input');
-  inputEl.onkeydown = (e) => {if(e.key==='Enter'&&e.target.value){reload_()}};
+  let inputEl = document.getElementById('input');
+  inputEl.onkeydown = (e) => {if(e.key==='Enter'&&e.target.value!=''){reload_()}};
 
   // event lisner for clicking 'clear' to clear cache 
   let clearBtnEl = document.getElementById("clear");
@@ -46,6 +47,9 @@ function emptyInput_(){
 function getGclid_(url) {
   let inputEl =document.getElementById('input');
   let val = inputEl && inputEl.value ? inputEl.value : '';
+  if(!val){
+    return '';
+  }
   return url.includes('?') ? '&gclid='+val : '?gclid='+val; 
 };
  
@@ -70,7 +74,7 @@ function getUrlWithourGclid (url) {
  */
 function beforeReload_(){
   let inputEl =document.getElementById('input');
-  if(inputEl && inputEl.value){
+  if(inputEl && inputEl.value!=''){
     reload_();
   }
 };
@@ -96,7 +100,6 @@ function reload_(){
 };
 
 /** 
- * @return {?string}
  * @param {!string} msg
  * @param {?string} val
  * @param {function} callback

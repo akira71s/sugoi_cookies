@@ -2,6 +2,8 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  * A list of constants  
  */
+"use strict";
+
 const STYLE_HIGHLIGHT ='font-weight: bold;background-color:black;color:#fff';
 const STYLE_BOLD ='font-weight: bold';
 const STYLE_BLUE ='color: blue';
@@ -12,7 +14,7 @@ const STYLE_ESCAPE = '%c';
 const STYLES_BOLD_BULE = [STYLE_BOLD, STYLE_BLUE];
 const STYLES_BOLD_RED = [STYLE_BOLD, STYLE_RED];
 const STYLES_BOLD_WHITE_BG_GREEN = [STYLE_BOLD, STYLE_WHITE, STYLE_BG_GREEN];
-const VERSION = '1.7.2';
+const VERSION = 'v2.7.1';
 
 /** 
  * Google Ads Cookies usually consists of 3 parts: conversionID, timeStamp, and UUID 

@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "version": "1.7.2",
+  "version": "2.7.1",
   "name": "SUGOI!Cookies: gclid tester for Google Ads",
   "short_name": "S Cookies: gclid tester",
   "description": "Check if you have cookies that are needed for Google Ads conversion tracking by gclid test",
@@ -18,12 +18,12 @@
     "name" : "turn on / off",
     "default_title": "SUGOI! Cokkies",
     "default_popup": "src/html/popup.html",
-    "default_icon": "icon/cookie128.png"
+    "default_icon": "icon/s128.png"
   },
   "icons" : {
-    "16": "icon/cookie16.png",
-    "48": "icon/cookie48.png",
-    "128": "icon/cookie128.png"
+    "16": "icon/s16.png",
+    "48": "icon/s48.png",
+    "128": "icon/s128.png"
   },
   "permissions": ["activeTab","cookies","<all_urls>"],
   "content_security_policy": "script-src 'self' 'unsafe-eval' https://ajax.googleapis.com/ ; object-src 'self'"

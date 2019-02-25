@@ -1,19 +1,23 @@
 /** 
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
+"use strict";
 
  /** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   // background JS sends back this message agter 'start' ->  'cross domain check'
-  if (request.message=='domainChecked'){
-    start_(request.value);
+  let msg = request.message;
+  let val = request.value;
+  if (msg=='domainChecked'){
+    start_(val).then(()=>getCookies_());
     // TODO listen Google Ads & Analytics Cookies Events instead of calling setTimeout
-    setTimeout(getCookies_, 2000); // => returnCookies
-  } else if (request.message=='returnCookies'){
-    let cookies = request.value;
+  } else if (msg=='returnCookies'){
+    let cookies = val;
     write_(cookies, document.domain);
+  } else if (msg=='cookiesChanged'){
+    add_(val);
   }
   return true;
 });
@@ -23,10 +27,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
  * @param{string} msg
  */
 function start_(msg){
-  let domain = document.domain;
-  console.log("%cSUGOI!Cookies for Google Ads (`*・ω・’)" + VERSION, STYLES_BOLD_BULE.join(';'));
-  switch(msg){
-    case 'noError':
+  return new Promise((resolve, reject)=>{
+    let domain = document.domain;
+    console.log("%cSUGOI!Cookies for Google Ads (`*・ω・’)" + VERSION, STYLES_BOLD_BULE.join(';'));
+    switch(msg){
+      case 'noError':
       console.log("Current domain is : 【", domain ,"】");
       break;
  
@@ -41,7 +46,9 @@ function start_(msg){
     case 'success':
       // TODO
       break;
-  }
+    }
+    resolve();
+  });
 };
 
 /** 
@@ -60,20 +67,30 @@ const write_ =(cookies, domain) =>{
     writeCookies_(cookies, gacNm, domain)
       .then(()=>{
         console.log("%cDONE!", STYLES_BOLD_BULE.join(';'));
-    })
- })
+      })
+  });
+}
+
+/** 
+ * calling console log for cookies
+ * @private
+ * @oaram {Array.<string>} cookies
+ * @oaram {string} domain
+ */
+const add_ =(cookie) =>{
+  console.log("%cCOOKIE CHANGED after windowLoaded", STYLES_BOLD_RED.join(';'));
+  console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
 }
 
 /** 
  * calling console log for cookies
  * @private
  * @return {Promise} 
- * @param {Array.<string>} cookies
+ * @param {Array.<domainCheckedring>} cookies
  * @param {string} cookieNm
  * @param {string} domain
  */
 function writeCookies_(cookies, cookieNm, domain){
-   let mainDomain = domain.slice(domain.indexOf('.'));
   return new Promise((resolve, reject)=>{
     cookies = cookies.filter((cookie) => {
       return cookie.name.includes(cookieNm);
@@ -104,13 +121,3 @@ const writeCookieInfo_ = (cookie) =>{
   console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
   // TODO: console in bg-red or bg-green 
 }; 
-
-/** 
- * eventListener
- * when window loaded, renew thedomain to the background.js
- */
-window.addEventListener('load', function() {
-  // TODO fix this
-  chrome.runtime.sendMessage({message:'checkCookies', domain:document.domain});
-  chrome.runtime.sendMessage({message:'setDomainAndCookies', domain:document.domain});
-});

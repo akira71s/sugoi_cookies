@@ -1,17 +1,20 @@
 /**
  * @author Akira Sakaguchi <akira.s7171@gmail.com>  
  */
+"use strict";
+let cache_ =[];
 
 /**
  * chrome.cookies shoul be called in this file, otherwise it's gonna be undefined  
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  let msg = request.message;
-  // receive start message on load 
+  const msg = request.message;
+  const domain = request.domain;
   switch(msg){
-    // content.js
     case 'start':
-      let enabled = window.localStorage.getItem('enabled') == 'true' ? true : false;
+      watch();
+      cache_ =[];
+      let enabled = isEnabled_();
       updateIcon_(enabled);
       if(enabled){
         start_(request);
@@ -19,18 +22,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       break;
        
     case 'clearCookies':
-     // from popup.js
-     var subdomain = request.domain;
-      var domain = subdomain.split('.').length > 2 ? 
-        request.domain.substr(request.domain.indexOf('.')):'';
-        getDomainCookies_(domain).then((cookies)=>{
-          clearCookies_(cookies).then((result)=>{
-            getDomainCookies_(subdomain).then((otherCookies)=>{
-              clearCookies_(otherCookies).then((otherResult)=>{
-                sendResponse(result || otherResult);
-                // TODO remove below
-                // sendMsg_(result || otherResult);
-                // return true;                
+      const domains = getDomains_(domain);
+          getDomainCookies_(domains[0]).then((firstCookies)=>{
+          clearCookies_(firstCookies).then((firstResult)=>{
+            getDomainCookies_(domains[1]).then((secondCookies)=>{
+              clearCookies_(secondCookies).then((secondResult)=>{
+                getDomainCookies_(domains[2]).then((thirdCookies)=>{
+                  clearCookies_(thirdCookies).then((thirdResult)=>{    
+                    sendResponse(firstResult || secondResult || thirdResult);
+                });
+              });
             });
           });
         });
@@ -54,36 +55,46 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       break;
     
     case 'getCookies':
-     // from writer.js
       getCookies(request).then((result)=>{
+        result = filter_(result);
+        cache_ = result;
+        watch();
         sendMsg_('returnCookies', result);
         return true;
       });              
       break;
 
-    case 'checkCookies':
-      // TODO: call this and send msg to writer.js
-      // from & to writer.js
-      getCookies(request).then((result)=>{
-        sendMsg_('cookieChecked', checkCookies_(result)); // 'fail' or 'success'
-        // sendResponse();
-      });              
-      break;
+    // TODO 
+    // case 'checkCookies':
+    //   getCookies(request).then((result)=>{
+    //     sendMsg_('cookieChecked', checkCookies_(result)); // 'fail' or 'success'
+    //     // sendResponse();
+    //   });              
+    //   break;
 
    case 'setDomainAndCookies':
-     // renew a domain name in the  local storage
      getCookies(request).then((result)=>{
        setCookies_(result);
        return true;
      });
-     window.sessionStorage.setItem("domainNm", request.domain);      
+     window.sessionStorage.setItem("domainNm", domain);
      break;
 
    case 'toggle':
-     // to & from pupup.js
-     toggle_(request)
+     toggle_(request);
+     stopWatching_();
      return true;
-  } 
+
+  case 'stopWatching':
+    stopWatching_();  
+    break;
+
+  case 'beforeReload':
+    cache_ = [];
+    stopWatching_();
+    break;
+  }
+
   return true;
 });
 
@@ -112,14 +123,53 @@ function push_(array, cookies){
 };
 
 /**
+ * @private 
+ * @return{Array.<String>} domains
+ * @param{String} domain 
+ */
+function getDomains_(domain){
+  let domains = [];
+  domains.push(domain);
+  domain.split('.').length > 2? 
+    domains.push(domain.substr(domain.indexOf('.'))):
+    domains.push('');
+  domain.split('.').length > 3? 
+    domains.push(domain.substr(domain.indexOf('.', domain.indexOf('.')+1))):
+    domains.push('');
+  return domains;
+};
+
+/**
+ * @private 
+ * @return{boolean}
+ */
+function isEnabled_(){
+ return window.localStorage.getItem('enabled') == 'true' ? true : false;
+};
+
+/**
  * request from pupup.js
  * @private 
  * @param{boolean} shouldEnabled 
  */
 function updateIcon_(shouldEnabled) {
   let suffix = shouldEnabled ? '-on' : '';
-  chrome.browserAction.setIcon({path:"../../icon/cookie128" + suffix + ".png"});
+  chrome.browserAction.setIcon({path:"../../icon/s128" + suffix + ".png"});
 };
+
+/** 
+ * @private
+ * @param {Array.<Object>} cookies
+ * @return {Array.<Object>} filtered cookies
+ */
+function filter_(cookies){
+  let gclAwNm ='_gcl_aw';
+  let gacNm ='_gac';
+  cookies = cookies.filter((cookie) => {
+    return cookie.name.includes(gclAwNm)||cookie.name.includes(gacNm);
+  });
+  return cookies;
+}
 
 /**
  * request from content.js
@@ -129,7 +179,6 @@ function updateIcon_(shouldEnabled) {
 function start_(request){
     let domain = request.domain;
     let referrer = request.referrer;
-    console.log(referrer)
     let isTheSameDomain = isTheSameDomain_(domain);
     // TODO
     // let result = checkCookies_()
@@ -145,7 +194,6 @@ function start_(request){
     }
 };
  
-
 /**
  * request from writers.js
  * @private 
@@ -164,10 +212,10 @@ function checkCookies_(cookies){
     return cookie.name.includes('_gac') ||cookie.name.includes('_gcl_aw');
   });
   cookiesSaved.forEach((cookie)=>{
-    console.log(cookie);
+    // console.log(cookie);
   });    
   cookies.forEach((cookie)=>{
-    console.log(cookie);
+    // console.log(cookie);
   });    
   
   return cookies == cookiesSaved ? 'success' : 'fail';
@@ -231,10 +279,11 @@ function getDomainCookies_(domainNm){
  */
 function sendMsg_(msg, val){
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    // found active tab
     if(!tabs[0]){
+      window.alert('please reload the page');
       return;
     }
+    // found active tab
     const tabID = tabs[0].id;
     val != undefined ? 
       chrome.tabs.sendMessage(tabID, {message: msg, value: val}):
@@ -247,21 +296,33 @@ function sendMsg_(msg, val){
  */
 function getCookies(request){
   let array = [];
-  var subdomain = request.domain;
-  var domain = subdomain.split('.').length > 2 ? 
-    request.domain.substr(request.domain.indexOf('.')):'';
+  let domains = getDomains_(request.domain);
   return new Promise((resolve, reject)=>{
-    getDomainCookies_(domain).then((cookies)=>{
-      push_(array, cookies).then((result)=>{
-        getDomainCookies_(subdomain).then((otherCookies)=>{
-          cookies = cookies.filter((cookie)=>{
-           return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
-          });
-          if(cookies.length>0){
-            otherCookies =[];  
-          }
-          push_(result, otherCookies).then((finalCookies)=>{
-            resolve(finalCookies);
+    getDomainCookies_(domains[0]).then((firstCookies)=>{
+      push_(array, firstCookies).then((firstResult)=>{
+        getDomainCookies_(domains[1]).then((secondCookies)=>{
+           firstResult = firstResult.filter((cookie)=>{
+            return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
+           });
+           if(firstResult.length>0){
+            secondCookies =[];  
+           } else {
+            secondCookies = secondCookies.filter((cookie)=>{
+              return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
+             });
+           }
+           push_(firstResult, secondCookies).then((secondResult)=>{
+             getDomainCookies_(domains[2]).then((thirdCookies)=>{
+               thirdCookies = thirdCookies.filter((cookie)=>{
+                 return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
+               });
+               if(secondResult.length>0){
+                 thirdCookies =[];  
+               }
+               push_(secondResult, thirdCookies).then((finalCookies)=>{
+                 resolve(finalCookies);
+               }); 
+            }); 
           });
         });
       });
@@ -276,3 +337,64 @@ function clearStorage_(){
   window.sessionStorage.removeItem('domain');
   window.sessionStorage.removeItem('cookies');
 };
+
+/**
+ * @private
+ */
+function watch(){
+  chrome.cookies.onChanged.addListener(watch_);
+};
+
+/**
+ * @private
+ * @param {Event} e 
+ */
+ function watch_(e){
+  let cookie = e.cookie;
+  let name = cookie.name;
+  let val = cookie.value;
+  let cause = e.cause;
+  let isRemoved = e.removed;
+  let isChanged = false;
+  if(name.includes('_gac') || name.includes('_gcl_aw')){
+    if(isEnabled_()){
+      if(cause=='explicit' && !isRemoved){
+        let filteredCache_ = fileterByName_(name, cache_);
+        if(filteredCache_.length === 0){
+          isChanged = true;
+        } else {
+          filteredCache_.forEach((cache)=>{
+            isChanged = cache.value.split('.')[2] != val.split('.')[2] ? true:false;
+          });
+        }
+        if(isChanged){
+          cache_ = cache_.concat([cookie]);
+          sendMsg_('cookiesChanged', cookie);
+        }
+      }
+    }
+  }
+};
+
+/**
+ * @private
+ * @param {string} name
+ * @param {Array.<string>} cache_
+ */
+function fileterByName_(name, cache_){
+  return cache_ = cache_.filter((cache)=>{
+    return cache.name.includes(name);
+  });
+};
+
+/**
+ * @private
+ */
+function stopWatching_(){
+  chrome.cookies.onChanged.removeListener(watch_);
+};
+
+// TODO -> conversion linker checker 
+// check cookies changed 
+// search GTM or gtag -> 
+// if no GTM, it would be gtag that generating the cookies
