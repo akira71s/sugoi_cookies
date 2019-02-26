@@ -17,7 +17,6 @@ chrome.webRequest.onCompleted.addListener(
 /**
  */
 function checkCV (){
-  console.log('CHECK', CVs);
   CVs.forEach((CV)=>{
     sendMsg_('CV', CV)
   });
@@ -29,7 +28,6 @@ function checkCV (){
 function logRequestURL(requestDetails) {
   let url = requestDetails.url;
   if(url.startsWith('https://www.googleadservices.com/pagead/conversion/')){
-    console.log(url);
     let gclawIdx = url.indexOf('&gclaw')
     let gclaw= gclawIdx != -1 ? url.substring(gclawIdx, url.indexOf('&', gclawIdx+1)) : '';
     let gacIdx = url.indexOf('&gac')
@@ -43,8 +41,6 @@ function logRequestURL(requestDetails) {
     CVlabel= CVlabel.split('=');
     CVlabel = CVlabel[1];
     let cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabel};
-    console.log(cookie);
-    console.log(contentLoaded);
     if(contentLoaded){
       sendMsg_('CV', cookie);
     } else {
@@ -425,7 +421,6 @@ function fileterByName_(name, cache_){
  * @private
  */
 function stopWatching_(){
-  console.log('CALLED');
   window.sessionStorage.removeItem('domain');
   window.sessionStorage.removeItem('cookies');
   CVs = [];
