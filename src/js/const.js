@@ -8,13 +8,19 @@ const STYLE_HIGHLIGHT ='font-weight: bold;background-color:black;color:#fff';
 const STYLE_BOLD ='font-weight: bold';
 const STYLE_BLUE ='color: blue';
 const STYLE_RED ='color: red';
-const STYLE_WHITE ='color: white';
+const STYLE_WHITE ='color: #fff';
+const STYLE_LIGHT_GRAY ='color: #D3D3D3';
 const STYLE_BG_GREEN ='background-color: green';
+const STYLE_BG_BLUE ='background-color: blue';
+const STYLE_BG_LIGHT_BLUE ='background-color: #ADD8E6';
+const STYLE_BG_ORANGE ='background-color: orange';
 const STYLE_ESCAPE = '%c';
 const STYLES_BOLD_BULE = [STYLE_BOLD, STYLE_BLUE];
 const STYLES_BOLD_RED = [STYLE_BOLD, STYLE_RED];
 const STYLES_BOLD_WHITE_BG_GREEN = [STYLE_BOLD, STYLE_WHITE, STYLE_BG_GREEN];
-const VERSION = 'v2.7.1';
+const STYLES_BOLD_WHITE_BG_BLUE = [STYLE_BOLD, STYLE_WHITE, STYLE_BG_BLUE];
+const STYLES_BOLD_WHITE_BG_ORANGE = [STYLE_BOLD, STYLE_WHITE, STYLE_BG_ORANGE];
+const VERSION = 'v3.0.1';
 
 /** 
  * Google Ads Cookies usually consists of 3 parts: conversionID, timeStamp, and UUID 

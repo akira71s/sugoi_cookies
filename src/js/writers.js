@@ -18,6 +18,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     write_(cookies, document.domain);
   } else if (msg=='cookiesChanged'){
     add_(val);
+  } else if (msg=='CV'){
+    writeCVinfo_(val);
   }
   return true;
 });
@@ -65,12 +67,27 @@ const write_ =(cookies, domain) =>{
   .then(()=>{
   /** _gac */ 
     writeCookies_(cookies, gacNm, domain)
-      .then(()=>{
-        console.log("%cDONE!", STYLES_BOLD_BULE.join(';'));
-      })
+      .then(()=>{})
   });
 }
 
+/** 
+ */
+const writeCVinfo_ =(CVinfo) =>{
+  console.log('%cCONGRATULATIONS! CV FIRES!', STYLES_BOLD_WHITE_BG_BLUE.join(';'));
+  console.log('CV ID: %c'+ CVinfo.cvid, STYLE_BOLD);
+  console.log('CV LABEL: %c'+ CVinfo.cvlabel, STYLE_BOLD);
+  if(!CVinfo.gclaw&&!CVinfo.gac){
+    console.log('%cBUT NOT COOKIES DETECTED', STYLES_BOLD_WHITE_BG_ORANGE.join(';'));
+  } else { 
+    if (CVinfo.gclaw){
+      console.log('CV COOKIE: %c'+ CVinfo.gclaw, STYLE_BOLD);
+    }  
+    if(CVinfo.gac){
+    console.log('CV COOKIE: %c'+ CVinfo.gac, STYLE_BOLD);
+    }
+  }
+}
 /** 
  * calling console log for cookies
  * @private

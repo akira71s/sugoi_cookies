@@ -7,9 +7,10 @@
 * eventListener
 * clear cache of background.js
 */
-window.onbeforeunload = function(){
+window.addEventListener('beforeunload', ()=>{
+  console('RELOAD');
   chrome.runtime.sendMessage({message:'beforeReload'},(()=>{})); 
- };
+});
 
 /** 
 * eventListener
@@ -25,7 +26,7 @@ window.addEventListener('load',()=>{
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-   let msg = request.message; 
+   let msg = request.message;
    switch(msg){
      case "clearCookies":
        // request from popup.js to background.js

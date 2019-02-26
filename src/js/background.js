@@ -3,6 +3,55 @@
  */
 "use strict";
 let cache_ =[];
+let CVs = [];
+let contentLoaded = false;
+
+/**
+ * detect Google Ads Conversion  
+ */
+chrome.webRequest.onCompleted.addListener(
+  logRequestURL,
+  {urls: ["<all_urls>"]}
+);
+
+/**
+ */
+function checkCV (){
+  console.log('CHECK', CVs);
+  CVs.forEach((CV)=>{
+    sendMsg_('CV', CV)
+  });
+  CVs = [];
+  contentLoaded = true;
+}
+
+// TODO refactoring this
+function logRequestURL(requestDetails) {
+  let url = requestDetails.url;
+  if(url.startsWith('https://www.googleadservices.com/pagead/conversion/')){
+    console.log(url);
+    let gclawIdx = url.indexOf('&gclaw')
+    let gclaw= gclawIdx != -1 ? url.substring(gclawIdx, url.indexOf('&', gclawIdx+1)) : '';
+    let gacIdx = url.indexOf('&gac')
+    let gac= gacIdx != -1? url.substring(gacIdx, url.indexOf('&', gacIdx+1)):'';
+    let cvStrIdx = url.indexOf('conversion/');
+    let surl = url.substr(cvStrIdx, url.indexOf('/', cvStrIdx+1));
+    let CVid = surl.substring(surl.indexOf('/'), surl.indexOf('/', surl.indexOf('/')+1));
+    CVid = CVid.replace('/','');
+    let labelIdx = url.indexOf('label=');
+    let CVlabel= url.substring(labelIdx, url.indexOf('&', labelIdx+1));
+    CVlabel= CVlabel.split('=');
+    CVlabel = CVlabel[1];
+    let cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabel};
+    console.log(cookie);
+    console.log(contentLoaded);
+    if(contentLoaded){
+      sendMsg_('CV', cookie);
+    } else {
+      CVs.push(cookie);
+    }
+  }
+};
 
 /**
  * chrome.cookies shoul be called in this file, otherwise it's gonna be undefined  
@@ -60,6 +109,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         cache_ = result;
         watch();
         sendMsg_('returnCookies', result);
+        checkCV();
         return true;
       });              
       break;
@@ -190,7 +240,6 @@ function start_(request){
       // sendMsg_('cookieChecked', 'fail');
     } else if (result ==='success'){
       // sendMsg_('cookieChecked', 'success');
-
     }
 };
  
@@ -304,21 +353,14 @@ function getCookies(request){
            firstResult = firstResult.filter((cookie)=>{
             return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
            });
-           if(firstResult.length>0){
-            secondCookies =[];  
-           } else {
             secondCookies = secondCookies.filter((cookie)=>{
               return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
              });
-           }
-           push_(firstResult, secondCookies).then((secondResult)=>{
+            push_(firstResult, secondCookies).then((secondResult)=>{
              getDomainCookies_(domains[2]).then((thirdCookies)=>{
                thirdCookies = thirdCookies.filter((cookie)=>{
                  return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
                });
-               if(secondResult.length>0){
-                 thirdCookies =[];  
-               }
                push_(secondResult, thirdCookies).then((finalCookies)=>{
                  resolve(finalCookies);
                }); 
@@ -328,14 +370,6 @@ function getCookies(request){
       });
     });
   });
-};
-
-/**
- * @private
- */
-function clearStorage_(){
-  window.sessionStorage.removeItem('domain');
-  window.sessionStorage.removeItem('cookies');
 };
 
 /**
@@ -391,6 +425,11 @@ function fileterByName_(name, cache_){
  * @private
  */
 function stopWatching_(){
+  console.log('CALLED');
+  window.sessionStorage.removeItem('domain');
+  window.sessionStorage.removeItem('cookies');
+  CVs = [];
+  contentLoaded = false;
   chrome.cookies.onChanged.removeListener(watch_);
 };
 
