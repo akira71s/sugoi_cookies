@@ -95,7 +95,7 @@ By hitting the red botton, you can clear all the cookies you have in the browser
 Detector conversions and show Conversion ID & label, cookies the CVs can use.
 In order to make your CVs work on Safari(ITP), you need to check if the cookies are sent with CV data.   
 
-- コンバージョンラベル・IDはもちろん、実際に送信できたクッキーまでをコンソールで表示します。(ITP対応のためには、このクッキーがコンバージョン時に送信できていることが必要です。)   
+コンバージョンラベル・IDはもちろん、実際に送信できたクッキーまでをコンソールで表示します。(ITP対応のためには、このクッキーがコンバージョン時に送信できていることが必要です。)   
 
 ## TODO
 TODO: add CROSS DOMAIN COOKIE DIFF ALERT function  
