@@ -17,8 +17,6 @@ chrome.webRequest.onCompleted.addListener(
 /**
  */
 function checkCV (){
-  console.log(CVs);
-  console.log('checkCV', contentLoaded);
   CVs.forEach((CV)=>{
     sendMsg_('CV', CV)
   });
@@ -43,8 +41,6 @@ function logRequestURL(requestDetails) {
     CVlabel= CVlabel.split('=');
     CVlabel = CVlabel[1];
     let cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabel};
-    console.log(cookie);
-    console.log(contentLoaded);
     if(contentLoaded){
       sendMsg_('CV', cookie);
     } else {
@@ -62,7 +58,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   switch(msg){      
     case 'start':
       watch();
-      contentLoaded = true;
       cache_ =[];
       let enabled = isEnabled_();
       updateIcon_(enabled);
@@ -129,7 +124,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
        return true;
      });
      window.sessionStorage.setItem("domainNm", domain);
-     console.log('setDomainAndCookies', contentLoaded);
      break;
 
    case 'toggle':
@@ -145,6 +139,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     cache_ = [];
     CVs = [];
     stopWatching_();
+    contentLoaded = false;
     break;
   }
 
@@ -431,7 +426,6 @@ function stopWatching_(){
   window.sessionStorage.removeItem('domain');
   window.sessionStorage.removeItem('cookies');
   CVs = [];
-  contentLoaded = false;
   chrome.cookies.onChanged.removeListener(watch_);
 };
 

@@ -2,6 +2,7 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 "use strict";
+chrome.runtime.sendMessage({message:'beforeLoad'},(()=>{return true})); 
 
 /** 
 * eventListener
