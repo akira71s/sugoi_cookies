@@ -90,7 +90,8 @@ By hitting the red botton, you can clear all the cookies you have in the browser
 
 (クロームブラウザのすべてのクッキーを削除します。)  
 
-### 6 (New! for version 3.0.1) CV Detector (新機能: コンバージョン計測機能)  
+### 6 (New! for version 3.0.1) CV Detector (新機能: コンバージョン計測機能) 
+
 Detector conversions and show Conversion ID & label, cookies the CVs can use.
 In order to make your CVs work on Safari(ITP), you need to check if the cookies are sent with CV data.   
 
