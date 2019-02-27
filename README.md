@@ -1,10 +1,11 @@
 @author Akira Sakaguchi <akira.s7171@gmail.com>
 
-# sugoi_cookies (Latest version: 2.1.1)
+# sugoi_cookies (Latest version: 3.0.1: new feature - CV detector)
 Chrome extension for checking Cookies needed for Google Ads Conversion tracking
 
 (Google広告のコンバージョン計測に必要なクッキーの計測・テストを行う、Google Chromブラウザの拡張機能(プラグイン)です。)
 
+<img width="640" alt="1280_800" src="https://user-images.githubusercontent.com/40524432/53511451-6eb3f300-3afb-11e9-861b-2f2a4671e423.PNG">
 
 <img width="827" alt="demo" src="https://user-images.githubusercontent.com/40524432/52161436-d7c46880-26ff-11e9-9da6-2be74a386dae.PNG">
 
@@ -77,17 +78,23 @@ You are an advertiser or web marketing developer but don't know much about gclid
 English - https://support.google.com/analytics/answer/2938246?hl=en  
 日本語 - https://support.google.com/analytics/answer/2938246?hl=ja  
 
-### 4(New! for version 1.7.2) Clear Cookies (新機能: クッキーの削除)  
+### 4 Clear Cookies (クッキーの削除)  
 
 By hitting the yellow botton, you can clear _gcl_aw & _gac Cookies in the domain you're currently at.  
 
 (現在いるドメインの_gac, _gcl_awを消去します。)  
 
-### 5(New! for version 1.7.2) Clear All Cookies (新機能: すべてのクッキーの削除)
+### 5 Clear All Cookies (すべてのクッキーの削除)
 
 By hitting the red botton, you can clear all the cookies you have in the browser.  
 
 (クロームブラウザのすべてのクッキーを削除します。)  
+
+### 6 (New! for version 3.0.1) CV Detector (新機能: コンバージョン計測機能)  
+Detector conversions and show Conversion ID & label, cookies the CVs can use.
+In order to make your CVs work on Safari(ITP), you need to check if the cookies are sent with CV data.   
+
+- コンバージョンラベル・IDはもちろん、実際に送信できたクッキーまでをコンソールで表示します。(ITP対応のためには、このクッキーがコンバージョン時に送信できていることが必要です。)   
 
 ## TODO
 TODO: add CROSS DOMAIN COOKIE DIFF ALERT function  
