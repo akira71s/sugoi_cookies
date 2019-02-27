@@ -8,7 +8,6 @@
 * clear cache of background.js
 */
 window.addEventListener('beforeunload', ()=>{
-  console('RELOAD');
   chrome.runtime.sendMessage({message:'beforeReload'},(()=>{})); 
 });
 
