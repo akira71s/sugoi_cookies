@@ -14,12 +14,14 @@ const STYLE_BG_GREEN ='background-color: green';
 const STYLE_BG_BLUE ='background-color: blue';
 const STYLE_BG_LIGHT_BLUE ='background-color: #ADD8E6';
 const STYLE_BG_ORANGE ='background-color: orange';
+const STYLE_BG_GRAY ='background-color: gray';
 const STYLE_ESCAPE = '%c';
 const STYLES_BOLD_BULE = [STYLE_BOLD, STYLE_BLUE];
 const STYLES_BOLD_RED = [STYLE_BOLD, STYLE_RED];
 const STYLES_BOLD_WHITE_BG_GREEN = [STYLE_BOLD, STYLE_WHITE, STYLE_BG_GREEN];
 const STYLES_BOLD_WHITE_BG_BLUE = [STYLE_BOLD, STYLE_WHITE, STYLE_BG_BLUE];
 const STYLES_BOLD_WHITE_BG_ORANGE = [STYLE_BOLD, STYLE_WHITE, STYLE_BG_ORANGE];
+const STYLES_BOLD_WHITE_BG_GRAY = [STYLE_BOLD, STYLE_WHITE, STYLE_BG_GRAY];
 const VERSION = 'v3.0.1';
 
 /** 

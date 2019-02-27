@@ -17,6 +17,8 @@ chrome.webRequest.onCompleted.addListener(
 /**
  */
 function checkCV (){
+  console.log(CVs);
+  console.log('checkCV', contentLoaded);
   CVs.forEach((CV)=>{
     sendMsg_('CV', CV)
   });
@@ -41,6 +43,8 @@ function logRequestURL(requestDetails) {
     CVlabel= CVlabel.split('=');
     CVlabel = CVlabel[1];
     let cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabel};
+    console.log(cookie);
+    console.log(contentLoaded);
     if(contentLoaded){
       sendMsg_('CV', cookie);
     } else {
@@ -55,9 +59,10 @@ function logRequestURL(requestDetails) {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   const msg = request.message;
   const domain = request.domain;
-  switch(msg){
+  switch(msg){      
     case 'start':
       watch();
+      contentLoaded = true;
       cache_ =[];
       let enabled = isEnabled_();
       updateIcon_(enabled);
@@ -124,6 +129,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
        return true;
      });
      window.sessionStorage.setItem("domainNm", domain);
+     console.log('setDomainAndCookies', contentLoaded);
      break;
 
    case 'toggle':
@@ -137,6 +143,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
   case 'beforeReload':
     cache_ = [];
+    CVs = [];
     stopWatching_();
     break;
   }
