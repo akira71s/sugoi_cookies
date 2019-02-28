@@ -21,18 +21,17 @@ function listenHTTPRequest(){
  * check conversions that fires before window loaded
  */
 function checkCV (){
-  console.log('checkCV :', CVs.length);
   CVs.forEach((CV)=>{
     sendMsg_('CV', CV)
   });
   CVs = [];
   contentLoaded = true;
-  console.log('checkCV :', contentLoaded);
 }
 
 // TODO refactoring this
 function logRequestURL(requestDetails) {
   let url = requestDetails.url;
+  let code = requestDetails.statusCode;
   if(url.startsWith('https://www.googleadservices.com/pagead/conversion/')){
     let gclawIdx = url.indexOf('&gclaw')
     let gclaw= gclawIdx != -1 ? url.substring(gclawIdx, url.indexOf('&', gclawIdx+1)) : '';
@@ -48,16 +47,23 @@ function logRequestURL(requestDetails) {
     CVlabel = CVlabel[1];
     let cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabel};
     if(!!contentLoaded){
-      let isSent = false;
-      sendMsg_('CV', cookie);
+      if(CVs.length==0){
+        CVs.push(cookie);    
+      }  
+      CVs.forEach((cv)=>{
+        if(CVs.length==1||cv.cvlabel!==CVlabel){
+          sendMsg_('CV', cookie);
+          CVs.push(cookie);
+       }
+     });
     } else {
       if(CVs.length==0){
         CVs.push(cookie);    
-      }
+      }  
       CVs.forEach((cv)=>{
-        if(cv.cvlabel!==CVlabel){
-          CVs.push(cookie);
-        }
+         if(cv.cvlabel!==CVlabel){
+            CVs.push(cookie);
+         }
       });
     }
   }
@@ -71,7 +77,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   const domain = request.domain;
   switch(msg){      
     case 'start':
-      console.log('start')
       watch();
       cache_ =[];
       let enabled = isEnabled_();

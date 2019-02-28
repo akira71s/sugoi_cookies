@@ -13,6 +13,15 @@ window.addEventListener('beforeunload', ()=>{
 });
 
 /** 
+* don't call beforeunload event when tel: clicked
+*/
+window.addEventListener('click', (e)=>{
+  if(e.target && e.target.href && e.target.href.includes('tel:')){
+    e.preventDefault();
+  }
+});
+
+/** 
 * eventListener
 * when window loaded, renew thedomain to the background.js
 */
