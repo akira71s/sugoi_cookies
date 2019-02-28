@@ -4,24 +4,30 @@
 "use strict";
 let cache_ =[];
 let CVs = [];
+let firedCVlabels = [];
 let contentLoaded = false;
 
 /**
  * detect Google Ads Conversion  
  */
-chrome.webRequest.onCompleted.addListener(
-  logRequestURL,
-  {urls: ["<all_urls>"]}
-);
+function listenHTTPRequest(){
+  chrome.webRequest.onCompleted.addListener(
+    logRequestURL,
+    {urls: ["<all_urls>"]}
+  );
+};
 
 /**
+ * check conversions that fires before window loaded
  */
 function checkCV (){
+  console.log('checkCV :', CVs.length);
   CVs.forEach((CV)=>{
     sendMsg_('CV', CV)
   });
   CVs = [];
   contentLoaded = true;
+  console.log('checkCV :', contentLoaded);
 }
 
 // TODO refactoring this
@@ -41,10 +47,18 @@ function logRequestURL(requestDetails) {
     CVlabel= CVlabel.split('=');
     CVlabel = CVlabel[1];
     let cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabel};
-    if(contentLoaded){
+    if(!!contentLoaded){
+      let isSent = false;
       sendMsg_('CV', cookie);
     } else {
-      CVs.push(cookie);
+      if(CVs.length==0){
+        CVs.push(cookie);    
+      }
+      CVs.forEach((cv)=>{
+        if(cv.cvlabel!==CVlabel){
+          CVs.push(cookie);
+        }
+      });
     }
   }
 };
@@ -57,6 +71,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   const domain = request.domain;
   switch(msg){      
     case 'start':
+      console.log('start')
       watch();
       cache_ =[];
       let enabled = isEnabled_();
@@ -81,8 +96,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           });
         });
       });
-      // TODO 
-      // celarStoage_();
       break;
     
     case 'clearAll':
@@ -90,13 +103,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       getDomainCookies_().then((cookies)=>{
         clearCookies_(cookies).then((result)=>{
           sendResponse(result);
-          // TODO remove below
-          // sendMsg_(result || otherResult);
-          // return true;                
         });
       });
-      // TODO 
-      // celarStoage_();
       break;
     
     case 'getCookies':
@@ -110,14 +118,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       });              
       break;
 
-    // TODO 
-    // case 'checkCookies':
-    //   getCookies(request).then((result)=>{
-    //     sendMsg_('cookieChecked', checkCookies_(result)); // 'fail' or 'success'
-    //     // sendResponse();
-    //   });              
-    //   break;
-
    case 'setDomainAndCookies':
      getCookies(request).then((result)=>{
        setCookies_(result);
@@ -129,7 +129,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
    case 'toggle':
      toggle_(request);
      stopWatching_();
-     return true;
+     break;
 
   case 'stopWatching':
     stopWatching_();  
@@ -137,12 +137,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
   case 'beforeReload':
     cache_ = [];
-    CVs = [];
     stopWatching_();
     contentLoaded = false;
+    console.log('beforeReload');
+    break;
+  
+  case 'beforeLoad':
+    listenHTTPRequest();
     break;
   }
-
   return true;
 });
 
@@ -229,43 +232,11 @@ function start_(request){
     let referrer = request.referrer;
     let isTheSameDomain = isTheSameDomain_(domain);
     // TODO
-    // let result = checkCookies_()
     if(isTheSameDomain || referrer==''){
       sendMsg_('domainChecked', 'noError');
     } else if(!isTheSameDomain){
       sendMsg_('domainChecked', 'domainChanged');
-    } else if (result ==='fail'){
-      // sendMsg_('cookieChecked', 'fail');
-    } else if (result ==='success'){
-      // sendMsg_('cookieChecked', 'success');
-    }
-};
- 
-/**
- * request from writers.js
- * @private 
- * @return {string} success / fail
- */
-function checkCookies_(cookies){
-  let JSONcookies = window.sessionStorage.getItem('cookies');
-  if(!JSONcookies){
-    return 'success';
-  }
-  let cookiesSaved = JSON.parse(JSONcookies);
-  cookiesSaved =cookiesSaved.filter((cookie)=>{
-    return cookie.name.includes('_gac') ||cookie.name.includes('_gcl_aw');
-  });
-  cookies = cookies.filter((cookie)=>{
-    return cookie.name.includes('_gac') ||cookie.name.includes('_gcl_aw');
-  });
-  cookiesSaved.forEach((cookie)=>{
-    // console.log(cookie);
-  });    
-  cookies.forEach((cookie)=>{
-    // console.log(cookie);
-  });    
-  
-  return cookies == cookiesSaved ? 'success' : 'fail';
+    } 
 };
 
 /**
@@ -423,13 +394,10 @@ function fileterByName_(name, cache_){
  * @private
  */
 function stopWatching_(){
+  console.log('stop');
   window.sessionStorage.removeItem('domain');
   window.sessionStorage.removeItem('cookies');
   CVs = [];
+  firedCVlabels = [];
   chrome.cookies.onChanged.removeListener(watch_);
 };
-
-// TODO -> conversion linker checker 
-// check cookies changed 
-// search GTM or gtag -> 
-// if no GTM, it would be gtag that generating the cookies

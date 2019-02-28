@@ -18,7 +18,7 @@ window.addEventListener('beforeunload', ()=>{
 */
 window.addEventListener('load',()=>{
   chrome.runtime.sendMessage({message:'start', domain:document.domain, referrer:document.referrer},(()=>{
-    chrome.runtime.sendMessage({message:'setDomainAndCookies', domain:document.domain});
+    chrome.runtime.sendMessage({message:'setDomainAndCookies', domain:document.domain},(()=>{return true}));
    }));
 });
 
@@ -76,7 +76,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
  * @param {boolean} enabled
  */
 function toggle_(enabled){
-  chrome.runtime.sendMessage({message:'toggle', shouldEnabled: enabled},(()=>{}));
+  chrome.runtime.sendMessage({message:'toggle', shouldEnabled: enabled},(()=>{return true;}));
  };
 
 /** 
@@ -85,7 +85,7 @@ function toggle_(enabled){
  * @param {boolean} enabled
  */
 function getCookies_(enabled){
-  chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},(()=>{})); 
+  chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},(()=>{return true;})); 
 };
 
 /** 
@@ -93,7 +93,7 @@ function getCookies_(enabled){
  * @private
  */
 function stopWatching_(){
-  chrome.runtime.sendMessage({message:'stopWatching'},(()=>{})); 
+  chrome.runtime.sendMessage({message:'stopWatching'},(()=>{return true;})); 
 };
 
 /**
@@ -137,16 +137,3 @@ function getUrlWithourGclid (url) {
   }
   return url;
 };
-
-// TODO
-// /**
-//  * @private 
-//  */
-// function startCheckingCookies_() {  
-//   return new Promise ((resolve,reject)=>{
-//     console.log('checkcookies');
-//     chrome.runtime.sendMessage({message:'checkCookies', domain:document.domain},function(){
-//       resolve();
-//     }); 
-//   });
-// }

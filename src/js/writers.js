@@ -36,17 +36,8 @@ function start_(msg){
       case 'noError':
       console.log("Current domain is : 【", domain ,"】");
       break;
- 
-    case 'domainChanged':
+     case 'domainChanged':
       console.log(STYLE_ESCAPE+"DOMAIN CHANGED TO : 【 "+ domain +" 】", STYLE_BOLD);
-      break;
-
-    case 'fail':
-      // TODO
-      break;
-
-    case 'success':
-      // TODO
       break;
     }
     resolve();
@@ -67,7 +58,7 @@ const write_ =(cookies, domain) =>{
   .then(()=>{
   /** _gac */ 
     writeCookies_(cookies, gacNm, domain)
-      .then(()=>{})
+      .then(()=>{return true})
   });
 }
 
