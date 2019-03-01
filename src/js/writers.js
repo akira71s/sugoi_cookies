@@ -12,7 +12,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   let val = request.value;
   if (msg=='domainChecked'){
     start_(val).then(()=>getCookies_());
-    // TODO listen Google Ads & Analytics Cookies Events instead of calling setTimeout
   } else if (msg=='returnCookies'){
     let cookies = val;
     write_(cookies, document.domain);
@@ -122,10 +121,7 @@ const writeCookieInfo_ = (cookie) =>{
     console.error('parameter invalid');
     return;
   }
-  // let values = cookie.value.split('.');
   cookie.value.length === DEFAULT_COOKIE_LENGTH ?
   console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
-  // console.log(STYLE_ESCAPE + cookie.name + '=' + values[0] +'.'+ values[1] +'.'+ STYLE_ESCAPE + values[2], STYLE_BOLD, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
   console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
-  // TODO: console in bg-red or bg-green 
 }; 

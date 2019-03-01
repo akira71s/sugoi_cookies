@@ -34,17 +34,18 @@ function logRequestURL(requestDetails) {
   let code = requestDetails.statusCode;
   if(url.startsWith('https://www.googleadservices.com/pagead/conversion/')){
     let gclawIdx = url.indexOf('&gclaw')
-    let gclaw= gclawIdx != -1 ? url.substring(gclawIdx, url.indexOf('&', gclawIdx+1)) : '';
     let gacIdx = url.indexOf('&gac')
-    let gac= gacIdx != -1? url.substring(gacIdx, url.indexOf('&', gacIdx+1)):'';
     let cvStrIdx = url.indexOf('conversion/');
-    let surl = url.substr(cvStrIdx, url.indexOf('/', cvStrIdx+1));
+    let labelIdx = url.indexOf('label=');
+    let surl = url.substr(cvStrIdx+1, url.indexOf('/', cvStrIdx+1));
+
+    let gclaw= gclawIdx != -1 ? url.substring(gclawIdx, url.indexOf('&', gclawIdx+1)) : '';
+    let gac= gacIdx != -1? url.substring(gacIdx, url.indexOf('&', gacIdx+1)):'';
     let CVid = surl.substring(surl.indexOf('/'), surl.indexOf('/', surl.indexOf('/')+1));
     CVid = CVid.replace('/','');
-    let labelIdx = url.indexOf('label=');
     let CVlabel= url.substring(labelIdx, url.indexOf('&', labelIdx+1));
-    CVlabel= CVlabel.split('=');
-    CVlabel = CVlabel[1];
+    CVlabel= CVlabel.split('=')[1]; // label=VAL => [label, VAL] 
+
     let cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabel};
     if(!!contentLoaded){
       if(CVs.length==0){
@@ -75,8 +76,7 @@ function logRequestURL(requestDetails) {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   const msg = request.message;
   const domain = request.domain;
-  switch(msg){      
-    case 'start':
+  if(msg==='start'){
       watch();
       cache_ =[];
       let enabled = isEnabled_();
@@ -84,11 +84,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       if(enabled){
         start_(request);
       }
-      break;
-       
-    case 'clearCookies':
+   } else if(msg==='clearCookies'){
       const domains = getDomains_(domain);
-          getDomainCookies_(domains[0]).then((firstCookies)=>{
+        getDomainCookies_(domains[0]).then((firstCookies)=>{
           clearCookies_(firstCookies).then((firstResult)=>{
             getDomainCookies_(domains[1]).then((secondCookies)=>{
               clearCookies_(secondCookies).then((secondResult)=>{
@@ -101,56 +99,38 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           });
         });
       });
-      break;
-    
-    case 'clearAll':
+    } else if (msg==='clearAll'){
      // from popup.js
       getDomainCookies_().then((cookies)=>{
         clearCookies_(cookies).then((result)=>{
           sendResponse(result);
         });
       });
-      break;
-    
-    case 'getCookies':
+    } else if(msg==='getCookies'){
       getCookies(request).then((result)=>{
         result = filter_(result);
         cache_ = result;
         watch();
         sendMsg_('returnCookies', result);
         checkCV();
-        return true;
-      });              
-      break;
-
-   case 'setDomainAndCookies':
-     getCookies(request).then((result)=>{
+      });  
+    } else if (msg==='setDomainAndCookies'){ 
+      getCookies(request).then((result)=>{
        setCookies_(result);
-       return true;
      });
      window.sessionStorage.setItem("domainNm", domain);
-     break;
-
-   case 'toggle':
-     toggle_(request);
-     stopWatching_();
-     break;
-
-  case 'stopWatching':
-    stopWatching_();  
-    break;
-
-  case 'beforeReload':
-    cache_ = [];
-    stopWatching_();
-    contentLoaded = false;
-    console.log('beforeReload');
-    break;
-  
-  case 'beforeLoad':
-    listenHTTPRequest();
-    break;
-  }
+　  } else if (msg ==='toggle'){
+       toggle_(request);
+       stopWatching_();
+     } else if (msg ==='stopWatching'){
+       stopWatching_();  
+     } else if (msg === 'beforeReload'){
+       cache_ = [];
+       stopWatching_();
+       contentLoaded = false;
+     } else if (msg === 'beforeLoad'){
+      listenHTTPRequest(); 
+    }
   return true;
 });
 
@@ -236,7 +216,6 @@ function start_(request){
     let domain = request.domain;
     let referrer = request.referrer;
     let isTheSameDomain = isTheSameDomain_(domain);
-    // TODO
     if(isTheSameDomain || referrer==''){
       sendMsg_('domainChecked', 'noError');
     } else if(!isTheSameDomain){
@@ -399,7 +378,6 @@ function fileterByName_(name, cache_){
  * @private
  */
 function stopWatching_(){
-  console.log('stop');
   window.sessionStorage.removeItem('domain');
   window.sessionStorage.removeItem('cookies');
   CVs = [];
