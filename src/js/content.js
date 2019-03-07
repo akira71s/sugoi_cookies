@@ -2,14 +2,14 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 "use strict";
-chrome.runtime.sendMessage({message:'beforeLoad'}); 
+chrome.runtime.sendMessage({message:'beforeLoad'}, ()=>{}); 
 
 /** 
 * eventListener
 * clear cache of background.js
 */
 window.addEventListener('beforeunload', ()=>{
-  chrome.runtime.sendMessage({message:'beforeReload'}); 
+  chrome.runtime.sendMessage({message:'beforeReload'},(e)=>{}); 
 });
 
 /** 
@@ -27,7 +27,7 @@ window.addEventListener('click', (e)=>{
 */
 window.addEventListener('load',()=>{
   chrome.runtime.sendMessage({message:'start', domain:document.domain, referrer:document.referrer},(()=>{
-    chrome.runtime.sendMessage({message:'setDomainAndCookies', domain:document.domain});
+    chrome.runtime.sendMessage({message:'setDomainAndCookies', domain:document.domain},()=>{});
   }));
 });
 
@@ -58,7 +58,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
  * @param {boolean} enabled
  */
 function toggle_(enabled){
-  chrome.runtime.sendMessage({message:'toggle', shouldEnabled: enabled});
+  chrome.runtime.sendMessage({message:'toggle', shouldEnabled: enabled},()=>{});
  };
 
 /** 
@@ -67,7 +67,7 @@ function toggle_(enabled){
  * @param {boolean} enabled
  */
 function getCookies_(enabled){
-  chrome.runtime.sendMessage({message:'getCookies', domain:document.domain}); 
+  chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},()=>{}); 
 };
 
 /** 
@@ -75,7 +75,7 @@ function getCookies_(enabled){
  * @private
  */
 function stopWatching_(){
-  chrome.runtime.sendMessage({message:'stopWatching'}); 
+  chrome.runtime.sendMessage({message:'stopWatching'},()=>{}); 
 };
 
 /**

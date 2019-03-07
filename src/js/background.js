@@ -47,17 +47,17 @@ function logRequestURL(requestDetails) {
     CVlabel= CVlabel.split('=')[1]; // label=VAL => [label, VAL] 
 
     let cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabel};
-    if(!!contentLoaded){
+      if(!!contentLoaded){
       if(CVs.length==0){
-        CVs.push(cookie);    
+       CVs.push(cookie);    
       }  
       CVs.forEach((cv)=>{
-        if(CVs.length==1||cv.cvlabel!==CVlabel){
+       if(CVs.length==1||cv.cvlabel!==CVlabel){
           sendMsg_('CV', cookie);
-          CVs.push(cookie);
+         CVs.push(cookie);
        }
-     });
-    } else {
+      });
+      } else {
       if(CVs.length==0){
         CVs.push(cookie);    
       }  
@@ -93,31 +93,31 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 getDomainCookies_(domains[2]).then((thirdCookies)=>{
                   clearCookies_(thirdCookies).then((thirdResult)=>{    
                     sendResponse(firstResult || secondResult || thirdResult);
-                });
-              });
-            });
-          });
-        });
-      });
+                },logCookie);
+              },logCookie);
+            },logCookie);
+          },logCookie);
+        },logCookie);
+      },logCookie);
     } else if (msg==='clearAll'){
      // from popup.js
       getDomainCookies_().then((cookies)=>{
         clearCookies_(cookies).then((result)=>{
           sendResponse(result);
-        });
-      });
+        },logCookie);
+      },logCookie);
     } else if(msg==='getCookies'){
-      getCookies(request).then((result)=>{
+      getCookies(domain).then((result)=>{
         result = filter_(result);
         cache_ = result;
         watch();
         sendMsg_('returnCookies', result);
         checkCV();
-      });  
+      },logCookie);  
     } else if (msg==='setDomainAndCookies'){ 
-      getCookies(request).then((result)=>{
+      getCookies(domain).then((result)=>{
        setCookies_(result);
-     });
+     },logCookie);
      window.sessionStorage.setItem("domainNm", domain);
 　  } else if (msg ==='toggle'){
        toggle_(request);
@@ -125,9 +125,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
      } else if (msg ==='stopWatching'){
        stopWatching_();  
      } else if (msg === 'beforeReload'){
-       cache_ = [];
-       stopWatching_();
-       contentLoaded = false;
+      cache_ = [];
+      stopWatching_();
+      contentLoaded = false;
      } else if (msg === 'beforeLoad'){
       listenHTTPRequest(); 
     }
@@ -294,11 +294,11 @@ function sendMsg_(msg, val){
 };
 
 /**
- * @param {Object} request
+ * @param {string} domain
  */
-function getCookies(request){
+function getCookies(domain){
   let array = [];
-  let domains = getDomains_(request.domain);
+  let domains = getDomains_(domain);
   return new Promise((resolve, reject)=>{
     getDomainCookies_(domains[0]).then((firstCookies)=>{
       push_(array, firstCookies).then((firstResult)=>{
@@ -316,13 +316,13 @@ function getCookies(request){
                });
                push_(secondResult, thirdCookies).then((finalCookies)=>{
                  resolve(finalCookies);
-               }); 
-            }); 
-          });
-        });
-      });
-    });
-  });
+               },logCookie); 
+            },logCookie); 
+          },logCookie);
+        },logCookie);
+      },logCookie);
+    },logCookie);
+  },logCookie);
 };
 
 /**
@@ -384,3 +384,11 @@ function stopWatching_(){
   firedCVlabels = [];
   chrome.cookies.onChanged.removeListener(watch_);
 };
+
+function logCookie(c) {
+  if (chrome.runtime.lastError) {
+    console.error(chrome.runtime.lastError);
+  } else {
+    console.log(c);
+  }
+}
