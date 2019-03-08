@@ -9,7 +9,8 @@ chrome.runtime.sendMessage({message:'beforeLoad'}, ()=>{});
 * clear cache of background.js
 */
 window.addEventListener('beforeunload', ()=>{
-  chrome.runtime.sendMessage({message:'beforeReload'},(e)=>{}); 
+  // TODO: remove this, 
+  // prepare for reload thing chrome.runtime.sendMessage({message:'beforeReload'},(e)=>{}); 
 });
 
 /** 
