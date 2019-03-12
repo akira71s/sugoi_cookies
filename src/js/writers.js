@@ -12,12 +12,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   let val = request.value;
   if (msg=='domainChecked'){
     start_(val).then(()=>getCookies_());
-    // TODO listen Google Ads & Analytics Cookies Events instead of calling setTimeout
   } else if (msg=='returnCookies'){
     let cookies = val;
     write_(cookies, document.domain);
   } else if (msg=='cookiesChanged'){
     add_(val);
+  } else if (msg=='CV'){
+    writeCVinfo_(val);
   }
   return true;
 });
@@ -29,22 +30,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 function start_(msg){
   return new Promise((resolve, reject)=>{
     let domain = document.domain;
-    console.log("%cSUGOI!Cookies for Google Ads (`*・ω・’)" + VERSION, STYLES_BOLD_BULE.join(';'));
+    console.log("%cSUGOI!Cookies for Google Ads (`*・ω・’)" + VERSION, STYLE_BOLD);
     switch(msg){
       case 'noError':
       console.log("Current domain is : 【", domain ,"】");
       break;
- 
-    case 'domainChanged':
-      console.log(STYLE_ESCAPE+"DOMAIN CHANGED TO : 【 "+ domain +" 】", STYLES_BOLD_RED.join(';'));
-      break;
-
-    case 'fail':
-      // TODO
-      break;
-
-    case 'success':
-      // TODO
+     case 'domainChanged':
+      console.log(STYLE_ESCAPE+"DOMAIN CHANGED TO : 【 "+ domain +" 】", STYLE_BOLD);
       break;
     }
     resolve();
@@ -65,12 +57,27 @@ const write_ =(cookies, domain) =>{
   .then(()=>{
   /** _gac */ 
     writeCookies_(cookies, gacNm, domain)
-      .then(()=>{
-        console.log("%cDONE!", STYLES_BOLD_BULE.join(';'));
-      })
+      .then(()=>{return true})
   });
 }
 
+/** 
+ */
+const writeCVinfo_ =(CVinfo) =>{
+  console.log('%cCONGRATULATIONS! CV FIRES!', STYLES_BOLD_WHITE_BG_ORANGE.join(';'));
+  console.log('CV ID: %c'+ CVinfo.cvid, STYLE_BOLD);
+  console.log('CV LABEL: %c'+ CVinfo.cvlabel, STYLE_BOLD);
+  if(!CVinfo.gclaw&&!CVinfo.gac){
+    console.log('%cBUT NOT COOKIES DETECTED', STYLES_BOLD_WHITE_BG_GRAY.join(';'));
+  } else { 
+    if (CVinfo.gclaw){
+      console.log('CV COOKIE: %c'+ CVinfo.gclaw, STYLE_BOLD);
+    }  
+    if(CVinfo.gac){
+    console.log('CV COOKIE: %c'+ CVinfo.gac, STYLE_BOLD);
+    }
+  }
+}
 /** 
  * calling console log for cookies
  * @private
@@ -114,10 +121,7 @@ const writeCookieInfo_ = (cookie) =>{
     console.error('parameter invalid');
     return;
   }
-  // let values = cookie.value.split('.');
   cookie.value.length === DEFAULT_COOKIE_LENGTH ?
   console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
-  // console.log(STYLE_ESCAPE + cookie.name + '=' + values[0] +'.'+ values[1] +'.'+ STYLE_ESCAPE + values[2], STYLE_BOLD, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
   console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
-  // TODO: console in bg-red or bg-green 
 }; 

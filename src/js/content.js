@@ -2,14 +2,25 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 "use strict";
+chrome.runtime.sendMessage({message:'beforeLoad'}, ()=>{}); 
 
 /** 
 * eventListener
 * clear cache of background.js
 */
-window.onbeforeunload = function(){
-  chrome.runtime.sendMessage({message:'beforeReload'},(()=>{})); 
- };
+window.addEventListener('beforeunload', ()=>{
+  // TODO -> send reload event to background.js 
+  // chrome.runtime.sendMessage({message:'beforeReload'},(e)=>{}); 
+});
+
+/** 
+* don't call beforeunload event when tel: clicked
+*/
+window.addEventListener('click', (e)=>{
+  if(e.target && e.target.href && e.target.href.includes('tel:')){
+    e.preventDefault();
+  }
+});
 
 /** 
 * eventListener
@@ -17,55 +28,28 @@ window.onbeforeunload = function(){
 */
 window.addEventListener('load',()=>{
   chrome.runtime.sendMessage({message:'start', domain:document.domain, referrer:document.referrer},(()=>{
-    chrome.runtime.sendMessage({message:'setDomainAndCookies', domain:document.domain});
-   }));
+    chrome.runtime.sendMessage({message:'setDomainAndCookies', domain:document.domain},()=>{});
+  }));
 });
 
 /** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-   let msg = request.message; 
-   switch(msg){
-     case "clearCookies":
-       // request from popup.js to background.js
-       clearCookies_(document.domain);
-       break;
-
-     case "clearAll": 
-       // request from popup.js to background.js
-       clearCookies_(document.domain, true);
-       break;
-
-     case 'reload':
-       // request from popup.js
-       reload_(request.value);
-       break;
-
-     case request.message=='coockieChecked':
-       // msg from background.js 
-       if(request.value==='success'){
-         // TODO consoleInGreen 
-        } else if (request.value==='fail'){
-          // TODO consoleInRed
-        }
-        break;
-
-      case 'toggle':
-        // request from popup.js
-        toggle_(request.value);
-        break;
-
-      case 'getCookies':
-        // request from popup.js to background.js
-        getCookies_(request.value);
-        break;
-
-      case 'getUrl':
-        // request from popup.js, sending response back
-        sendResponse(window.location.href);
-        break;
-  }
+   let msg = request.message;
+   if(msg==="clearCookies"){
+     clearCookies_(document.domain);
+   } else if (msg==="clearAll") {
+     clearCookies_(document.domain, true);
+   } else if (msg==='reload'){
+     reload_(request.value);
+   } else if (msg==='toggle'){
+     toggle_(request.value);
+   } else if(msg==='getCookies'){
+     getCookies_(request.value);
+   } else if('getUrl'){
+    sendResponse(window.location.href);
+   }
   return true;
 });
 
@@ -75,7 +59,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
  * @param {boolean} enabled
  */
 function toggle_(enabled){
-  chrome.runtime.sendMessage({message:'toggle', shouldEnabled: enabled},(()=>{}));
+  chrome.runtime.sendMessage({message:'toggle', shouldEnabled: enabled},()=>{});
  };
 
 /** 
@@ -84,7 +68,7 @@ function toggle_(enabled){
  * @param {boolean} enabled
  */
 function getCookies_(enabled){
-  chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},(()=>{})); 
+  chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},()=>{}); 
 };
 
 /** 
@@ -92,7 +76,7 @@ function getCookies_(enabled){
  * @private
  */
 function stopWatching_(){
-  chrome.runtime.sendMessage({message:'stopWatching'},(()=>{})); 
+  chrome.runtime.sendMessage({message:'stopWatching'},()=>{}); 
 };
 
 /**
@@ -109,6 +93,7 @@ function clearCookies_(newDomain, isAll){
     console.log(STYLE_ESCAPE + response, STYLE_BOLD);
     console.log('reloading this page in a moment...');
     reload_();
+    return true;
   });
 };
 
@@ -136,16 +121,3 @@ function getUrlWithourGclid (url) {
   }
   return url;
 };
-
-// TODO
-// /**
-//  * @private 
-//  */
-// function startCheckingCookies_() {  
-//   return new Promise ((resolve,reject)=>{
-//     console.log('checkcookies');
-//     chrome.runtime.sendMessage({message:'checkCookies', domain:document.domain},function(){
-//       resolve();
-//     }); 
-//   });
-// }
