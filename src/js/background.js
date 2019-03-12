@@ -21,7 +21,6 @@ function listenHTTPRequest(){
  * check conversions that fires before window loaded
  */
 function checkCV (){
-  console.log(CVs.length);
   CVs.forEach((CV)=>{
     sendMsg_('CV', CV)
   });
