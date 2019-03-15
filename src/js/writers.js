@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     start_();
     let cookies = getCookies(true);
     write_(cookies, document.domain);
-    setTimeout(checkCookies_, 5000);
+    setTimeout(checkCookies_, 3000);
   
   // from background js
   } else if (msg=='CV'){
