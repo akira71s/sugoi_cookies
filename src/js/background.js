@@ -77,62 +77,44 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   const msg = request.message;
   const domain = request.domain;
   if(msg==='start'){
-      watch();
-      cache_ =[];
       let enabled = isEnabled_();
       updateIcon_(enabled);
       if(enabled){
         start_(request);
       }
-   } else if(msg==='clearCookies'){
-      const domains = getDomains_(domain);
-        getDomainCookies_(domains[0]).then((firstCookies)=>{
-          clearCookies_(firstCookies).then((firstResult)=>{
-            getDomainCookies_(domains[1]).then((secondCookies)=>{
-              clearCookies_(secondCookies).then((secondResult)=>{
-                getDomainCookies_(domains[2]).then((thirdCookies)=>{
-                  clearCookies_(thirdCookies).then((thirdResult)=>{    
-                    sendResponse(firstResult || secondResult || thirdResult);
-                },logCookie);
-              },logCookie);
-            },logCookie);
-          },logCookie);
-        },logCookie);
-      },logCookie);
-    } else if (msg==='clearAll'){
+   } else if (msg==='clearAll'){
      // from popup.js
       getDomainCookies_().then((cookies)=>{
         clearCookies_(cookies).then((result)=>{
           sendResponse(result);
         },logCookie);
       },logCookie);
-    } else if(msg==='getCookies'){
-      getCookies(domain).then((result)=>{
-        result = filter_(result);
-        cache_ = result;
-        watch();
-        sendMsg_('returnCookies', result);
-        checkCV();
-      },logCookie);  
-    } else if (msg==='setDomainAndCookies'){ 
-      getCookies(domain).then((result)=>{
-       setCookies_(result);
-     },logCookie);
-     window.sessionStorage.setItem("domainNm", domain);
-　  } else if (msg ==='toggle'){
+    }else if (msg ==='toggle'){
        toggle_(request);
-       stopWatching_();
+       stop_();
      } else if (msg ==='stopWatching'){
-       stopWatching_();  
+       stop_();  
      } else if (msg === 'beforeReload'){
       cache_ = [];
-      stopWatching_();
+      stop_();
       contentLoaded = false;
      } else if (msg === 'beforeLoad'){
       listenHTTPRequest(); 
+    } else if (msg=== 'cacheCookies'){
+      let cookies = request.value;
+      cookies.forEach(()=>{
+        cache_.push({name:cookies.split('=')[0], value:cookies.split('=')[2]})
+      });
     }
   return true;
 });
+
+function stop_() {
+  window.sessionStorage.removeItem('domain');
+  window.sessionStorage.removeItem('cookies');
+  CVs = [];
+  firedCVlabels = [];
+};
 
 /**
  * to & from pupup.js
@@ -193,19 +175,6 @@ function updateIcon_(shouldEnabled) {
   chrome.browserAction.setIcon({path:"../../icon/s128" + suffix + ".png"});
 };
 
-/** 
- * @private
- * @param {Array.<Object>} cookies
- * @return {Array.<Object>} filtered cookies
- */
-function filter_(cookies){
-  let gclAwNm ='_gcl_aw';
-  let gacNm ='_gac';
-  cookies = cookies.filter((cookie) => {
-    return cookie.name.includes(gclAwNm)||cookie.name.includes(gacNm);
-  });
-  return cookies;
-}
 
 /**
  * request from content.js
@@ -213,33 +182,8 @@ function filter_(cookies){
  * @param {Object} request
  */
 function start_(request){
-    let domain = request.domain;
-    let referrer = request.referrer;
-    let isTheSameDomain = isTheSameDomain_(domain);
-    if(isTheSameDomain || referrer==''){
-      sendMsg_('domainChecked', 'noError');
-    } else if(!isTheSameDomain){
-      sendMsg_('domainChecked', 'domainChanged');
-    } 
+  sendMsg_('enabled');
 };
-
-/**
- * @private 
- * @return {Array.<Object>} cookies
- */
-function setCookies_(cookies){
-  let JSONcookies = JSON.stringify(cookies);
-  window.sessionStorage.setItem('cookies', JSONcookies);
-};
-
-/**
- * @private 
- * @return {boolean} 
- * @param {String} domain 
- */
-function isTheSameDomain_(domain){
-  return domain === window.sessionStorage.getItem("domainNm");
-}
 
 /**
  * @private 
@@ -291,98 +235,6 @@ function sendMsg_(msg, val){
       chrome.tabs.sendMessage(tabID, {message: msg, value: val}):
       chrome.tabs.sendMessage(tabID, {message: msg});
     });
-};
-
-/**
- * @param {string} domain
- */
-function getCookies(domain){
-  let array = [];
-  let domains = getDomains_(domain);
-  return new Promise((resolve, reject)=>{
-    getDomainCookies_(domains[0]).then((firstCookies)=>{
-      push_(array, firstCookies).then((firstResult)=>{
-        getDomainCookies_(domains[1]).then((secondCookies)=>{
-           firstResult = firstResult.filter((cookie)=>{
-            return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
-           });
-            secondCookies = secondCookies.filter((cookie)=>{
-              return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
-             });
-            push_(firstResult, secondCookies).then((secondResult)=>{
-             getDomainCookies_(domains[2]).then((thirdCookies)=>{
-               thirdCookies = thirdCookies.filter((cookie)=>{
-                 return  cookie.name && (cookie.name.startsWith('_gac') || cookie.name.startsWith('_gcl_aw'));
-               });
-               push_(secondResult, thirdCookies).then((finalCookies)=>{
-                 resolve(finalCookies);
-               },logCookie); 
-            },logCookie); 
-          },logCookie);
-        },logCookie);
-      },logCookie);
-    },logCookie);
-  },logCookie);
-};
-
-/**
- * @private
- */
-function watch(){
-  chrome.cookies.onChanged.addListener(watch_);
-};
-
-/**
- * @private
- * @param {Event} e 
- */
- function watch_(e){
-  let cookie = e.cookie;
-  let name = cookie.name;
-  let val = cookie.value;
-  let cause = e.cause;
-  let isRemoved = e.removed;
-  let isChanged = false;
-  if(name.includes('_gac') || name.includes('_gcl_aw')){
-    if(isEnabled_()){
-      if(cause=='explicit' && !isRemoved){
-        let filteredCache_ = fileterByName_(name, cache_);
-        if(filteredCache_.length === 0){
-          isChanged = true;
-        } else {
-          filteredCache_.forEach((cache)=>{
-            isChanged = cache.value.split('.')[2] != val.split('.')[2] ? true:false;
-          });
-        }
-        if(isChanged){
-          cache_ = cache_.concat([cookie]);
-          sendMsg_('cookiesChanged', cookie);
-        }
-      }
-    }
-  }
-};
-
-/**
- * @private
- * @param {string} name
- * @param {Array.<string>} cache_
- */
-function fileterByName_(name, cache_){
-  return cache_ = cache_.filter((cache)=>{
-    return cache.name.includes(name);
-  });
-};
-
-/**
- * @private
- */
-function stopWatching_(){
-  window.sessionStorage.removeItem('domain');
-  window.sessionStorage.removeItem('cookies');
-  CVs = [];
-  firedCVlabels = [];
-  chrome.cookies.onChanged.removeListener(watch_);
 };
 
 function logCookie(c) {

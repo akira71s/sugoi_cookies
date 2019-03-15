@@ -2,15 +2,12 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 "use strict";
-chrome.runtime.sendMessage({message:'beforeLoad'}, ()=>{}); 
-
 /** 
 * eventListener
 * clear cache of background.js
 */
-window.addEventListener('beforeunload', ()=>{
-  // TODO -> send reload event to background.js 
-  // chrome.runtime.sendMessage({message:'beforeReload'},(e)=>{}); 
+window.addEventListener('load', ()=>{
+   chrome.runtime.sendMessage({message:'start'});; 
 });
 
 /** 
@@ -20,16 +17,6 @@ window.addEventListener('click', (e)=>{
   if(e.target && e.target.href && e.target.href.includes('tel:')){
     e.preventDefault();
   }
-});
-
-/** 
-* eventListener
-* when window loaded, renew thedomain to the background.js
-*/
-window.addEventListener('load',()=>{
-  chrome.runtime.sendMessage({message:'start', domain:document.domain, referrer:document.referrer},(()=>{
-    chrome.runtime.sendMessage({message:'setDomainAndCookies', domain:document.domain},()=>{});
-  }));
 });
 
 /** 
@@ -45,8 +32,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
      reload_(request.value);
    } else if (msg==='toggle'){
      toggle_(request.value);
-   } else if(msg==='getCookies'){
-     getCookies_(request.value);
    } else if('getUrl'){
     sendResponse(window.location.href);
    }
@@ -68,15 +53,7 @@ function toggle_(enabled){
  * @param {boolean} enabled
  */
 function getCookies_(enabled){
-  chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},()=>{}); 
-};
-
-/** 
- * to background.js
- * @private
- */
-function stopWatching_(){
-  chrome.runtime.sendMessage({message:'stopWatching'},()=>{}); 
+ // chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},()=>{}); 
 };
 
 /**
@@ -86,15 +63,22 @@ function stopWatching_(){
  * @param {?boolean} isAll
  */
 function clearCookies_(newDomain, isAll){
-  let msgObj = isAll ? 
-    {message:'clearAll', domain:newDomain} :
-    {message:'clearCookies', domain:newDomain}; 
-  chrome.runtime.sendMessage(msgObj, function(response){
-    console.log(STYLE_ESCAPE + response, STYLE_BOLD);
-    console.log('reloading this page in a moment...');
+  if(!isAll){
+    document.cookie = '_gac; max-age=0';
+    document.cookie = '_gcl_aw; max-age=0';
+    document.cookie = 'gclid; max-age=0';
     reload_();
-    return true;
-  });
+  } else {
+    let msgObj = isAll ? 
+      {message:'clearAll', domain:newDomain} :
+      {message:'clearCookies', domain:newDomain}; 
+    chrome.runtime.sendMessage(msgObj, function(response){
+      console.log(STYLE_ESCAPE + response, STYLE_BOLD);
+      console.log('reloading this page in a moment...');
+      reload_();
+      return true;
+    });
+  };
 };
 
 /** 

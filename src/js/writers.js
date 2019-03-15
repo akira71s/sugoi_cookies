@@ -2,21 +2,24 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 "use strict";
+let gacCache = [];
+let gclawCache = [];
+let gclidCache = [];
 
- /** 
+/** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-  // background JS sends back this message agter 'start' ->  'cross domain check'
   let msg = request.message;
   let val = request.value;
-  if (msg=='domainChecked'){
-    start_(val).then(()=>getCookies_());
-  } else if (msg=='returnCookies'){
-    let cookies = val;
+  // from background js
+  if(msg=='enabled'){
+    start_();
+    let cookies = getCookies(true);
     write_(cookies, document.domain);
-  } else if (msg=='cookiesChanged'){
-    add_(val);
+    setTimeout(checkCookies_, 5000);
+  
+  // from background js
   } else if (msg=='CV'){
     writeCVinfo_(val);
   }
@@ -24,23 +27,73 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 /** 
- * calling console log for starter messages
- * @param{string} msg
- */
-function start_(msg){
-  return new Promise((resolve, reject)=>{
-    let domain = document.domain;
-    console.log("%cSUGOI!Cookies for Google Ads (`*・ω・’)" + VERSION, STYLE_BOLD);
-    switch(msg){
-      case 'noError':
-      console.log("Current domain is : 【", domain ,"】");
-      break;
-     case 'domainChanged':
-      console.log(STYLE_ESCAPE+"DOMAIN CHANGED TO : 【 "+ domain +" 】", STYLE_BOLD);
-      break;
+* TODO
+*/
+function checkCookies_(){
+  let newCookies = [];
+  let isChanged = false;
+  let cookies = getCookies(false);
+  cookies.forEach((cookie)=>{
+    let name = cookie.split('=')[0];   
+    let value = cookie.split('=')[1];
+    if(name.includes('gac')&&!gacCache.includes(value)) {
+      isChanged = true;
+      newCookies.push(name+'='+value);
+    }  
+    if(name.includes('gcl_aw')&&!gclawCache.includes(value)) {
+      isChanged = true;
+      newCookies.push(name+'='+value);
+    }  
+    if(name.includes('gclid')&&!gclidCache.includes(value)) {
+      isChanged = true;
+      newCookies.push(name+'='+value);
     }
-    resolve();
   });
+  if(isChanged){
+    console.log("%cCOOKIE CHANGED after windowLoaded", STYLES_BOLD_RED.join(';'));    
+    newCookies.forEach((cookie)=>{
+      add_(cookie);
+    });
+  }
+};
+
+/** 
+* TODO
+*/
+function getCookies(isOnload){
+  let cookies = document.cookie.split(';');
+  cookies = cookies.filter((cookie)=>{
+    let name = cookie.split('=')[0];
+    let value = cookie.split('=')[1];
+    console.log();
+    if(name.includes('gac')&&!gacCache.includes(value)){
+      if(isOnload){
+        gacCache.push(value) 
+      }
+      return true;
+    } else if (name.includes('gcl_aw')&&!gclawCache.includes(value)){
+      if(isOnload){
+        gclawCache.push(value); 
+      }
+      return true;
+    } else if (name.includes('gclid')&& !gclidCache.includes(value)){
+      if(isOnload){
+        gclidCache.push(value); 
+      }
+      return true;
+    }
+    return false;
+  });
+  return cookies;
+};
+
+/** 
+ * calling console log for starter messages
+ */
+function start_(){
+  let domain = document.domain;
+  console.log("%cSUGOI!Cookies for Google Ads (`*・ω・’)" + VERSION, STYLE_BOLD);
+  console.log("Current domain is : 【", domain ,"】");
 };
 
 /** 
@@ -52,14 +105,14 @@ function start_(msg){
 const write_ =(cookies, domain) =>{
   let gclAwNm ='_gcl_aw';
   let gacNm ='_gac';
-  /** _gal_aw */ 
-  writeCookies_(cookies, gclAwNm, domain)
-  .then(()=>{
+  let gclid ='gclid';
+  /** _gal_aw */
+  writeCookies_(cookies, gclAwNm, domain);
   /** _gac */ 
-    writeCookies_(cookies, gacNm, domain)
-      .then(()=>{return true})
-  });
-}
+  writeCookies_(cookies, gacNm, domain);
+  /** gclid */ 
+  writeCookies_(cookies, gclid, domain);
+};
 
 /** 
  */
@@ -85,31 +138,30 @@ const writeCVinfo_ =(CVinfo) =>{
  * @oaram {string} domain
  */
 const add_ =(cookie) =>{
-  console.log("%cCOOKIE CHANGED after windowLoaded", STYLES_BOLD_RED.join(';'));
-  console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
-}
+  let name = cookie.split('=')[0];
+  let value = cookie.split('=')[1];
+  console.log(STYLE_ESCAPE + name + '=' + value, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
+};
 
 /** 
  * calling console log for cookies
  * @private
  * @return {Promise} 
- * @param {Array.<domainCheckedring>} cookies
+ * @param {Array.<string>} cookies
  * @param {string} cookieNm
  * @param {string} domain
  */
 function writeCookies_(cookies, cookieNm, domain){
-  return new Promise((resolve, reject)=>{
-    cookies = cookies.filter((cookie) => {
-      return cookie.name.includes(cookieNm);
-    });
-    cookies.length > 0 ?
-    console.log('【found out:', cookies.length, ' ', cookieNm + ' cookies】') :
-    console.log('NO '+ cookieNm + ' detected');
-    cookies.forEach(function(item){
-      writeCookieInfo_(item);
-    }); 
-    resolve();
-  })
+  cookies = cookies.filter((cookie) => {
+    let name = cookie.split('=')[0];
+    return name.includes(cookieNm);
+  });
+  cookies.length > 0 ?
+  console.log('【found out:', cookies.length, ' ', cookieNm + ' cookies】') :
+  console.log('NO '+ cookieNm + ' detected');
+  cookies.forEach(function(item){
+    writeCookieInfo_(item);
+  }); 
 };
 
 /** 
@@ -121,7 +173,9 @@ const writeCookieInfo_ = (cookie) =>{
     console.error('parameter invalid');
     return;
   }
-  cookie.value.length === DEFAULT_COOKIE_LENGTH ?
-  console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
-  console.log(STYLE_ESCAPE + cookie.name + '=' + cookie.value, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
+  let name = cookie.split('=')[0];
+  let value = cookie.split('=')[1];
+  value.length === DEFAULT_COOKIE_LENGTH ?
+  console.log(STYLE_ESCAPE + name + '=' + value, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
+  console.log(STYLE_ESCAPE + name + '=' + value, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
 }; 
