@@ -12,7 +12,7 @@ let contentLoaded = false;
  */
 function listenHTTPRequest(){
   chrome.webRequest.onCompleted.addListener(
-    logRequestURL,
+    checkHttpRequest,
     {urls: ["<all_urls>"]}
   );
 };
@@ -28,8 +28,10 @@ function checkCV (){
   contentLoaded = true;
 }
 
-// TODO refactoring this
-function logRequestURL(requestDetails) {
+/**
+ * check conversions that fires before window loaded
+ */
+function checkHttpRequest(requestDetails) {
   let url = requestDetails.url;
   let code = requestDetails.statusCode;
   if(url.startsWith('https://www.googleadservices.com/pagead/conversion/')){
@@ -83,35 +85,20 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         start_(request);
       }
    } else if (msg==='clearAll'){
-     // from popup.js
-      getDomainCookies_().then((cookies)=>{
+       // from popup.js
+       getCookies_().then((cookies)=>{
         clearCookies_(cookies).then((result)=>{
           sendResponse(result);
         },logCookie);
       },logCookie);
-    }else if (msg ==='toggle'){
+    } else if (msg ==='toggle'){
        toggle_(request);
        stop_();
-     } else if (msg ==='stopWatching'){
-       stop_();  
-     } else if (msg === 'beforeReload'){
-      cache_ = [];
-      stop_();
-      contentLoaded = false;
-     } else if (msg === 'beforeLoad'){
-      listenHTTPRequest(); 
-    } else if (msg=== 'cacheCookies'){
-      let cookies = request.value;
-      cookies.forEach(()=>{
-        cache_.push({name:cookies.split('=')[0], value:cookies.split('=')[2]})
-      });
     }
-  return true;
+    return true;
 });
 
 function stop_() {
-  window.sessionStorage.removeItem('domain');
-  window.sessionStorage.removeItem('cookies');
   CVs = [];
   firedCVlabels = [];
 };
@@ -126,35 +113,6 @@ function toggle_(request){
   updateIcon_(shouldEnabled);
   let booleanStr = shouldEnabled ? 'true' : 'false';
   window.localStorage.setItem('enabled', booleanStr);
-};
-
-/**
- * @private 
- * @return{Promise}
- * @param{Array} array 
- * @param{Array} cookies 
- */
-function push_(array, cookies){
-  return new Promise((resolve, reject)=>{
-    resolve(array.concat(cookies));
-  });
-};
-
-/**
- * @private 
- * @return{Array.<String>} domains
- * @param{String} domain 
- */
-function getDomains_(domain){
-  let domains = [];
-  domains.push(domain);
-  domain.split('.').length > 2? 
-    domains.push(domain.substr(domain.indexOf('.'))):
-    domains.push('');
-  domain.split('.').length > 3? 
-    domains.push(domain.substr(domain.indexOf('.', domain.indexOf('.')+1))):
-    domains.push('');
-  return domains;
 };
 
 /**
@@ -174,7 +132,6 @@ function updateIcon_(shouldEnabled) {
   let suffix = shouldEnabled ? '-on' : '';
   chrome.browserAction.setIcon({path:"../../icon/s128" + suffix + ".png"});
 };
-
 
 /**
  * request from content.js
@@ -203,16 +160,10 @@ function clearCookies_(cookies=[]){
 /**
  * @private 
  * @return {Promise} 
- * @param {?string} domaiNm - if null, get all  
  */
-function getDomainCookies_(domainNm){
-  let detailObj = domainNm ? {domain:domainNm} :{};
+function getCookies_(domainNm){
   return new Promise((resolve, reject)=>{ 
-    // '' is a flag to return empty array
-    if(domainNm===''){
-      resolve([]);
-    }  
-    chrome.cookies.getAll(detailObj,((cookies)=>{
+    chrome.cookies.getAll({},((cookies)=>{
       resolve(cookies || []);
     }));
   });
