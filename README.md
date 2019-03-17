@@ -1,6 +1,6 @@
 @author Akira Sakaguchi <akira.s7171@gmail.com>
 
-# sugoi_cookies (Latest version: 3.0.1: new feature - CV detector)
+# sugoi_cookies (Latest version: 3.1.2: new feature - console gclid" cookie)
 Chrome extension for checking Cookies needed for Google Ads Conversion tracking
 
 (Google広告のコンバージョン計測に必要なクッキーの計測・テストを行う、Google Chromブラウザの拡張機能(プラグイン)です。)
@@ -20,36 +20,26 @@ but you don't need to do anymore. What you need to do is just check the console!
 
 ## JS files (JavaScript ファイル):
 ### writers.js
- - JS file to write (console.log) cookie info related to Google Ads conversion tracking
-
 ### background.js
- - execute clearCookies(chrome.cookies API), then send a message to content JS & writer JS
- 
 ### popup.js
- - listening events by elements and getting values from the input.
-Then send messages to background JS or content JS for reload / clearCookie 
-
 ### const.js
- - constans variables
- 
 ### content.js
- - receive messages from popup JS & background JS, 
-   then execute reload or send another messageto background JS
-
+ 
 ## Message Flow
-*testGclid: popup.js: get gclid value and sendMessage to content JS  
-  => content,js: execute reload with / without gclid
+*testGclid: [popup.js]: get gclid value and sendMessage to content JS  
+  => [content,js]: execute reload with / without gclid
+  => [writer.js]: checkcookies and show cookies in the console 
+  
+*[clearCookies]: popup.js: sendMessage 
+  => [content,js]: receive & send message to background.js
+  => [background.js]: execute chrome.cookie API, then sendResponse to content.js
+  => [content.js]: console.log() & reload without gcli
 
-*clearCookies: popup.js: sendMessage 
-  => content,js: receive & send message to background.js
-  => background.js: execute chrome.cookie API, then sendResponse to content.js
-  => content.js: console.log() & reload without gcli
-
-*reload: popup.js: clear / execute gclid test  
-  => content,js: after async functions done (Promise), execute reload with or without gclid
+*reload: [popup.js]: clear / execute gclid test  
+  => [content,js]: after async functions done (Promise), execute reload with or without gclid
 
 ## Features(機能):  
-### 1 Check "_gcl_aw" in the console.(_gcl_aw_クッキーを検出し、コンソールで情報を流します)    
+### 1: Check "_gcl_aw" in the console.(_gcl_aw_クッキーを検出し、コンソールで情報を流します)    
 This is a cookie that plays a very important role for Google Ads and its conversion tracking.  
 
 (このクッキーはGoogle広告のコンバージョン計測に欠かせないものです。)
@@ -59,7 +49,7 @@ For more information about how _gcl_aw works, please have a look below:
 English - https://developers.google.com/adwords-remarketing-tag/?hl=en    
 日本語 - https://developers.google.com/adwords-remarketing-tag/?hl=ja    
 
-### 2 Check "_gac" in the console.(_gac_クッキーを検出し、コンソールで情報を流します)   
+### 2: Check "_gac" in the console.(_gac_クッキーを検出し、コンソールで情報を流します)   
 It is a type of Google Analytics cookie, and also can be utilized for Google Ads conversion tracking.   
 *You need to link your Google Ads & Google Analytics accounts to utilize this cookie    
 
@@ -72,27 +62,26 @@ English - https://developers.google.com/analytics/devguides/collection/analytics
 日本語 -https://developers.google.com/analytics/devguides/collection/analyticsjs/cookie-usage?hl=ja  
 
 ### 3 1-click gclid auto-tagging test(gclidテストがボタン1つで実行可能です。)  
-
 You are an advertiser or web marketing developer but don't know much about gclid? You should check :   
 (gclidテスト、自動タグ設定に関しては以下のドキュメントをお読み下さい。)  
 English - https://support.google.com/analytics/answer/2938246?hl=en  
 日本語 - https://support.google.com/analytics/answer/2938246?hl=ja  
 
-### 4 Clear Cookies (クッキーの削除)  
+### 4: Check "gclid" in the console.(gclidクッキーを検出し、コンソールで情報を流します)   
+For how to use "gclid" cookies, check the link below (Ofline Conversions)
+English - https://support.google.com/google-ads/answer/2998031?hl=ja
+日本語 - https://support.google.com/google-ads/answer/2998031?hl=en
 
+### 5: Clear Cookies (クッキーの削除)  
 By hitting the yellow botton, you can clear _gcl_aw & _gac Cookies in the domain you're currently at.  
-
 (現在いるドメインの_gac, _gcl_awを消去します。)  
 
-### 5 Clear All Cookies (すべてのクッキーの削除)
-
+### 6: Clear All Cookies (すべてのクッキーの削除)
 By hitting the red botton, you can clear all the cookies you have in the browser.  
-
 (クロームブラウザのすべてのクッキーを削除します。)  
 
-### 6 (New! for version 3.0.1) CV Detector (新機能: コンバージョン計測機能) 
-
-Detector conversions and show Conversion ID & label, cookies the CVs can use.
+### 7: (New! for version 3.0.1) CV Detector (新機能: コンバージョン計測機能) 
+Detect conversions and show Conversion ID & label, cookies the CVs can use.
 In order to make your CVs work on Safari(ITP), you need to check if the cookies are sent with CV data.   
 
 コンバージョンラベル・IDはもちろん、実際に送信できたクッキーまでをコンソールで表示します。(ITP対応のためには、このクッキーがコンバージョン時に送信できていることが必要です。)   
@@ -100,5 +89,4 @@ In order to make your CVs work on Safari(ITP), you need to check if the cookies 
 ## TODO
 TODO: add CROSS DOMAIN COOKIE DIFF ALERT function  
 TODO: integrate OLD CODE DETECTOR function  
-TODO: listen to ajax event or something which is fired on cookie creation (_gac, _gcl_aw)  
 TODO: deal with customized cookie name (users can change the prefix of "_gcl" from GTM)  
