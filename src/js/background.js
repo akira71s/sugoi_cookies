@@ -40,13 +40,14 @@ function checkHttpRequest(requestDetails) {
     let cvStrIdx = url.indexOf('conversion/');
     let labelIdx = url.indexOf('label=');
     let surl = url.substr(cvStrIdx+1, url.indexOf('/', cvStrIdx+1));
+    let surlIdx = surl.indexOf('/');
 
     let gclaw= gclawIdx != -1 ? url.substring(gclawIdx, url.indexOf('&', gclawIdx+1)) : '';
     let gac= gacIdx != -1? url.substring(gacIdx, url.indexOf('&', gacIdx+1)):'';
-    let CVid = surl.substring(surl.indexOf('/'), surl.indexOf('/', surl.indexOf('/')+1));
+    let CVid = surl.substring(surlIdx, surl.indexOf('/', surlIdx+1));
     CVid = CVid.replace('/','');
     let CVlabel= url.substring(labelIdx, url.indexOf('&', labelIdx+1));
-    CVlabel= CVlabel.split('=')[1]; // label=VAL => [label, VAL] 
+    CVlabel= CVlabel.split('=')[1]; // label=VAL => [label, VAL]  -> [1] === VAL 
 
     let cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabel};
       if(!!contentLoaded){

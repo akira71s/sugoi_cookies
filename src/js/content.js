@@ -57,7 +57,6 @@ function getCookies_(enabled){
 };
 
 /**
- * from popup.js to background.js 
  * @private
  * @param {string} newDomain
  * @param {?boolean} isAll
