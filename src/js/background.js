@@ -25,6 +25,7 @@ function checkCV (){
     sendMsg_('CV', CV)
   });
   CVs = [];
+　firedCVlabels = [];
   contentLoaded = true;
 }
 
@@ -55,10 +56,10 @@ function checkHttpRequest(requestDetails) {
        CVs.push(cookie);    
       }  
       CVs.forEach((cv)=>{
-       if(CVs.length==1||cv.cvlabel!==CVlabel){
+      if(cv.cvlabel!==CVlabel){
           sendMsg_('CV', cookie);
-         CVs.push(cookie);
-       }
+          CVs.push(cookie);
+      }
       });
       } else {
       if(CVs.length==0){
