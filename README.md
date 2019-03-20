@@ -66,10 +66,10 @@ You are an advertiser or web marketing developer but don't know much about gclid
 English - https://support.google.com/analytics/answer/2938246?hl=en  
 日本語 - https://support.google.com/analytics/answer/2938246?hl=ja  
 
-### 4: Check "gclid" in the console.(gclidクッキーを検出し、コンソールで情報を流します)   
-For how to use "gclid" cookies, check the link below (Ofline Conversions)
-English - https://support.google.com/google-ads/answer/2998031?hl=ja
-日本語 - https://support.google.com/google-ads/answer/2998031?hl=en
+### 4: Check "gclid" in the console.(gclidクッキーを検出し、コンソールで情報を流します)     
+For how to use "gclid" cookies, check the link below (Ofline Conversions)  
+English - https://support.google.com/google-ads/answer/2998031?hl=ja  
+日本語 - https://support.google.com/google-ads/answer/2998031?hl=en  
 
 ### 5: Clear Cookies (クッキーの削除)  
 By hitting the yellow botton, you can clear _gcl_aw & _gac Cookies in the domain you're currently at.  
