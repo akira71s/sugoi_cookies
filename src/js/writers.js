@@ -62,10 +62,13 @@ function checkCookies_(){
 */
 function getCookies(isOnload){
   let cookies = document.cookie.split(';');
+  let localStorageGclid = localStorage.getItem('gclid');
+  if(localStorageGclid){
+    cookies.push(['gclid='+localStorageGclid]);
+  }
   cookies = cookies.filter((cookie)=>{
     let name = cookie.split('=')[0];
     let value = cookie.split('=')[1];
-    console.log();
     if(name.includes('gac')&&!gacCache.includes(value)){
       if(isOnload){
         gacCache.push(value) 
