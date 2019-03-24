@@ -47,15 +47,6 @@ function toggle_(enabled){
   chrome.runtime.sendMessage({message:'toggle', shouldEnabled: enabled},()=>{});
  };
 
-/** 
- * to background.js
- * @private
- * @param {boolean} enabled
- */
-function getCookies_(enabled){
- // chrome.runtime.sendMessage({message:'getCookies', domain:document.domain},()=>{}); 
-};
-
 /**
  * @private
  * @param {string} newDomain
