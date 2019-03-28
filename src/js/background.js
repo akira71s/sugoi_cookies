@@ -86,13 +86,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       if(enabled){
         start_(request);
       }
-   } else if (msg==='clearAll'){
-       // from popup.js
-       getCookies_().then((cookies)=>{
-        clearCookies_(cookies).then((result)=>{
-          sendResponse(result);
-        },logCookie);
-      },logCookie);
     } else if (msg ==='toggle'){
        toggle_(request);
        stop_();
@@ -142,33 +135,6 @@ function updateIcon_(shouldEnabled) {
  */
 function start_(request){
   sendMsg_('enabled');
-};
-
-/**
- * @private 
- * @return {Promise} 
- * @param {Array.<Object>} cookies - [] default 
- */
-function clearCookies_(cookies=[]){
-  return new Promise((resolve, reject)=>{ 
-      cookies.forEach(function(cookie){
-        let url = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain + cookie.path;
-        chrome.cookies.remove({"url": url, "name": cookie.name}, function(cookie){('deleted_cookie', cookie)});
-      });
-      resolve("cookieCleared");
-    });
-};
-
-/**
- * @private 
- * @return {Promise} 
- */
-function getCookies_(domainNm){
-  return new Promise((resolve, reject)=>{ 
-    chrome.cookies.getAll({},((cookies)=>{
-      resolve(cookies || []);
-    }));
-  });
 };
 
 /**
