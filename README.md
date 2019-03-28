@@ -1,6 +1,6 @@
 @author Akira Sakaguchi <akira.s7171@gmail.com>
 
-# sugoi_cookies (Latest version: 3.1.2: new feature - console gclid" cookie)
+# sugoi_cookies (Latest version: 3.2.2: bug fix
 Chrome extension for checking Cookies needed for Google Ads Conversion tracking
 
 (Google広告のコンバージョン計測に必要なクッキーの計測・テストを行う、Google Chromブラウザの拡張機能(プラグイン)です。)
@@ -28,12 +28,7 @@ but you don't need to do anymore. What you need to do is just check the console!
 *testGclid: [popup.js]: get gclid value and sendMessage to content JS  
   => [content,js]: execute reload with / without gclid
   => [writer.js]: checkcookies and show cookies in the console 
-  
-*[clearCookies]: popup.js: sendMessage 
-  => [content,js]: receive & send message to background.js
-  => [background.js]: execute chrome.cookie API, then sendResponse to content.js
-  => [content.js]: console.log() & reload without gcli
-
+ 
 *reload: [popup.js]: clear / execute gclid test  
   => [content,js]: after async functions done (Promise), execute reload with or without gclid
 
