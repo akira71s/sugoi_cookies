@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+      "target": "es5",
+      "module": "commonjs",
+      "strict": true,
+      "jsx": "react",
+      "outDir": "./src/js",
+      "lib": ["dom", "es7"]
+    },
+  "include": [
+    "./src/ts/**/*.ts/"
+  ],
+  "types": [
+    "chrome"
+  ]
+}

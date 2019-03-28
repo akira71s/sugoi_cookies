@@ -53,22 +53,22 @@ function toggle_(enabled){
  * @param {?boolean} isAll
  */
 function clearCookies_(newDomain, isAll){
-  if(!isAll){
-    document.cookie = '_gac; max-age=0';
-    document.cookie = '_gcl_aw; max-age=0';
-    document.cookie = 'gclid; max-age=0';
-    reload_();
-  } else {
-    let msgObj = isAll ? 
-      {message:'clearAll', domain:newDomain} :
-      {message:'clearCookies', domain:newDomain}; 
-    chrome.runtime.sendMessage(msgObj, function(response){
-      console.log(STYLE_ESCAPE + response, STYLE_BOLD);
-      console.log('reloading this page in a moment...');
-      reload_();
-      return true;
+  const expiryDate = ';max-age=0';
+  const domain = ';domain='+location.hostname;
+  let cookies = document.cookie.split(';');
+  if(cookies.length){
+    cookies.forEach((cookie)=>{
+      if(isAll){
+        document.cookie = cookie+ domain + expiryDate;
+      } else { // !isAll
+        if(cookie.includes('gac')||cookie.includes('gclaw')||cookie.includes('gclid')){
+          document.cookie = cookie +  domain + expiryDate;
+        }          
+      }
     });
-  };
+  }
+  console.log('reloading this page in a moment...');
+  reload_();
 };
 
 /** 
