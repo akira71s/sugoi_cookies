@@ -58,7 +58,6 @@ function clearCookies_(newDomain, isAll){
   let cookies = document.cookie.split(';');
   if(cookies.length){
     cookies.forEach((cookie)=>{
-      console.log(cookie+ domain + expiryDate);
       if(isAll){
         document.cookie = cookie+ domain + expiryDate;
       } else { // !isAll
