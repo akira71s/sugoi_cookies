@@ -62,7 +62,7 @@ function clearCookies_(newDomain, isAll){
     let cookies = document.cookie.split(';');
     if(cookies.length){
       cookies.forEach((cookie)=>{
-        let name = cookie[0];  
+        let name = cookie.split('=')[0];  
         document.cookie = name+'; max-age=0';
       });
     }
