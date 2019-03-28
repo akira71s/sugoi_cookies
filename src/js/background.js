@@ -155,11 +155,3 @@ function sendMsg_(msg, val){
       chrome.tabs.sendMessage(tabID, {message: msg});
     });
 };
-
-function logCookie(c) {
-  if (chrome.runtime.lastError) {
-    console.error(chrome.runtime.lastError);
-  } else {
-    console.log(c);
-  }
-}
