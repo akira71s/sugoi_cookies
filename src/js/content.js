@@ -2,22 +2,9 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 "use strict";
-/** 
-* eventListener
-* clear cache of background.js
-*/
-window.addEventListener('load', ()=>{
-   chrome.runtime.sendMessage({message:'start'});; 
-});
 
-/** 
-* don't call beforeunload event when tel: clicked
-*/
-window.addEventListener('click', (e)=>{
-  if(e.target && e.target.href && e.target.href.includes('tel:')){
-    e.preventDefault();
-  }
-});
+// start
+chrome.runtime.sendMessage({message:'start'});; 
 
 /** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 

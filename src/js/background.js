@@ -3,9 +3,6 @@
  */
 "use strict";
 let cache_ =[];
-let CVs = [];
-let firedCVlabels = [];
-let contentLoaded = false;
 
 /**
  * detect Google Ads Conversion  
@@ -18,21 +15,11 @@ function listenHTTPRequest(){
 };
 
 /**
- * check conversions that fires before window loaded
- */
-function checkCV (){
-  CVs.forEach((CV)=>{
-    sendMsg_('CV', CV)
-  });
-  CVs = [];
-　firedCVlabels = [];
-  contentLoaded = true;
-}
-
-/**
+ * TODO: add this to ts file
  * check conversions that fires before window loaded
  */
 function checkHttpRequest(requestDetails) {
+  let isDuplicated = false;
   let url = requestDetails.url;
   let code = requestDetails.statusCode;
   if(url.startsWith('https://www.googleadservices.com/pagead/conversion/')){
@@ -48,28 +35,18 @@ function checkHttpRequest(requestDetails) {
     let CVid = surl.substring(surlIdx, surl.indexOf('/', surlIdx+1));
     CVid = CVid.replace('/','');
     let CVlabel= url.substring(labelIdx, url.indexOf('&', labelIdx+1));
-    CVlabel= CVlabel.split('=')[1]; // label=VAL => [label, VAL]  -> [1] === VAL 
+    let CVlabelVal= CVlabel.split('=')[1]; // label=VAL => [label, VAL]  -> [1] === VAL 
 
-    let cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabel};
-      if(!!contentLoaded){
-      if(CVs.length==0){
-       CVs.push(cookie);    
-      }  
-      CVs.forEach((cv)=>{
-      if(cv.cvlabel!==CVlabel){
-          sendMsg_('CV', cookie);
-          CVs.push(cookie);
+    let cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabelVal};
+    let timer = setTimeout(sendMsg_, 100,'CV',cookie);
+    cache_.forEach((label)=>{
+      if(label==CVlabelVal){
+        isDuplicated=true;
+        clearTimeout(timer);
       }
-      });
-      } else {
-      if(CVs.length==0){
-        CVs.push(cookie);    
-      }  
-      CVs.forEach((cv)=>{
-         if(cv.cvlabel!==CVlabel){
-            CVs.push(cookie);
-         }
-      });
+    });
+    if(!isDuplicated){
+      cache_.push(CVlabelVal);
     }
   }
 };
@@ -79,24 +56,18 @@ function checkHttpRequest(requestDetails) {
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   const msg = request.message;
-  const domain = request.domain;
   if(msg==='start'){
-      let enabled = isEnabled_();
-      updateIcon_(enabled);
-      if(enabled){
-        start_(request);
-      }
-    } else if (msg ==='toggle'){
-       toggle_(request);
-       stop_();
-    }
-    return true;
+     listenHTTPRequest()
+     let enabled = isEnabled_();
+     updateIcon_(enabled);
+     if(enabled){
+       start_(request);
+     }
+  } else if (msg ==='toggle'){
+    toggle_(request);
+  }
+  return true;
 });
-
-function stop_() {
-  CVs = [];
-  firedCVlabels = [];
-};
 
 /**
  * to & from pupup.js
@@ -143,6 +114,7 @@ function start_(request){
  * @param {?Any} val
  */
 function sendMsg_(msg, val){
+  cache_ = [];
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     if(!tabs[0]){
       window.alert('please reload the page');
