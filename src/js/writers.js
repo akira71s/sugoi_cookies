@@ -27,8 +27,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 /** 
-* TODO
-*/
+ * TODO: write docs 
+ */
 function checkCookies_(){
   let newCookies = [];
   let isChanged = false;
@@ -58,8 +58,8 @@ function checkCookies_(){
 };
 
 /** 
-* TODO
-*/
+ * TODO: write docs
+ */
 function getCookies(isOnload){
   let cookies = document.cookie.split(';');
   let localStorageGclid = localStorage.getItem('gclid');
@@ -118,6 +118,7 @@ const write_ =(cookies, domain) =>{
 };
 
 /** 
+ * TODO: write docs
  */
 const writeCVinfo_ =(CVinfo) =>{
   console.log('%cCONGRATULATIONS! CV FIRES!', STYLES_BOLD_WHITE_BG_ORANGE.join(';'));
