@@ -1,6 +1,6 @@
 @author Akira Sakaguchi <akira.s7171@gmail.com>
 
-# sugoi_cookies (Latest version: 3.2.2: bug fix
+# sugoi_cookies (Latest version: 3.7.1: CV detector fixed)
 Chrome extension for checking Cookies needed for Google Ads Conversion tracking
 
 (Google広告のコンバージョン計測に必要なクッキーの計測・テストを行う、Google Chromブラウザの拡張機能(プラグイン)です。)
@@ -71,8 +71,8 @@ By hitting the yellow botton, you can clear _gcl_aw & _gac Cookies in the domain
 (現在いるドメインの_gac, _gcl_awを消去します。)  
 
 ### 6: Clear All Cookies (すべてのクッキーの削除)
-By hitting the red botton, you can clear all the cookies you have in the browser.  
-(クロームブラウザのすべてのクッキーを削除します。)  
+By hitting the red botton, you can clear all the cookies you have in the domain.  
+(ドメインのすべてのクッキーを削除します。)  
 
 ### 7: (New! for version 3.0.1) CV Detector (新機能: コンバージョン計測機能) 
 Detect conversions and show Conversion ID & label, cookies the CVs can use.
