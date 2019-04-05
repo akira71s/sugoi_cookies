@@ -34,28 +34,62 @@ function toggle_(enabled){
   chrome.runtime.sendMessage({message:'toggle', shouldEnabled: enabled},()=>{});
  };
 
+// /**
+//  * @private
+//  * @param {string} newDomain
+//  * @param {?boolean} isAll
+//  */
+// function clearCookies_(newDomain, isAll){
+//   const expiryDate = ';max-age=0';
+//   const domain = ';domain='+location.hostname;
+//   let cookies = document.cookie.split(';');
+//   if(cookies.length){
+//     cookies.forEach((cookie)=>{
+//       if(isAll){
+//         document.cookie = cookie+ domain + expiryDate;
+//       } else { // !isAll
+//         if(cookie.includes('gac')||cookie.includes('gclaw')||cookie.includes('gclid')){
+//           document.cookie = cookie +  domain + expiryDate;
+//         }          
+//       }
+//     });
+//   }
+//   console.log('reloading this page in a moment...');
+//   reload_();
+// };
+
 /**
+ * from popup.js to background.js 
  * @private
- * @param {string} newDomain
+ * @param {string} domainStr
  * @param {?boolean} isAll
  */
-function clearCookies_(newDomain, isAll){
-  const expiryDate = ';max-age=0';
-  const domain = ';domain='+location.hostname;
-  let cookies = document.cookie.split(';');
-  if(cookies.length){
-    cookies.forEach((cookie)=>{
-      if(isAll){
-        document.cookie = cookie+ domain + expiryDate;
-      } else { // !isAll
-        if(cookie.includes('gac')||cookie.includes('gclaw')||cookie.includes('gclid')){
-          document.cookie = cookie +  domain + expiryDate;
-        }          
-      }
-    });
+function clearCookies_(domainStr, isAll){
+  const domains = getDomains(document.domain);
+  let msgObj = isAll ? 
+    {message:'clearAll', domain:domains} :
+    {message:'clearCookies', domain:domains}; 
+  chrome.runtime.sendMessage(msgObj, function(response){
+    console.log(STYLE_ESCAPE + response, STYLE_BOLD);
+    console.log('reloading this page in a moment...');
+    reload_();
+    return true;
+  });
+};
+
+/** 
+ * @return {string{}}
+ * @param {string} domain;
+ */
+function getDomains(domain){
+  let domains = [];
+  domains.push(domain);
+  while(domain.indexOf('.')!=-1){
+    domain = domain.slice(domain.indexOf('.'));
+    domain = domain.replace('.','');
+    domains.push(domain);
   }
-  console.log('reloading this page in a moment...');
-  reload_();
+  return domains;
 };
 
 /** 

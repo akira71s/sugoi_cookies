@@ -56,6 +56,7 @@ function checkHttpRequest(requestDetails) {
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   const msg = request.message;
+  const domains = request.domain;
   if(msg==='start'){
      listenHTTPRequest()
      let enabled = isEnabled_();
@@ -65,9 +66,64 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
      }
   } else if (msg ==='toggle'){
     toggle_(request);
+  } else if (msg ==='clearCookies'){
+    domains.forEach((domain)=>{
+      getDomainCookies_(domain).then((cookies)=>{
+        clearCookies_(cookies, true);
+      });
+    });
+    sendResponse('Cookie Cleared!') 
+  }else if (msg ==='clearAll'){
+   domains.forEach((domain)=>{
+      getDomainCookies_(domain).then((cookies)=>{
+        clearCookies_(cookies, false);
+      });
+    });
+    sendResponse('Cookie Cleared!') 
   }
   return true;
 });
+
+/**
+* @private 
+* @return {Promise} 
+* @param {Array.<Object>} cookies - [] default 
+* @param {Array.<Object>} false
+*/
+function clearCookies_(cookies=[], googleCookieOnly=false){
+  return new Promise((resolve, reject)=>{ 
+    cookies.forEach(function(cookie){
+      if(googleCookieOnly){
+        if(cookie.name.includes('gac')||cookie.name.includes('gcl_aw')||cookie.name.includes('gclid')){
+          let url = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain + cookie.path;
+          chrome.cookies.remove({"url": url, "name": cookie.name}, function(cookie){('deleted_cookie', cookie)});
+        }
+      } else {
+        let url = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain + cookie.path;
+        chrome.cookies.remove({"url": url, "name": cookie.name}, function(cookie){('deleted_cookie', cookie)});
+      }
+    });
+    resolve("cookieCleared");
+   });
+};
+
+/**
+* @private 
+* @return {Promise} 
+* @param {?string} domaiNm - if null, get all  
+*/
+function getDomainCookies_(domainNm){
+  let detailObj = domainNm ? {domain:domainNm} :{};
+  return new Promise((resolve, reject)=>{ 
+    // '' is a flag to return empty array
+    if(domainNm===''){
+      resolve([]);
+    }  
+    chrome.cookies.getAll(detailObj,((cookies)=>{
+      resolve(cookies || []);
+    }));
+  });
+};
 
 /**
  * to & from pupup.js
