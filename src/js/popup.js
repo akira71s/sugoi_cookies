@@ -65,6 +65,10 @@ function getUrlWithourGclid (url) {
     url = url.substring(url.indexOf('?gclid'),0);
   } else if(url.includes('&gclid')) {
     url = url.substring(url.indexOf('&gclid'),0);
+  } else if (url.includes('?_gl')){
+    url = url.substring(url.indexOf('?_gl'),0);
+  } else if (url.includes('&_gl')){
+    url = url.substring(url.indexOf('&_gl'),0);
   }
   return url;
 };
