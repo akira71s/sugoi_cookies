@@ -57,7 +57,7 @@ function getGclid_(url) {
  * @return {string} url - url without gclid
  * @param {string} url - url with or without gclid
  */
-function getUrlWithourGclid (url) {
+function getUrlWithoutGclid (url) {
   if(!url){
     return;
   }
@@ -91,7 +91,7 @@ function reload_(){
     const tabID = tabs[0].id;
     if (tabID) {
       chrome.tabs.sendMessage(tabID, {message: 'getUrl'}, ((response)=>{
-        let url = getUrlWithourGclid(response);    
+        let url = getUrlWithoutGclid(response);    
         if(url){
           let gclid = getGclid_(url);
           chrome.tabs.sendMessage(tabID, {message: 'reload', value:url+gclid});
