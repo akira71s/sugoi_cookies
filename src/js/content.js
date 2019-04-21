@@ -34,30 +34,6 @@ function toggle_(enabled){
   chrome.runtime.sendMessage({message:'toggle', shouldEnabled: enabled},()=>{});
  };
 
-// /**
-//  * @private
-//  * @param {string} newDomain
-//  * @param {?boolean} isAll
-//  */
-// function clearCookies_(newDomain, isAll){
-//   const expiryDate = ';max-age=0';
-//   const domain = ';domain='+location.hostname;
-//   let cookies = document.cookie.split(';');
-//   if(cookies.length){
-//     cookies.forEach((cookie)=>{
-//       if(isAll){
-//         document.cookie = cookie+ domain + expiryDate;
-//       } else { // !isAll
-//         if(cookie.includes('gac')||cookie.includes('gclaw')||cookie.includes('gclid')){
-//           document.cookie = cookie +  domain + expiryDate;
-//         }          
-//       }
-//     });
-//   }
-//   console.log('reloading this page in a moment...');
-//   reload_();
-// };
-
 /**
  * from popup.js to background.js 
  * @private

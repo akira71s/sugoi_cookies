@@ -27,7 +27,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 /** 
- * TODO: write docs 
+ * check if new cookies created / overriden after window loaded
+ * @return {bookean}
  */
 function checkCookies_(){
   let newCookies = [];
@@ -57,8 +58,9 @@ function checkCookies_(){
   }
 };
 
-/** 
- * TODO: write docs
+ /** 
+ * return array of cookies ('name=value')
+ * @return {string[]}
  */
 function getCookies(isOnload){
   let cookies = document.cookie.split(';');
@@ -118,7 +120,7 @@ const write_ =(cookies, domain) =>{
 };
 
 /** 
- * TODO: write docs
+ * logging cookie info (related to Google Ads)
  */
 const writeCVinfo_ =(CVinfo) =>{
   console.log('%cCONGRATULATIONS! CV FIRES!', STYLES_BOLD_WHITE_BG_ORANGE.join(';'));
