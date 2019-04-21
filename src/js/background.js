@@ -5,39 +5,34 @@
 let cache_ =[];
 
 /**
- * detect Google Ads Conversion  
- */
-function listenHTTPRequest(){
-  chrome.webRequest.onCompleted.addListener(
-    checkHttpRequest,
-    {urls: ["<all_urls>"]}
-  );
-};
-
-/**
- * TODO: add this to ts file
  * check conversions that fires before window loaded
  */
 function checkHttpRequest(requestDetails) {
   let isDuplicated = false;
   let url = requestDetails.url;
-  let code = requestDetails.statusCode;
   if(url.startsWith('https://www.googleadservices.com/pagead/conversion/')){
-    let gclawIdx = url.indexOf('&gclaw')
-    let gacIdx = url.indexOf('&gac')
-    let cvStrIdx = url.indexOf('conversion/');
-    let labelIdx = url.indexOf('label=');
-    let surl = url.substr(cvStrIdx+1, url.indexOf('/', cvStrIdx+1));
-    let surlIdx = surl.indexOf('/');
+    const queryIdx = url.indexOf('?');
+    // index without query param
+    const shortUrl = url.substring(0,queryIdx);
+    const reEx = /https:\/\/www.googleadservices.com\/pagead\/conversion\/(.*)\//;
+    // return if the request is not for Google Ads CV
+    if(shortUrl.search(reEx)==-1){
+      return;
+    }
+    const gclawIdx = url.indexOf('&gclaw')
+    const gacIdx = url.indexOf('&gac')
+    const cvStrIdx = url.indexOf('conversion/');
+    const labelIdx = url.indexOf('label=');
 
-    let gclaw= gclawIdx != -1 ? url.substring(gclawIdx, url.indexOf('&', gclawIdx+1)) : '';
-    let gac= gacIdx != -1? url.substring(gacIdx, url.indexOf('&', gacIdx+1)):'';
-    let CVid = surl.substring(surlIdx, surl.indexOf('/', surlIdx+1));
-    CVid = CVid.replace('/','');
-    let CVlabel= url.substring(labelIdx, url.indexOf('&', labelIdx+1));
-    let CVlabelVal= CVlabel.split('=')[1]; // label=VAL => [label, VAL]  -> [1] === VAL 
+    // match returns 2 strings: [0] === whole the url, [1] matched string === CVid for the conversion
+    let CVid = shortUrl.match(reEx)[1];
+    console.log(CVid);
+    const gclaw= gclawIdx != -1 ? url.substring(gclawIdx, url.indexOf('&', gclawIdx+1)) : '';
+    const gac= gacIdx != -1? url.substring(gacIdx, url.indexOf('&', gacIdx+1)):'';
+    const CVlabel= url.substring(labelIdx, url.indexOf('&', labelIdx+1));
+    const CVlabelVal= CVlabel.split('=')[1]; // label=VAL => [label, VAL]  -> [1] === VAL 
 
-    let cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabelVal};
+    const cookie = {'gclaw':gclaw, 'gac':gac, 'cvid':CVid, 'cvlabel':CVlabelVal};
     let timer = setTimeout(sendMsg_, 100,'CV',cookie);
     cache_.forEach((label)=>{
       if(label==CVlabelVal){
@@ -58,12 +53,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   const msg = request.message;
   const domains = request.domain;
   if(msg==='start'){
-     listenHTTPRequest()
      let enabled = isEnabled_();
      updateIcon_(enabled);
      if(enabled){
        start_(request);
-     }
+       listenHTTPRequest();
+      }
   } else if (msg ==='toggle'){
     toggle_(request);
   } else if (msg ==='clearCookies'){
@@ -83,6 +78,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   }
   return true;
 });
+
+/**
+ * detect Google Ads Conversion  
+ */
+function listenHTTPRequest(){
+  chrome.webRequest.onCompleted.addListener(
+    checkHttpRequest,
+    {urls: ["<all_urls>"]}
+  );
+};
 
 /**
 * @private 
