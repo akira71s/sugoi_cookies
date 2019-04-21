@@ -1,6 +1,6 @@
 @author Akira Sakaguchi <akira.s7171@gmail.com>
 
-# sugoi_cookies (Latest version: 3.7.1: CV detector fixed)
+# sugoi_cookies (Latest version: 3.7.2: CV detector fixed)
 Chrome extension for checking Cookies needed for Google Ads Conversion tracking
 
 (Google広告のコンバージョン計測に必要なクッキーの計測・テストを行う、Google Chromブラウザの拡張機能(プラグイン)です。)
