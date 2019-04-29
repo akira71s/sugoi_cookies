@@ -1,21 +1,21 @@
 @author Akira Sakaguchi <akira.s7171@gmail.com>
 
-# sugoi_cookies (Latest version: 3.7.2: CV detector fixed)
+# sugoi_cookies (Latest version: 4.0.0: big change in the UI)
 Chrome extension for checking Cookies needed for Google Ads Conversion tracking
 
 (Google広告のコンバージョン計測に必要なクッキーの計測・テストを行う、Google Chromブラウザの拡張機能(プラグイン)です。)
 
-<img width="640" alt="SS" src="https://user-images.githubusercontent.com/40524432/54485487-50e4dd00-48b4-11e9-99e5-d5b3cd206fde.PNG">
-<img width="827" alt="1280_800" src="https://user-images.githubusercontent.com/40524432/53511451-6eb3f300-3afb-11e9-861b-2f2a4671e423.PNG">
+<img width="640" alt="1280" src="https://user-images.githubusercontent.com/40524432/56913612-ae3f9100-6ae4-11e9-8f01-dd81e2fac6bd.PNG">
+<img width="640" alt="1280_2" src="https://user-images.githubusercontent.com/40524432/56913613-aed82780-6ae4-11e9-8ec6-d61e57d3b436.PNG">
 
 ## Outline(概要):
 Check if you have cookies that are needed for Google Ads conversion tracking by gclid test
 Before this plugin, you needed to add 「?or&gclid=...」 to the URL, then open the developer tool, find the cookie names...
-but you don't need to do anymore. What you need to do is just check the console!
+but you don't need to do anymore. What you need to do is just check the console or in the POPUP menu!
 
 (gclidテストと呼ばれるテスト行うと、Google広告のクッキーがきちん保存されているか確認ができます。
 今まではURLの後ろに? or & gclid=... とつけて、デベロッパーツールを開いて、クッキーを探して....
-という作業が必要でしたが、このプラグインを使えば、それがコンソールでできます。)
+という作業が必要でしたが、このプラグインを使えば、それがコンソール or ポップアップメニュー内でできます。)
 
 ## JS files (JavaScript ファイル):
 ### writers.js
@@ -33,7 +33,7 @@ but you don't need to do anymore. What you need to do is just check the console!
   => [content,js]: after async functions done (Promise), execute reload with or without gclid
 
 ## Features(機能):  
-### 1: Check "_gcl_aw" in the console.(_gcl_aw_クッキーを検出し、コンソールで情報を流します)    
+### 1: Check "_gcl_aw" in the console & the popup menu.(_gcl_aw_クッキーを検出し、コンソール & ポップアップメニューで情報を流します)    
 This is a cookie that plays a very important role for Google Ads and its conversion tracking.  
 
 (このクッキーはGoogle広告のコンバージョン計測に欠かせないものです。)
@@ -43,7 +43,7 @@ For more information about how _gcl_aw works, please have a look below:
 English - https://developers.google.com/adwords-remarketing-tag/?hl=en    
 日本語 - https://developers.google.com/adwords-remarketing-tag/?hl=ja    
 
-### 2: Check "_gac" in the console.(_gac_クッキーを検出し、コンソールで情報を流します)   
+### 2: Check "_gac" in the console & the popup menu.(_gac_クッキーを検出し、コンソール&ポップアップメニューで情報を流します)   
 It is a type of Google Analytics cookie, and also can be utilized for Google Ads conversion tracking.   
 *You need to link your Google Ads & Google Analytics accounts to utilize this cookie    
 
@@ -61,7 +61,7 @@ You are an advertiser or web marketing developer but don't know much about gclid
 English - https://support.google.com/analytics/answer/2938246?hl=en  
 日本語 - https://support.google.com/analytics/answer/2938246?hl=ja  
 
-### 4: Check "gclid" in the console.(gclidクッキーを検出し、コンソールで情報を流します)     
+### 4: Check "gclid" in the console & the popup menu.(gclidクッキーを検出し、コンソール&ポップアップメニューで情報を流します)     
 For how to use "gclid" cookies, check the link below (Ofline Conversions)  
 English - https://support.google.com/google-ads/answer/2998031?hl=ja  
 日本語 - https://support.google.com/google-ads/answer/2998031?hl=en  
