@@ -61,6 +61,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       }
   } else if (msg ==='toggle'){
     toggle_(request);
+    sendResponse('toggled') 
   } else if (msg ==='clearCookies'){
     domains.forEach((domain)=>{
       getDomainCookies_(domain).then((cookies)=>{

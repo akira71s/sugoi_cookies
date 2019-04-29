@@ -1,26 +1,14 @@
 <!DOCTYPE html>
 <html>
- <head>
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="../css/popup.css">
-  </head>
-  <body>
-    <div>
-      <p>G'day mate! Input value to test gclid</p>
-      <div class="second-line">
-        <span>gclid = </span><input id='input'></input> 
-        <span><input id='go' type="button" class="btn-primary" value="Go!"/></span>
-        <span><input id='clear' type="button" class="btn-warning" value="Clear"/></span>
-      </div>
-      <div class="third-line">
-        <input id='clear-all' type="button" class="btn-danger" value="Clear ALL Cookies"/>
-        <!-- Rounded switch -->
-        <label class="switch">
-          <input id="toggle" type="checkbox">
-          <span class="slider round"></span>
-        </label> 
-      </div>
-    </div>
-  </body>
-  <script type="text/javascript" src="../js/popup.js"></script>
+<head>
+<link rel="stylesheet" type="text/css" href="../css/popup.css">
+<script src="../js/popup.js"></script>  
+</head>
+<body>
+<div class="icon-parent">
+    <img class="icon" src="../img/icon_bgbk.png">
+    <span class="ver-info">v4.0.0</span>
+</div>
+<iframe id="main-iframe" src="iframe.html"></iframe>
+</body>
 </html>

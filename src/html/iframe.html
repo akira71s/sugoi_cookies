@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../lib/vue.min.js"></script>
+</head>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="../css/iframe.css">
+</head>
+<body>
+    <div class="second-line">
+        <span class="gclid-title">gclid = </span><span class="input-parent"><input id='gclid-input' v-model="value"></input></span> 
+        <span class="go-parent"><input id='go' v-on:click="go" type="button" class="btn-primary" value="Go!"/></span>
+    </div>
+    <div class="third-line">
+        <span class='clear'><input id='clear' v-on:click="clear" type="button" class="btn-warning" value="Clear GoogleAds-related Cookies"/></span>
+    </div>
+    <div class="forth-line">
+        <span class='clear-all'><input id='clear-all' v-on:click="clearAll" type="button" class="btn-danger" value="Clear ALL Cookies of the domain"/></span>
+    </div>
+    <div class="msgs">
+        <div id="gclaw-msg">
+           <span id='gclaw-name'>{{name}}</span>  <span id='gclaw-value' v-bind:class='{bgGreen:hasValue}' title={{value}}>{{value}}</span>
+        </div>
+        <div id="gac-msg">
+            <span id='gac-name'>{{name}}</span>  <span v-bind:class='{bgGreen:hasValue}' id='gac-value' title={{value}}>{{value}}</span>
+        </div>
+        <div id="gclid-msg">
+            <span id='gclid-name'>{{name}}</span>   <span v-bind:class='{bgGreen: hasValue }' id='gclid-value' title={{value}}>{{value}}</span>
+        </div>  
+    </div>
+    <div class='footer-iframe'>
+           <span id="domain-msg">
+              <span class="domain-msg">{{msg}}</span>
+              <br/>
+              <span id="domain-name"v-if="enabled">{{domainName}}</span>
+            </span>
+           <!--
+            <span id="img-parent">
+                <img v-if="enabled" id="switch-img" src="../img/bk.png">
+                <img v-else id="switch-img" src="../img/msg.png">
+            </span>
+            -->
+        <!-- Rounded switch -->
+        <label id="switch-input" class="switch">
+            <input id="toggle" v-on:change="toggle" type="checkbox">
+            <span class="slider round"></span>
+        </label>
+    </div>
+<script type="text/javascript" src="../js/iframe_popup.js"></script>
+</body>
+</html>
