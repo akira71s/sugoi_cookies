@@ -2,152 +2,18 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 "use strict";
-const DOMAIN_MSG = "Your Current Domain is :";
-const DOMAIN_HERE_MSG = 'domain will be shown here'; 
-const INSTRUCTION = "To Enable It & Get Started, Click =>";
-const PARENT_URL = 'chrome-extension://knohbnpbdehneiegeneeeajikikaehag/';
-const NO_COOKIE_MSG = 'NO COOKIE FOUND';
 
-let gclidInput = new Vue({
-  el:'#gclid-input',
-  methods:{
-    emptyInput:function(){
-      this.value = '';
-    }
-  }
-});
-
-let goBtn = new Vue({
-  el:'#go',
-  methods:{
-    go:function(){
-        if(gclidInput.value){
-          reload_();    
-        }
-    } 
-  }
-});
-
-let clearBtn = new Vue({
-  el:'#clear',
-  methods:{
-    clear:function(){
-      clearCookieMsgs();
-      gclidInput.emptyInput();
-      sendMsgToContentJS_('clearCookies', null);
-    } 
-  }
-});
-
-let clearAllBtn = new Vue({
-  el:'#clearAll',
-  methods:{
-    clearAll:function(){
-      clearCookieMsgs();
-      gclidInput.emptyInput();
-      sendMsgToContentJS_('clearAll', null);    
-    } 
-  }
-});
-
-function clearCookieMsgs(){
-  gclawMsg.setValue(''); 
-  gacMsg.setValue('');
-  gclidMsg.setValue('');
-}
-
-var gclidMsg = new Vue({
-  el:'#gclid-msg',
-      data: {
-          name: 'gclid',
-          value: NO_COOKIE_MSG,
-          hasValue: false
-      },
-      methods :{
-        setValue : function(val){
-          this.value = val;
-          this.hasValue = this.value === ''  || this.value === NO_COOKIE_MSG ? false: true;
-        }
-      },
-      created: function(){
-        window.parent.postMessage(JSON.stringify({type:'getCookies'}), PARENT_URL);
-     }
-});
-
-var gclawMsg = new Vue({
-  el:'#gclaw-msg',
-      data: {
-        name: '_gcl_aw',
-        value: NO_COOKIE_MSG,
-        hasValue: false
-      },
-      methods :{
-        setValue : function(val){
-          this.value = val;
-          this.hasValue = this.value === ''  || this.value === NO_COOKIE_MSG ? false: true;
-        }
-      },
-      created: function(){
-        window.parent.postMessage(JSON.stringify({type:'getCookies'}), PARENT_URL);
-     }
-});
-  
-var gacMsg = new Vue({
-  el:'#gac-msg',
-      data: {
-        name: '_gac',
-        value: NO_COOKIE_MSG,
-        hasValue: false
-      },
-      methods :{
-        setValue : function(val){
-          this.value = val;
-          this.hasValue = this.value === ''  || this.value === NO_COOKIE_MSG ? false: true;
-        }
-      },
-      created: function(){
-        window.parent.postMessage(JSON.stringify({type:'getCookies'}), PARENT_URL);
-      }
-});
-  
-var domainMsg = new Vue({
-  el:'#domain-msg',
-  data: {
-      enabled: false,
-      msg: DOMAIN_MSG,
-      domainName: DOMAIN_HERE_MSG
-  },
-  methods: {
-    toggle: function(){
-      this.enabled = !this.enabled;
-      this.msg = this.enabled ? DOMAIN_MSG : INSTRUCTION;
-    }
-  },
-  created: function(){
-     window.parent.postMessage(JSON.stringify({type:'checkEnabled'}), PARENT_URL);
-     window.parent.postMessage(JSON.stringify({type:'getDomainName'}), PARENT_URL);
-  }
-});
-
-var switchInput = new Vue({
-  el:'#toggle',
-  methods: {
-      toggle: function () {
-        window.parent.postMessage(JSON.stringify({'type':'toggleEnabled'}), PARENT_URL); 
-        sendMsgToContentJS_('toggle',this.$el.checked, 'reload');
-        domainMsg.toggle();
-      },
-      check: function () {
-       this.$el.checked = true;
-      },
-      uncheck: function () {
-       this.$el.checked = false;
-      }
-  }
+/** 
+ * TODO: how to deal with this with Vue.js?
+ * eventListener
+ */
+window.addEventListener('load', function(){
+  let inputEl = document.getElementById('gclid-input');
+  inputEl.onkeydown = (e) => {if(e.key==='Enter'&&e.target.value!=''){reload_()}};
 });
 
 /**
-* check if the extension is enabled or not 
+*  Messages from popup.js (parent window)
 */
 window.addEventListener('message', (e)=>{
   if(!IsJsonString(e.data)){
@@ -189,15 +55,6 @@ window.parent.postMessage(JSON.stringify(obj), PARENT_URL);
 };
 
 /** 
- * TODO: how to deal with this with Vue.js?
- * eventListener
- */
-window.addEventListener('load', function(){
-  let inputEl = document.getElementById('gclid-input');
-  inputEl.onkeydown = (e) => {if(e.key==='Enter'&&e.target.value!=''){reload_()}};
-});
-
-/** 
  * @param {!string} msg
  * @param {?string} val
  * @param {function} callback
@@ -207,9 +64,8 @@ function sendMsgToContentJS_(msg,val,callback){
   window.parent.postMessage(JSON.stringify(obj), PARENT_URL);
 };
 
-/**
- * check if the string is JSON parsable
- * @return {boolean}  
+/** 
+ * TODO: import 
  */
 function IsJsonString(str) {
   try {

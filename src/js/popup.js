@@ -1,20 +1,25 @@
 /** 
- * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
+ * Listening message from content.js & writers.js
+ * once messages received, post message to the iframe window
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   let msg = request.message;
+
   if(msg==='sendDomainName'){
     const $iFrame = document.getElementById('main-iframe');
     $iFrame.contentWindow.postMessage(JSON.stringify({type:'sendDomainName', 'domainName':request.domainName}),'*');  
+
   } if(msg==='sendCookie'){
     const $iFrame = document.getElementById('main-iframe');
     $iFrame.contentWindow.postMessage(JSON.stringify({type:'sendCookie', 
       'cookieName':request.cookieName,'cookieValue':request.cookieValue}),'*');  
   } 
- 
-  return true;
+   return true;
 });
 
+/** 
+ * Listening message from the iframe window
+*/
 window.addEventListener('message',(e)=>{
   if(!IsJsonString(e.data)){
     return;
@@ -85,7 +90,6 @@ window.addEventListener('message',(e)=>{
       return true; 
     })
   }
-
 });
 
 /** 

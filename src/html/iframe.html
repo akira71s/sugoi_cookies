@@ -5,6 +5,7 @@
 </head>
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="../css/iframe.css">
+<link rel="stylesheet" type="text/css" href="../css/switch-input.css">
 </head>
 <body>
     <div class="second-line">
@@ -33,19 +34,15 @@
               <span class="domain-msg">{{msg}}</span>
               <br/>
               <span id="domain-name"v-if="enabled">{{domainName}}</span>
-            </span>
-           <!--
-            <span id="img-parent">
-                <img v-if="enabled" id="switch-img" src="../img/bk.png">
-                <img v-else id="switch-img" src="../img/msg.png">
-            </span>
-            -->
+           </span>
         <!-- Rounded switch -->
         <label id="switch-input" class="switch">
             <input id="toggle" v-on:change="toggle" type="checkbox">
             <span class="slider round"></span>
         </label>
     </div>
+<script type="text/javascript" src="../js/iframe_const.js"></script>
+<script type="text/javascript" src="../js/iframe_components.js"></script>
 <script type="text/javascript" src="../js/iframe_popup.js"></script>
 </body>
 </html>
