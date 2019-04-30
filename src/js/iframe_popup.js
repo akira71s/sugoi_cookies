@@ -6,8 +6,9 @@ const DOMAIN_MSG = "Your Current Domain is :";
 const DOMAIN_HERE_MSG = 'domain will be shown here'; 
 const INSTRUCTION = "To Enable It & Get Started, Click =>";
 const PARENT_URL = 'chrome-extension://knohbnpbdehneiegeneeeajikikaehag/';
+const NO_COOKIE_MSG = 'NO COOKIE FOUND';
 
-var gclidInput = new Vue({
+let gclidInput = new Vue({
   el:'#gclid-input',
   methods:{
     emptyInput:function(){
@@ -16,7 +17,7 @@ var gclidInput = new Vue({
   }
 });
 
-var goBtn = new Vue({
+let goBtn = new Vue({
   el:'#go',
   methods:{
     go:function(){
@@ -27,27 +28,34 @@ var goBtn = new Vue({
   }
 });
 
-var clearBtn = new Vue({
+let clearBtn = new Vue({
   el:'#clear',
   methods:{
     clear:function(){
+      clearCookieMsgs();
       gclidInput.emptyInput();
       sendMsgToContentJS_('clearCookies', null);
     } 
   }
 });
 
-var clearAllBtn = new Vue({
+let clearAllBtn = new Vue({
   el:'#clearAll',
   methods:{
     clearAll:function(){
+      clearCookieMsgs();
       gclidInput.emptyInput();
       sendMsgToContentJS_('clearAll', null);    
     } 
   }
 });
 
-const NO_COOKIE_MSG = 'NO COOKIE FOUND';
+function clearCookieMsgs(){
+  gclawMsg.setValue(''); 
+  gacMsg.setValue('');
+  gclidMsg.setValue('');
+}
+
 var gclidMsg = new Vue({
   el:'#gclid-msg',
       data: {
