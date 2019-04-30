@@ -189,20 +189,13 @@ window.parent.postMessage(JSON.stringify(obj), PARENT_URL);
 };
 
 /** 
+ * TODO: how to deal with this with Vue.js?
  * eventListener
  */
 window.addEventListener('load', function(){
   let inputEl = document.getElementById('gclid-input');
   inputEl.onkeydown = (e) => {if(e.key==='Enter'&&e.target.value!=''){reload_()}};
 });
-
-/** 
- * @private
- */
-function reload_(){
-  const obj = {'type':'reload','gclidVal':document.getElementById('gclid-input').value};
-  window.parent.postMessage(JSON.stringify(obj), PARENT_URL);
-};
 
 /** 
  * @param {!string} msg
