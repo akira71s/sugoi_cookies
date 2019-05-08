@@ -1,3 +1,15 @@
+/**
+ * dataflow starts from popup.js: windowLoaded
+ * -> start & tell the parentURL to iframe_popup.js // TODO: use hard-coded URL
+ * -> iframe_popup.js tell the parentURL to & call decorateComponents(); // TODO: use hard-coded URL
+ */
+window.addEventListener('load',(e)=>{
+  const $iFrame = document.getElementById('main-iframe');
+  console.log(window.location.href);
+  $iFrame.contentWindow.postMessage(JSON.stringify({type:'start', 'parentUrl':window.location.href}),'*');   
+  document.getElementById('ver-info').innerText = VERSION;
+});
+
 /** 
  * Listening message from content.js & writers.js
  * once messages received, post message to the iframe window

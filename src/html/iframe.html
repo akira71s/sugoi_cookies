@@ -6,17 +6,18 @@
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="../css/iframe.css">
 <link rel="stylesheet" type="text/css" href="../css/switch-input.css">
+<script src="../js/custom-button.js"></script>
 </head>
 <body>
     <div class="second-line">
         <span class="gclid-title">gclid = </span><span class="input-parent"><input id='gclid-input' v-model="value"></input></span> 
         <span class="go-parent"><input id='go' v-on:click="go" type="button" class="btn-primary" value="Go!"/></span>
     </div>
-    <div class="third-line">
-        <span class='clear'><input id='clear' v-on:click="clear" type="button" class="btn-warning" value="Clear GoogleAds-related Cookies"/></span>
+    <div class="third-line" id="clear-parent">
+        <custom-button v-on:click="clear" v-bind:class="btnClass" v-bind:id="btnId" v-bind:class="spanId" v-bind:value="btnValue"/></custom-button>
     </div>
-    <div class="forth-line">
-        <span class='clear-all'><input id='clear-all' v-on:click="clearAll" type="button" class="btn-danger" value="Clear ALL Cookies of the domain"/></span>
+    <div class="forth-line" id="clear-all-parent">
+       <custom-button v-on:click="clearAll" v-bind:class="btnClass" v-bind:id="btnId" v-bind:class="spanId" v-bind:value="btnValue"/></custom-button>
     </div>
     <div class="msgs">
         <div id="gclaw-msg">
