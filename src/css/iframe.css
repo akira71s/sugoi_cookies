@@ -1,0 +1,97 @@
+*{
+  font-family: arial, sans-serif;
+}
+
+body{
+  overflow-x: hidden;
+}
+
+.footer-iframe{
+  background-color:black;
+  height:56px;
+  width:100%;
+  padding-top:12px;
+}
+
+.bgGreen{
+  background-color: green;
+  color: #ffffff;
+  font-style: bold;
+}
+
+.domain-msg{
+  padding-top: 8px;
+}
+
+#domain-name{
+  font-weight: bold;
+  font-size: 18px; 
+}
+
+#domain-msg{
+  color: #ffffff;
+}
+
+#gclaw-msg, #gac-msg, #gclid-msg{
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+#gclaw-value, #gac-value, #gclid-value{
+  font-weight: bold; 
+}
+.second-line{
+  padding: 16px 16px 4px 16px;
+}
+
+.third-line{
+  padding: 8px 16px 0px 16px;
+}
+
+.forth-line{
+  padding:8px 16px 0px 16px;
+}
+
+.msgs{
+  padding: 12px 16px 0px 16px;
+  font-size: px;
+}
+
+.switch{
+  display:inline-block; 
+}
+
+.app-container{
+  margin-top:12px;
+  vertical-align:middle;
+}
+
+/** INPUT FOR GCLID*/
+.gclid-title{
+  font-size:24px;
+  font-weight: bold; 
+}
+
+.input-parent{
+  display: inline-block; 
+}
+
+#gclid-input{
+  margin-left:8px;
+  font-size:24px;
+  max-width:120px;
+}
+
+/** BUTONS */
+.go-parent{
+  display: inline-block; 
+}
+
+#go{
+  font-size:24px;
+  margin-left: 8px;
+}
+
+#clear, #clear-all{
+  font-size:14px;
+}

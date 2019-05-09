@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../lib/vue.min.js"></script>
+</head>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="../css/iframe.css">
+<link rel="stylesheet" type="text/css" href="../css/switch-input.css">
+<script src="../js/custom-button.js"></script>
+</head>
+<body>
+    <div class="second-line">
+        <span class="gclid-title">gclid = </span>
+        <span class="input-parent">
+            <input id='gclid-input' v-on:keydown="handleKeydown" v-model="value"></input>
+        </span> 
+        <span class="go-parent" id="go-parent">
+            <custom-button v-on:click="go" v-bind:class="btnClass" v-bind:id="btnId" v-bind:value="btnValue"/></custom-button>
+        </span>
+    </div>
+    <div class="third-line" id="clear-parent">
+        <custom-button v-on:click="clear" v-bind:class="btnClass" v-bind:id="btnId"  v-bind:value="btnValue"/></custom-button>
+    </div>
+    <div class="forth-line" id="clear-all-parent">
+       <custom-button v-on:click="clearAll" v-bind:class="btnClass" v-bind:id="btnId" v-bind:value="btnValue"/></custom-button>
+    </div>
+    <div class="msgs">
+        <div id="gclaw-msg">
+           <span id='gclaw-name'>{{name}}</span>  <span id='gclaw-value' v-bind:class='{bgGreen:hasValue}' title={{value}}>{{value}}</span>
+        </div>
+        <div id="gac-msg">
+            <span id='gac-name'>{{name}}</span>  <span v-bind:class='{bgGreen:hasValue}' id='gac-value' title={{value}}>{{value}}</span>
+        </div>
+        <div id="gclid-msg">
+            <span id='gclid-name'>{{name}}</span>   <span v-bind:class='{bgGreen: hasValue }' id='gclid-value' title={{value}}>{{value}}</span>
+        </div>  
+    </div>
+    <div class='footer-iframe'>
+           <span id="domain-msg">
+              <span class="domain-msg">{{msg}}</span>
+              <br/>
+              <span id="domain-name"v-if="enabled">{{domainName}}</span>
+           </span>
+        <!-- Rounded switch -->
+        <label id="switch-input" class="switch">
+            <input id="toggle" v-on:change="toggle" type="checkbox">
+            <span class="slider round"></span>
+        </label>
+    </div>
+<script type="text/javascript" src="../js/iframe_const.js"></script>
+<script type="text/javascript" src="../js/iframe_components.js"></script>
+<script type="text/javascript" src="../js/iframe_popup.js"></script>
+</body>
+</html>

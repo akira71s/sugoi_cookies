@@ -22,7 +22,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   // from background js
   } else if (msg=='CV'){
     writeCVinfo_(val);
+  } else if (msg=='getCookies'){
+    chrome.runtime.sendMessage({message:'sendCookie', cookieName: 'gcl_aw', cookieValue:gclawCache});
+    chrome.runtime.sendMessage({message:'sendCookie', cookieName: 'gac', cookieValue:gacCache});
+    chrome.runtime.sendMessage({message:'sendCookie', cookieName: 'gclid', cookieValue:gclidCache});
   }
+
   return true;
 });
 
@@ -181,7 +186,6 @@ const writeCookieInfo_ = (cookie) =>{
   }
   let name = cookie.split('=')[0];
   let value = cookie.split('=')[1];
-  value.length === DEFAULT_COOKIE_LENGTH ?
-  console.log(STYLE_ESCAPE + name + '=' + value, STYLES_BOLD_WHITE_BG_GREEN.join(';')):
   console.log(STYLE_ESCAPE + name + '=' + value, STYLES_BOLD_WHITE_BG_GREEN.join(';'));
+  chrome.runtime.sendMessage({message:'sendCookie', cookieName: name, cookieValue:value});
 }; 

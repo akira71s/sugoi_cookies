@@ -4,24 +4,40 @@
 "use strict";
 
 // start
-chrome.runtime.sendMessage({message:'start'});; 
+chrome.runtime.sendMessage({message:'start'});
+chrome.runtime.sendMessage({message:'sendDomainName',domainName:document.domain}); 
+
 
 /** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
  */
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
    let msg = request.message;
-   if(msg==="clearCookies"){
+   switch(msg){
+     case "clearCookies":
      clearCookies_(document.domain);
-   } else if (msg==="clearAll") {
+     break;
+
+     case "clearAll" :
      clearCookies_(document.domain, true);
-   } else if (msg==='reload'){
+     break;
+
+     case 'reload' :
      reload_(request.value);
-   } else if (msg==='toggle'){
+     break;
+
+     case 'toggle':
      toggle_(request.value);
-   } else if('getUrl'){
-    sendResponse(window.location.href);
-   }
+     break;
+
+     case 'getUrl':
+     sendResponse(window.location.href);
+     break;
+
+     case 'getDomainName':
+     chrome.runtime.sendMessage({message:'sendDomainName',domainName:document.domain}); 
+     break;
+  }
   return true;
 });
 
