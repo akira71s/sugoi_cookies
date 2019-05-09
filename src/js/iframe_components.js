@@ -21,20 +21,25 @@ function decorateComponents(parentUrl){
       }
     });
   
-  /**
-  * go button
-  */
- window.goBtn = new Vue({
-      el:'#go',
-      methods:{
-        go:function(){
-            if(gclidInput.value && switchInput.isChekced()){
-              reload();    
-            }
-        } 
-      }
-    });
-    
+      /**
+   * go button
+   */
+  window.goBtn = new Vue({
+    el:'#go-parent',
+    data:{
+      btnClass: "btn-primary",
+      btnId: "go",
+      btnValue: "Go!",
+    },  
+    methods:{
+      go:function(){
+          if(gclidInput.value && switchInput.isChekced()){
+            reload();    
+          }
+      } 
+    }
+  });
+
   /**
    * clear button
    */
@@ -43,7 +48,6 @@ function decorateComponents(parentUrl){
       data:{
         btnClass: "btn-warning",
         btnId: "clear",
-        spanId: "clear",
         btnValue: "Clear GoogleAds-related Cookies",
       },  
       methods:{
@@ -68,7 +72,6 @@ function decorateComponents(parentUrl){
     data:{
       btnClass: "btn-danger",
       btnId: "clear-all",
-      spanId: "clear-all",
       btnValue: "Clear ALL Cookies of the domain",
     },  
     methods:{

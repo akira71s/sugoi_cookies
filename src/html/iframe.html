@@ -14,13 +14,15 @@
         <span class="input-parent">
             <input id='gclid-input' v-on:keydown="handleKeydown" v-model="value"></input>
         </span> 
-        <span class="go-parent"><input id='go' v-on:click="go" type="button" class="btn-primary" value="Go!"/></span>
+        <span class="go-parent" id="go-parent">
+            <custom-button v-on:click="go" v-bind:class="btnClass" v-bind:id="btnId" v-bind:value="btnValue"/></custom-button>
+        </span>
     </div>
     <div class="third-line" id="clear-parent">
-        <custom-button v-on:click="clear" v-bind:class="btnClass" v-bind:id="btnId" v-bind:class="spanId" v-bind:value="btnValue"/></custom-button>
+        <custom-button v-on:click="clear" v-bind:class="btnClass" v-bind:id="btnId"  v-bind:value="btnValue"/></custom-button>
     </div>
     <div class="forth-line" id="clear-all-parent">
-       <custom-button v-on:click="clearAll" v-bind:class="btnClass" v-bind:id="btnId" v-bind:class="spanId" v-bind:value="btnValue"/></custom-button>
+       <custom-button v-on:click="clearAll" v-bind:class="btnClass" v-bind:id="btnId" v-bind:value="btnValue"/></custom-button>
     </div>
     <div class="msgs">
         <div id="gclaw-msg">
