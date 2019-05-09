@@ -10,7 +10,10 @@
 </head>
 <body>
     <div class="second-line">
-        <span class="gclid-title">gclid = </span><span class="input-parent"><input id='gclid-input' v-model="value"></input></span> 
+        <span class="gclid-title">gclid = </span>
+        <span class="input-parent">
+            <input id='gclid-input' v-on:keydown="handleKeydown" v-model="value"></input>
+        </span> 
         <span class="go-parent"><input id='go' v-on:click="go" type="button" class="btn-primary" value="Go!"/></span>
     </div>
     <div class="third-line" id="clear-parent">

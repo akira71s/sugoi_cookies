@@ -2,16 +2,8 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 "use strict";
-var parentUrl;
-
-/** 
- * TODO: how to deal with this with Vue.js?
- * eventListener
- */
-window.addEventListener('load', function(){  
-  let inputEl = document.getElementById('gclid-input');
-  inputEl.onkeydown = (e) => {if(e.key==='Enter'&&e.target.value!=''){reload_()}};
-});
+// TODO delete this
+let parentUrl;
 
 /**
 *  Messages from popup.js (parent window)
@@ -21,6 +13,8 @@ window.addEventListener('message', (e)=>{
     return;
   }
   const data = JSON.parse(e.data);
+  // TODO: delete this
+  // decorateComponents can be called just after DOM ready
   if(data.type && data.type==='start'){
     parentUrl = data.parentUrl;
     decorateComponents(parentUrl);
@@ -29,7 +23,7 @@ window.addEventListener('message', (e)=>{
     domainMsg.enabled = data.isEnabled ? true:false;
     data.isEnabled ? switchInput.check() : switchInput.uncheck();
   } else if(data.type && data.type==='reload'){
-    reload_();
+    reload();
 
   } else if(data.type && data.type==='emptyInput'){
     gclidInput.emptyInput();
@@ -53,7 +47,7 @@ window.addEventListener('message', (e)=>{
 /** 
 * @private
 */
-function reload_(){
+function reload(){
 const obj = {'type':'reload','gclidVal':gclidInput.value};
 window.parent.postMessage(JSON.stringify(obj), parentUrl);
 };

@@ -10,8 +10,13 @@ function decorateComponents(parentUrl){
   window.gclidInput = new Vue({
       el:'#gclid-input',
       methods:{
-        emptyInput:function(){
+        emptyInput: function(){
           this.value = '';
+        },
+        handleKeydown: function(e){
+          if(e.key==='Enter'&&this.value!=''&& switchInput.isChekced()){
+            reload();    
+          }
         }
       }
     });
@@ -23,8 +28,8 @@ function decorateComponents(parentUrl){
       el:'#go',
       methods:{
         go:function(){
-            if(gclidInput.value){
-              reload_();    
+            if(gclidInput.value && switchInput.isChekced()){
+              reload();    
             }
         } 
       }
@@ -181,6 +186,9 @@ function decorateComponents(parentUrl){
           },
           uncheck: function () {
            this.$el.checked = false;
+          },
+          isChekced: function(){
+            return this.$el.checked;
           }
       }
     });
