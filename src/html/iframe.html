@@ -12,7 +12,8 @@
     <div class="second-line">
         <span class="gclid-title">gclid = </span>
         <span class="input-parent">
-            <input id='gclid-input' v-on:keydown="handleKeydown" v-model="value"></input>
+            <input id='gclid-input' @keydown="handleKeydown" @focus="emptyInput" 
+             v-bind:value="inivalue" v-model="value"></input>
         </span> 
         <span class="go-parent" id="go-parent">
             <custom-button v-on:click="go" v-bind:class="btnClass" v-bind:id="btnId" v-bind:value="btnValue"/></custom-button>

@@ -2,8 +2,6 @@
  * @author Akira Sakaguchi <akira.s7171@gmail.com>
  */
 "use strict";
-// TODO delete this
-let parentUrl;
 
 /**
 *  Messages from popup.js (parent window)
@@ -13,13 +11,7 @@ window.addEventListener('message', (e)=>{
     return;
   }
   const data = JSON.parse(e.data);
-  // TODO: delete this
-  // decorateComponents can be called just after DOM ready
-  if(data.type && data.type==='start'){
-    parentUrl = data.parentUrl;
-    decorateComponents(parentUrl);
-  
-  } else if(data.type && data.type==='isEnabled'){
+  if(data.type && data.type==='isEnabled'){
     domainMsg.enabled = data.isEnabled ? true:false;
     data.isEnabled ? switchInput.check() : switchInput.uncheck();
   } else if(data.type && data.type==='reload'){
@@ -49,7 +41,7 @@ window.addEventListener('message', (e)=>{
 */
 function reload(){
 const obj = {'type':'reload','gclidVal':gclidInput.value};
-window.parent.postMessage(JSON.stringify(obj), parentUrl);
+window.parent.postMessage(JSON.stringify(obj), PARENT_URL);
 };
 
 /** 
@@ -59,7 +51,7 @@ window.parent.postMessage(JSON.stringify(obj), parentUrl);
  */
 function sendMsgToContentJS_(msg,val,callback){
   const obj = {'type':'sendMsg','msg':msg, 'val':val, 'callback':callback};
-  window.parent.postMessage(JSON.stringify(obj), parentUrl);
+  window.parent.postMessage(JSON.stringify(obj), PARENT_URL);
 };
 
 /** 
@@ -73,3 +65,4 @@ function IsJsonString(str) {
   }
   return true;
 };
+

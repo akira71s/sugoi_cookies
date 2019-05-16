@@ -3,28 +3,30 @@
  */
 "use strict";
 
-function decorateComponents(parentUrl){
-  /**
-   * input component for gclid
-   */
-  window.gclidInput = new Vue({
-      el:'#gclid-input',
-      methods:{
-        emptyInput: function(){
-          this.value = '';
-        },
-        handleKeydown: function(e){
-          if(e.key==='Enter'&&this.value!=''&& switchInput.isChekced()){
-            reload();    
-          }
+/**
+ * input component for gclid
+*/
+let gclidInput = new Vue({
+    el:'#gclid-input',
+    data:{
+      inivalue: 'test_'+ (new Date().getMonth()+1).toString()+ new Date().getDate().toString(),
+    },  
+    methods:{
+      emptyInput: function(){
+        this.value = '';
+      },
+      handleKeydown: function(e){
+        if(e.key==='Enter'&&this.value!=''&& switchInput.isChekced()){
+          reload();    
         }
       }
-    });
-  
-      /**
-   * go button
-   */
-  window.goBtn = new Vue({
+    }
+ });
+
+/**
+ * go button
+ */
+let goBtn = new Vue({
     el:'#go-parent',
     data:{
       btnClass: "btn-primary",
@@ -38,36 +40,36 @@ function decorateComponents(parentUrl){
           }
       } 
     }
-  });
+});
 
-  /**
-   * clear button
-   */
-  window.clearBtn = new Vue({
-      el:'#clear-parent',
-      data:{
-        btnClass: "btn-warning",
-        btnId: "clear",
-        btnValue: "Clear GoogleAds-related Cookies",
-      },  
-      methods:{
-        clearCookieMsgs_:function(){
-          gclawMsg.setValue(''); 
-          gacMsg.setValue('');
-          gclidMsg.setValue('');
-        },
-        clear:function(){
-          this.clearCookieMsgs_();
-          gclidInput.emptyInput();
-          sendMsgToContentJS_('clearCookies', null);
-        }
+/**
+ * clear button
+ */
+let clearBtn = new Vue({
+    el:'#clear-parent',
+    data:{
+      btnClass: "btn-warning",
+      btnId: "clear",
+      btnValue: "Clear GoogleAds-related Cookies",
+    },  
+    methods:{
+      clearCookieMsgs_:function(){
+        gclawMsg.setValue(''); 
+        gacMsg.setValue('');
+        gclidMsg.setValue('');
+      },
+      clear:function(){
+        this.clearCookieMsgs_();
+       gclidInput.emptyInput();
+        sendMsgToContentJS_('clearCookies', null);
       }
-    });
-  
-   /**
-   * clearAll button
-   */
-  window.clearAllBtn = new Vue({
+    }
+ });
+
+ /**
+ * clearAll button
+ */
+let clearAllBtn = new Vue({
     el:'#clear-all-parent',
     data:{
       btnClass: "btn-danger",
@@ -88,10 +90,10 @@ function decorateComponents(parentUrl){
     }
   });
   
-  /**
-   * gclid cookie msg
-   */
-  window.gclidMsg = new Vue({
+ /**
+  * gclid cookie msg
+  */
+let  gclidMsg = new Vue({
       el:'#gclid-msg',
           data: {
               name: 'gclid',
@@ -105,14 +107,14 @@ function decorateComponents(parentUrl){
             }
           },
           created: function(){
-            window.parent.postMessage(JSON.stringify({type:'getCookies'}), parentUrl);
+            window.parent.postMessage(JSON.stringify({type:'getCookies'}), PARENT_URL);
          }
     });
   
   /**
    * gclaw cookie msg
    */
-  window.gclawMsg = new Vue({
+  let gclawMsg = new Vue({
       el:'#gclaw-msg',
           data: {
             name: '_gcl_aw',
@@ -126,14 +128,14 @@ function decorateComponents(parentUrl){
             }
           },
           created: function(){
-            window.parent.postMessage(JSON.stringify({type:'getCookies'}), parentUrl);
+            window.parent.postMessage(JSON.stringify({type:'getCookies'}), PARENT_URL);
          }
     });
     
   /**
    * gac cookie msg
    */
-  window.gacMsg = new Vue({
+  let gacMsg = new Vue({
       el:'#gac-msg',
           data: {
             name: '_gac',
@@ -147,14 +149,14 @@ function decorateComponents(parentUrl){
             }
           },
           created: function(){
-            window.parent.postMessage(JSON.stringify({type:'getCookies'}), parentUrl);
+            window.parent.postMessage(JSON.stringify({type:'getCookies'}), PARENT_URL);
           }
     });
       
   /**
    * domain msg shower 
    */
-  window.domainMsg = new Vue({
+  let domainMsg = new Vue({
       el:'#domain-msg',
       data: {
           enabled: false,
@@ -168,19 +170,19 @@ function decorateComponents(parentUrl){
         }
       },
       created: function(){
-         window.parent.postMessage(JSON.stringify({type:'checkEnabled'}), parentUrl);
-         window.parent.postMessage(JSON.stringify({type:'getDomainName'}), parentUrl);
+         window.parent.postMessage(JSON.stringify({type:'checkEnabled'}), PARENT_URL);
+         window.parent.postMessage(JSON.stringify({type:'getDomainName'}), PARENT_URL);
       }
     });
     
   /**
    * switch input to enable / disable
    */
-  window.switchInput = new Vue({
+  let switchInput = new Vue({
       el:'#toggle',
       methods: {
           toggle: function () {
-            window.parent.postMessage(JSON.stringify({'type':'toggleEnabled'}), parentUrl); 
+            window.parent.postMessage(JSON.stringify({'type':'toggleEnabled'}), PARENT_URL); 
             sendMsgToContentJS_('toggle',this.$el.checked, 'reload');
             domainMsg.toggle();
           },
@@ -195,4 +197,3 @@ function decorateComponents(parentUrl){
           }
       }
     });
-  };
