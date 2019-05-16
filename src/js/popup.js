@@ -1,16 +1,7 @@
-// TODO: delete eventListener on windowLoaded
-// use hardcoded URL instead
-
 /**
- * dataflow starts from popup.js: windowLoaded
- * -> start & tell the parentURL to iframe_popup.js // TODO: use hard-coded URL
- * -> iframe_popup.js tell the parentURL to & call decorateComponents(); // TODO: use hard-coded URL
+ * set the version text in the popup menu
  */
-window.addEventListener('load',(e)=>{
-  const $iFrame = document.getElementById('main-iframe');
-  console.log(window.location.href);
-  $iFrame.contentWindow.postMessage(JSON.stringify({type:'start', 'parentUrl':window.location.href}),'*');   
-  // TODO: leave this?
+window.addEventListener('DOMContentLoaded',(e)=>{
   document.getElementById('ver-info').innerText = VERSION;
 });
 

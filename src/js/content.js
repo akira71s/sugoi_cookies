@@ -7,7 +7,6 @@
 chrome.runtime.sendMessage({message:'start'});
 chrome.runtime.sendMessage({message:'sendDomainName',domainName:document.domain}); 
 
-
 /** 
  * eventListener - eventListener for chrome.tabs.sendMessage(tabID, obj, function) 
  */
