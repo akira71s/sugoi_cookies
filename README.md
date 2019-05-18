@@ -1,6 +1,6 @@
 @author Akira Sakaguchi <akira.s7171@gmail.com>
 
-# sugoi_cookies (Latest version: 4.0.0: big change in the UI)
+# sugoi_cookies (Latest version: 4.1.4: big change in the UI)
 Chrome extension for checking Cookies needed for Google Ads Conversion tracking
 
 (Google広告のコンバージョン計測に必要なクッキーの計測・テストを行う、Google Chromブラウザの拡張機能(プラグイン)です。)
